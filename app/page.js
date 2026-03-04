@@ -663,51 +663,238 @@ export default function HomePage() {
           {/* INFO TAB */}
           {activeTab === 'info' && (
             <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-              <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                <h2 style={{ fontSize: '36px', marginBottom: '20px' }}>About the Regatta</h2>
-                <p style={{ fontSize: '18px', opacity: 0.8, maxWidth: '700px', margin: '0 auto', lineHeight: 1.8 }}>
-                  {event.description}
-                </p>
-              </div>
-
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                gap: '30px',
-              }}>
-                {[
-                  { icon: Icons.Location, title: 'Venue', content: event.venue, sub: 'La Cruz de Huanacaxtle' },
-                  { icon: Icons.Trophy, title: 'Scoring', content: 'Masters Handicap', sub: 'Apprentice +4, Master +3, GM +2, GGM +1, Legend +0' },
-                  { icon: Icons.Sailboat, title: 'Classes', content: 'ILCA 7 & ILCA 6', sub: 'Scoring separately' },
-                  { icon: Icons.Wind, title: 'Conditions', content: 'Warm Water', sub: 'Expect 10-20 knots' },
-                ].map((item, idx) => (
-                  <div key={idx} style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    borderRadius: '20px',
-                    padding: '40px',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px)'
-                    e.currentTarget.style.borderColor = 'rgba(99, 179, 237, 0.5)'
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
-                  }}
-                  >
-                    <div style={{ color: '#63b3ed', marginBottom: '20px' }}>
-                      <item.icon />
+              
+              {/* Event Overview */}
+              <section style={{ marginBottom: '60px' }}>
+                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ color: '#63b3ed' }}><Icons.Flag /></span>
+                  Event Overview
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Dates</h4>
+                      <p>March 19 – 21, 2026</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>
+                        <a href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/24490/availability/1754243089/book/?full-items=yes" target="_blank" style={{ color: '#63b3ed' }}>
+                          Optional Pre-Clinic: March 16-18 →
+                        </a>
+                      </p>
                     </div>
-                    <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>{item.title}</h3>
-                    <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#63b3ed', marginBottom: '5px' }}>{item.content}</p>
-                    <p style={{ opacity: 0.6 }}>{item.sub}</p>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Location</h4>
+                      <p>La Cruz de Huanacaxtle, Nayarit, Mexico</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7 }}>Bahía de Banderas</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Classes</h4>
+                      <p>ILCA 4, ILCA 6, ILCA 7</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7 }}>All levels including Masters</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Host</h4>
+                      <p>International Sailing Academy</p>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  
+                  <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Highlights</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ color: '#63b3ed' }}>•</span> 3 days of racing (up to 9 races)
+                      </li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ color: '#63b3ed' }}>•</span> "Whale Perpetual Trophy"
+                      </li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ color: '#63b3ed' }}>•</span> Warm water sailing
+                      </li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ color: '#63b3ed' }}>•</span> Friendly atmosphere
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              {/* Registration */}
+              <section style={{ marginBottom: '60px' }}>
+                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ color: '#63b3ed' }}><Icons.Trophy /></span>
+                  Registration
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', marginBottom: '25px' }}>
+                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#63b3ed' }}>$100</div>
+                    <a 
+                      href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/1772134672/book/?full-items=yes" 
+                      target="_blank"
+                      style={{
+                        background: '#63b3ed',
+                        color: '#0a192f',
+                        padding: '12px 24px',
+                        borderRadius: '8px',
+                        textDecoration: 'none',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
+                    >
+                      Register Now <Icons.ArrowRight />
+                    </a>
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>What's Included</h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
+                        <li>• Entry to regatta (up to 9 races)</li>
+                        <li>• Event t-shirt</li>
+                        <li>• Trophy awards ceremony</li>
+                        <li>• Welcome reception</li>
+                        <li>• Prize-giving party</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Important Notes</h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
+                        <li>• No registration deadline</li>
+                        <li>• No late fees</li>
+                        <li>• Secure online payment</li>
+                        <li>• Accommodation not included</li>
+                        <li>• Boat charter available separately</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Venue & Travel */}
+              <section style={{ marginBottom: '60px' }}>
+                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ color: '#63b3ed' }}><Icons.Location /></span>
+                  Venue & Travel
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Racing Venue</h4>
+                      <p style={{ marginBottom: '10px' }}>Bahía de Banderas, launching from Marina Riviera Nayarit and the International Sailing Academy</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7 }}>La Cruz de Huanacaxtle, Nayarit, Mexico</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Getting There</h4>
+                      <p>Fly into <strong>Puerto Vallarta (PVR)</strong> airport</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Stay in Bucerías or La Cruz — hotels, Airbnbs, and restaurants nearby</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Weather</h4>
+                      <p>Warm water & stable thermal winds in March</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Average daily high ~28°C (82°F), reliable breeze, scenic mountain backdrop</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Boat Storage</h4>
+                      <p>Available at ISA and Bourquin Sailing Yard</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Contact ISA to reserve boat park space</p>
+                    </div>
+                  </div>
+                  
+                  <div style={{ marginTop: '25px' }}>
+                    <a 
+                      href="https://maps.app.goo.gl/R3H3UwEeaY8MSpjw6" 
+                      target="_blank"
+                      style={{ color: '#63b3ed', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      <Icons.Location /> View on Google Maps →
+                    </a>
+                  </div>
+                </div>
+              </section>
+
+              {/* Classes & Awards */}
+              <section style={{ marginBottom: '60px' }}>
+                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ color: '#63b3ed' }}><Icons.Sailboat /></span>
+                  Classes & Awards
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Classes</h4>
+                      <p>ILCA 4 • ILCA 6 • ILCA 7</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Open (all ages) and Masters categories (35+)</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Scoring</h4>
+                      <p>Masters Handicap Low Point System</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>9 races scheduled • 1 discard after 4+ races</p>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Awards</h4>
+                      <p>Top 3 in each class • Masters recognition</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>The Whale Perpetual Trophy for overall champion</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Safety */}
+              <section style={{ marginBottom: '60px' }}>
+                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ color: '#63b3ed' }}><Icons.CheckeredFlag /></span>
+                  Safety & Requirements
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Eligibility</h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
+                        <li>• Class association membership required</li>
+                        <li>• Boat must conform to class rules</li>
+                        <li>• Proof of insurance required</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Safety Equipment</h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
+                        <li>• Whistle required</li>
+                        <li>• Flotation device required</li>
+                        <li>• Safety boat coverage provided</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Contact */}
+              <section>
+                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ color: '#63b3ed' }}><Icons.Users /></span>
+                  Contact & Support
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Email</h4>
+                      <a href="mailto:info@internationalsailingacademy.com" style={{ color: 'white' }}>
+                        info@internationalsailingacademy.com
+                      </a>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>WhatsApp</h4>
+                      <a href="https://wa.me/523221177641" target="_blank" style={{ color: '#63b3ed', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        +52 322 117 7641 →
+                      </a>
+                    </div>
+                    <div>
+                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Race Office</h4>
+                      <p>ISA Office, Local 31 A Del Mar<br/>La Cruz de Huanacaxtle</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
             </div>
           )}
 
