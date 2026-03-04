@@ -2,26 +2,78 @@
 
 import { useState, useEffect } from 'react'
 
+// Masters handicap lookup table (simplified - adjust as needed)
+const MASTERS_HANDICAP = {
+  'Apprentice': 0,
+  'Master': 1,
+  'Grand Master': 3,
+  'Great Grand Master': 6,
+  'Legend': 10
+}
+
+// Letter score values
+const LETTER_SCORES = {
+  'DNS': 1000,  // Did Not Start
+  'DNF': 1001,  // Did Not Finish
+  'DSQ': 1002,  // Disqualified
+  'OCS': 1003,  // On Course Side (start line)
+  'BFD': 1004,  // Black Flag Disqualified
+  'RET': 1005,  // Retired
+  'UFD': 1006,  // U Flag Disqualified
+  'NSC': 1007   // Not Sailed Course
+}
+
 export default function RegattaApp() {
-  // Load from localStorage on mount
   const [sailors, setSailors] = useState([])
   const [races, setRaces] = useState([])
   const [activeTab, setActiveTab] = useState('register')
   const [selectedClass, setSelectedClass] = useState('all')
   const [selectedAge, setSelectedAge] = useState('all')
+  const [useHandicap, setUseHandicap] = useState(true)
+  const [dropRaces, setDropRaces] = useState(1)
 
   useEffect(() => {
-    const saved = localStorage.getItem('regatta-data')
+    const saved = localStorage.getItem('regatta-data-v2')
     if (saved) {
       const data = JSON.parse(saved)
       setSailors(data.sailors || [])
       setRaces(data.races || [])
+      setUseHandicap(data.useHandicap !== false)
+      setDropRaces(data.dropRaces || 1)
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('regatta-data', JSON.stringify({ sailors, races }))
-  }, [sailors, races])
+    localStorage.setItem('regatta-data-v2', JSON.stringify({ sailors, races, useHandicap, dropRaces }))
+  }, [sailors, races, useHandicap, dropRaces])
+
+  const getHandicap = (ageGroup) => {
+    if (!useHandicap) return 0
+    // Extract masters category from age group string
+    for (const [category, points] of Object.entries(MASTERS_HANDICAP)) {
+      if (ageGroup.includes(category)) return points
+    }
+    return 0
+  }
+
+  const parseScore = (score, numRacers) => {
+    if (!score) return { value: numRacers + 1, display: 'DNS', isLetter: true }
+    
+    const upperScore = score.toString().toUpperCase().trim()
+    
+    // Check if it's a letter score
+    if (LETTER_SCORES[upperScore]) {
+      return { value: numRacers + 1, display: upperScore, isLetter: true }
+    }
+    
+    // Try to parse as number
+    const num = parseInt(score)
+    if (!isNaN(num)) {
+      return { value: num, display: num.toString(), isLetter: false }
+    }
+    
+    return { value: numRacers + 1, display: 'DNS', isLetter: true }
+  }
 
   const addSailor = (e) => {
     e.preventDefault()
@@ -63,22 +115,43 @@ export default function RegattaApp() {
 
   const calculateResults = () => {
     const numRaces = races.length
-    const discards = numRaces >= 9 ? 2 : numRaces >= 5 ? 1 : 0
-
+    const numSailors = sailors.length
+    
     return sailors.map(sailor => {
-      const scores = races.map(r => {
-        const score = sailor.scores[r.number]
-        if (!score || score === 'DNS') return numRaces + 1
-        if (['DNF', 'DSQ', 'RET'].includes(score)) return numRaces + 1
-        return parseInt(score) || numRaces + 1
+      const handicap = getHandicap(sailor.ageGroup)
+      
+      const raceScores = races.map(r => {
+        const parsed = parseScore(sailor.scores[r.number], numSailors)
+        const adjustedValue = Math.max(1, parsed.value - handicap) // Apply handicap
+        return {
+          race: r.number,
+          raw: parsed.value,
+          adjusted: adjustedValue,
+          display: parsed.display,
+          isLetter: parsed.isLetter
+        }
       })
 
-      const total = scores.reduce((a, b) => a + b, 0)
-      const sortedScores = [...scores].sort((a, b) => b - a)
-      const netScores = sortedScores.slice(discards)
-      const net = netScores.reduce((a, b) => a + b, 0)
+      // Sort by adjusted score (highest first for discarding)
+      const sortedByScore = [...raceScores].sort((a, b) => b.adjusted - a.adjusted)
+      
+      // Drop highest scoring races
+      const droppedRaces = sortedByScore.slice(0, dropRaces)
+      const droppedRaceNumbers = droppedRaces.map(r => r.race)
+      
+      const countedRaces = raceScores.filter(r => !droppedRaceNumbers.includes(r.race))
+      
+      const total = raceScores.reduce((sum, r) => sum + r.adjusted, 0)
+      const net = countedRaces.reduce((sum, r) => sum + r.adjusted, 0)
 
-      return { ...sailor, total, net, scores }
+      return { 
+        ...sailor, 
+        total, 
+        net, 
+        raceScores,
+        droppedRaces: droppedRaceNumbers,
+        handicap
+      }
     }).sort((a, b) => a.net - b.net)
   }
 
@@ -96,9 +169,9 @@ export default function RegattaApp() {
   const exportCSV = () => {
     const results = calculateResults()
     const csv = [
-      ['Rank', 'Sail', 'Name', 'Class', 'Age', 'Country', 'Total', 'Net'].join(','),
+      ['Rank', 'Sail', 'Name', 'Class', 'Age Group', 'Handicap', 'Country', 'Total', 'Net'].join(','),
       ...results.map((r, i) => [
-        i + 1, r.sailNumber, `"${r.name}"`, r.boatClass, r.ageGroup, r.country, r.total, r.net
+        i + 1, r.sailNumber, `"${r.name}"`, r.boatClass, r.ageGroup, r.handicap, r.country, r.total, r.net
       ].join(','))
     ].join('\n')
     
@@ -114,12 +187,14 @@ export default function RegattaApp() {
     if (confirm('Clear all data? This cannot be undone.')) {
       setSailors([])
       setRaces([])
-      localStorage.removeItem('regatta-data')
+      localStorage.removeItem('regatta-data-v2')
     }
   }
 
+  const letterScoreOptions = ['DNS', 'DNF', 'DSQ', 'OCS', 'BFD', 'RET', 'UFD', 'NSC']
+
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'system-ui' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', fontFamily: 'system-ui' }}>
       <h1 style={{ textAlign: 'center', color: '#1a365d' }}>⛵ ISA Regatta Scoring</h1>
       
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
@@ -144,6 +219,27 @@ export default function RegattaApp() {
         ))}
       </div>
 
+      {/* Settings */}
+      <div style={{ background: '#edf2f7', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+          <input 
+            type="checkbox" 
+            checked={useHandicap} 
+            onChange={(e) => setUseHandicap(e.target.checked)}
+          />
+          <span>Use Masters Handicap Scoring</span>
+        </label>
+        <div style={{ marginTop: '10px' }}>
+          <label>Drop Races: </label>
+          <select value={dropRaces} onChange={(e) => setDropRaces(parseInt(e.target.value))}
+            style={{ padding: '5px', borderRadius: '4px' }}>
+            <option value={0}>0</option>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+          </select>
+        </div>
+      </div>
+
       {activeTab === 'register' && (
         <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
           <h2>Register Sailor</h2>
@@ -160,9 +256,15 @@ export default function RegattaApp() {
             </select>
             <select name="ageGroup" required 
               style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }}>
-              <option value="">Select Age Group</option>
+              <option value="">Select Age Group / Masters Category</option>
               <option value="Open">Open</option>
-              <option value="Masters">Masters</option>
+              <option value="Youth">Youth</option>
+              <option value="18-35">18-35</option>
+              <option value="Apprentice Master">Apprentice Master</option>
+              <option value="Master">Master</option>
+              <option value="Grand Master">Grand Master</option>
+              <option value="Great Grand Master">Great Grand Master</option>
+              <option value="Legend">Legend</option>
             </select>
             <input name="country" placeholder="Country (optional)" 
               style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
@@ -179,6 +281,7 @@ export default function RegattaApp() {
                 <strong>{s.sailNumber}</strong> — {s.name} 
                 <span style={{ color: '#718096', marginLeft: '10px' }}>
                   {s.boatClass} • {s.ageGroup}
+                  {useHandicap && <span style={{ color: '#38a169' }}> (Handicap: {getHandicap(s.ageGroup)})</span>}
                 </span>
               </div>
             ))}
@@ -219,6 +322,9 @@ export default function RegattaApp() {
       {activeTab === 'scores' && (
         <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
           <h2>Input Scores</h2>
+          <p style={{ fontSize: '14px', color: '#718096' }}>
+            Enter position (1, 2, 3...) or letter score. Letter scores: {letterScoreOptions.join(', ')}
+          </p>
           {races.length === 0 ? (
             <p>Add races first!</p>
           ) : (
@@ -226,16 +332,16 @@ export default function RegattaApp() {
               {races.map(race => (
                 <div key={race.number} style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
                   <h3>Race {race.number}</h3>
-                  <div style={{ display: 'grid', gap: '8px', maxHeight: '300px', overflow: 'auto' }}>
+                  <div style={{ display: 'grid', gap: '8px', maxHeight: '400px', overflow: 'auto' }}>
                     {sailors.map(sailor => (
                       <div key={sailor.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span style={{ minWidth: '150px' }}>{sailor.sailNumber} — {sailor.name}</span>
                         <input
                           type="text"
-                          placeholder="Pos"
+                          placeholder="Pos or DNS/DNF/etc"
                           value={sailor.scores[race.number] || ''}
                           onChange={(e) => updateScore(sailor.id, race.number, e.target.value)}
-                          style={{ width: '60px', padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e0' }}
+                          style={{ width: '100px', padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e0' }}
                         />
                         <span style={{ color: '#718096', fontSize: '12px' }}>
                           {sailor.boatClass} • {sailor.ageGroup}
@@ -252,7 +358,10 @@ export default function RegattaApp() {
 
       {activeTab === 'results' && (
         <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
-          <h2>Results</h2>
+          <h2>Results {useHandicap && '(with Masters Handicap)'}</h2>
+          <p style={{ fontSize: '14px', color: '#718096' }}>
+            Dropping {dropRaces} highest score(s). Crossed out scores are dropped.
+          </p>
           
           <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
             <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}
@@ -265,7 +374,13 @@ export default function RegattaApp() {
               style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }}>
               <option value="all">All Ages</option>
               <option value="Open">Open</option>
-              <option value="Masters">Masters</option>
+              <option value="Youth">Youth</option>
+              <option value="18-35">18-35</option>
+              <option value="Apprentice Master">Apprentice Master</option>
+              <option value="Master">Master</option>
+              <option value="Grand Master">Grand Master</option>
+              <option value="Great Grand Master">Great Grand Master</option>
+              <option value="Legend">Legend</option>
             </select>
             <button onClick={exportCSV}
               style={{ padding: '10px 20px', background: '#4299e1', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
@@ -274,36 +389,44 @@ export default function RegattaApp() {
           </div>
 
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', borderRadius: '8px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', borderRadius: '8px', fontSize: '14px' }}>
               <thead>
                 <tr style={{ background: '#edf2f7' }}>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>Rank</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>Sail</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>Name</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>Class</th>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>Age</th>
+                  <th style={{ padding: '10px', textAlign: 'left' }}>Rank</th>
+                  <th style={{ padding: '10px', textAlign: 'left' }}>Sail</th>
+                  <th style={{ padding: '10px', textAlign: 'left' }}>Name</th>
+                  <th style={{ padding: '10px', textAlign: 'left' }}>Class</th>
+                  <th style={{ padding: '10px', textAlign: 'left' }}>Age</th>
+                  {useHandicap && <th style={{ padding: '10px', textAlign: 'center' }}>HCP</th>}
                   {races.map(r => (
-                    <th key={r.number} style={{ padding: '12px', textAlign: 'center' }}>R{r.number}</th>
+                    <th key={r.number} style={{ padding: '10px', textAlign: 'center' }}>R{r.number}</th>
                   ))}
-                  <th style={{ padding: '12px', textAlign: 'center' }}>Total</th>
-                  <th style={{ padding: '12px', textAlign: 'center' }}>Net</th>
+                  <th style={{ padding: '10px', textAlign: 'center' }}>Total</th>
+                  <th style={{ padding: '10px', textAlign: 'center' }}>Net</th>
                 </tr>
               </thead>
               <tbody>
                 {getFilteredResults().map((result, index) => (
                   <tr key={result.id} style={{ borderTop: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '12px' }}>{index + 1}</td>
-                    <td style={{ padding: '12px' }}>{result.sailNumber}</td>
-                    <td style={{ padding: '12px' }}>{result.name}</td>
-                    <td style={{ padding: '12px' }}>{result.boatClass}</td>
-                    <td style={{ padding: '12px' }}>{result.ageGroup}</td>
-                    {races.map(r => (
-                      <td key={r.number} style={{ padding: '12px', textAlign: 'center' }}>
-                        {result.scores[r.number] || '-'}
+                    <td style={{ padding: '10px' }}>{index + 1}</td>
+                    <td style={{ padding: '10px' }}>{result.sailNumber}</td>
+                    <td style={{ padding: '10px' }}>{result.name}</td>
+                    <td style={{ padding: '10px' }}>{result.boatClass}</td>
+                    <td style={{ padding: '10px' }}>{result.ageGroup}</td>
+                    {useHandicap && <td style={{ padding: '10px', textAlign: 'center', color: '#38a169' }}>{result.handicap}</td>}
+                    {result.raceScores.map(r => (
+                      <td key={r.race} style={{ padding: '10px', textAlign: 'center' }}>
+                        {result.droppedRaces.includes(r.race) ? (
+                          <span style={{ textDecoration: 'line-through', color: '#a0aec0' }}>
+                            {r.display}
+                          </span>
+                        ) : (
+                          <span>{r.display}</span>
+                        )}
                       </td>
                     ))}
-                    <td style={{ padding: '12px', textAlign: 'center' }}>{result.total}</td>
-                    <td style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>{result.net}</td>
+                    <td style={{ padding: '10px', textAlign: 'center' }}>{result.total}</td>
+                    <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#2b6cb0' }}>{result.net}</td>
                   </tr>
                 ))}
               </tbody>
