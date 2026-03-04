@@ -7,7 +7,7 @@ import { getAllEvents, saveEvent, FLAGS } from './lib/data'
 const DEFAULT_EVENT = {
   id: 'mexican-midwinters-2026',
   eventName: 'ILCA Mexican Midwinter Regatta',
-  eventDate: '2026-03-19',
+  eventDate: '2026-03-19T12:00:00-06:00', // 12:00 PM CST (Mexico City)
   eventEndDate: '2026-03-21',
   venue: 'La Cruz, Nayarit, Mexico',
   organizer: 'International Sailing Academy',
@@ -917,9 +917,9 @@ export default function HomePage() {
                         <span style={{ background: '#e53e3e', padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>ILCA 7</span>
                         <span>{ilca7Sailors.length} Sailors</span>
                       </h2>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {ilca7Sailors.map((sailor, index) => (
-                          <SailorCard key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
+                          <SailorRow key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
                         ))}
                       </div>
                     </div>
@@ -931,9 +931,9 @@ export default function HomePage() {
                         <span style={{ background: '#38a169', padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>ILCA 6</span>
                         <span>{ilca6Sailors.length} Sailors</span>
                       </h2>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {ilca6Sailors.map((sailor, index) => (
-                          <SailorCard key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
+                          <SailorRow key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
                         ))}
                       </div>
                     </div>
@@ -1074,52 +1074,68 @@ export default function HomePage() {
 }
 
 // Sailor Card Component
-function SailorCard({ sailor, index, getHandicap }) {
+function SailorRow({ sailor, index, getHandicap }) {
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.05)',
-      borderRadius: '16px',
-      padding: '25px',
-      border: '1px solid rgba(255,255,255,0.1)',
-      transition: 'all 0.3s ease',
+      background: 'rgba(255,255,255,0.03)',
+      borderRadius: '10px',
+      padding: '14px 20px',
+      border: '1px solid rgba(255,255,255,0.08)',
+      transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '20px',
     }}
     onMouseEnter={(e) => {
-      e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)'
-      e.currentTarget.style.borderColor = 'rgba(99, 179, 237, 0.5)'
       e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+      e.currentTarget.style.borderColor = 'rgba(99, 179, 237, 0.4)'
     }}
     onMouseLeave={(e) => {
-      e.currentTarget.style.transform = 'translateY(0) scale(1)'
-      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-      e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+      e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
     }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
-        <div style={{ fontSize: '32px' }}>{FLAGS[sailor.country] || '○'}</div>
-        <div style={{ 
-          background: 'rgba(99, 179, 237, 0.2)', 
-          padding: '6px 12px', 
-          borderRadius: '20px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-        }}>
-          #{index + 1}
-        </div>
-      </div>
-      <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>{sailor.name}</h3>
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '15px' }}>
-        <span style={{ opacity: 0.6, fontSize: '14px' }}>Sail: {sailor.sailNumber}</span>
-      </div>
+      {/* Rank */}
       <div style={{ 
-        display: 'inline-block',
-        background: 'rgba(255,255,255,0.1)',
-        padding: '8px 16px',
-        borderRadius: '8px',
-        fontSize: '13px',
+        minWidth: '36px',
+        textAlign: 'center',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        color: 'rgba(255,255,255,0.5)',
+      }}>
+        #{index + 1}
+      </div>
+      
+      {/* Flag */}
+      <div style={{ fontSize: '24px', minWidth: '32px' }}>{FLAGS[sailor.country] || '○'}</div>
+      
+      {/* Name */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {sailor.name}
+        </h3>
+      </div>
+      
+      {/* Sail Number */}
+      <div style={{ 
+        fontSize: '14px', 
+        color: 'rgba(255,255,255,0.5)',
+        minWidth: '70px',
+      }}>
+        {sailor.sailNumber}
+      </div>
+      
+      {/* Category */}
+      <div style={{ 
+        background: 'rgba(255,255,255,0.08)',
+        padding: '5px 12px',
+        borderRadius: '6px',
+        fontSize: '12px',
+        whiteSpace: 'nowrap',
       }}>
         {sailor.category}
         {getHandicap(sailor.category) > 0 && (
-          <span style={{ color: '#fc8181', marginLeft: '8px', fontWeight: 'bold' }}>
+          <span style={{ color: '#fc8181', marginLeft: '6px', fontWeight: 'bold' }}>
             +{getHandicap(sailor.category)}
           </span>
         )}
