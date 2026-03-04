@@ -354,32 +354,42 @@ export default function HomePage() {
           <div>
             <h2 style={{ borderBottom: '2px solid rgba(255,255,255,0.3)', paddingBottom: '10px' }}>Live Results</h2>
             
-            {ilca7Races.length === 0 && ilca6Races.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🏁</div>
-                <h3>Racing Hasn't Started Yet</h3>
-                <p>Results will be updated live during the regatta.</p>
-                <p style={{ opacity: 0.7 }}>Check back on March 19, 2026!</p>
-              </div>
-            ) : (
-              <div>
-                {/* ILCA 7 Results */}
-                {ilca7Races.length > 0 && ilca7Sailors.length > 0 && (
-                  <div style={{ marginBottom: '40px' }}>
-                    <h3 style={{ color: '#fc8181' }}>ILCA 7 Results ({ilca7Races.length} races)</h3>
-                    <ResultsTable sailors={ilca7Sailors} races={ilca7Races} />
+            {/* Check if any scores have been entered */}
+            {(() => {
+              const hasIlca7Scores = ilca7Sailors.some(s => Object.keys(s.scores || {}).length > 0)
+              const hasIlca6Scores = ilca6Sailors.some(s => Object.keys(s.scores || {}).length > 0)
+              
+              if (!hasIlca7Scores && !hasIlca6Scores) {
+                return (
+                  <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '48px', marginBottom: '20px' }}>🏁</div>
+                    <h3>Racing Hasn't Started Yet</h3>
+                    <p>Results will be updated live during the regatta.</p>
+                    <p style={{ opacity: 0.7 }}>Check back on March 19, 2026!</p>
                   </div>
-                )}
+                )
+              }
+              
+              return (
+                <div>
+                  {/* ILCA 7 Results */}
+                  {hasIlca7Scores && ilca7Sailors.length > 0 && (
+                    <div style={{ marginBottom: '40px' }}>
+                      <h3 style={{ color: '#fc8181' }}>ILCA 7 Results</h3>
+                      <ResultsTable sailors={ilca7Sailors} races={ilca7Races} />
+                    </div>
+                  )}
 
-                {/* ILCA 6 Results */}
-                {ilca6Races.length > 0 && ilca6Sailors.length > 0 && (
-                  <div>
-                    <h3 style={{ color: '#68d391' }}>ILCA 6 Results ({ilca6Races.length} races)</h3>
-                    <ResultsTable sailors={ilca6Sailors} races={ilca6Races} />
-                  </div>
-                )}
-              </div>
-            )}
+                  {/* ILCA 6 Results */}
+                  {hasIlca6Scores && ilca6Sailors.length > 0 && (
+                    <div>
+                      <h3 style={{ color: '#68d391' }}>ILCA 6 Results</h3>
+                      <ResultsTable sailors={ilca6Sailors} races={ilca6Races} />
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
           </div>
         )}
       </div>

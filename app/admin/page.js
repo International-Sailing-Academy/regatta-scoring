@@ -19,10 +19,12 @@ export default function AdminPage() {
   const [events, setEvents] = useState([])
   const [selectedEventId, setSelectedEventId] = useState(null)
   const [event, setEvent] = useState(null)
+  const [savedEvent, setSavedEvent] = useState(null) // Track last saved state
   const [activeTab, setActiveTab] = useState('event')
   const [shareUrl, setShareUrl] = useState('')
   const [loading, setLoading] = useState(true)
   const [selectedScoreClass, setSelectedScoreClass] = useState('')
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   // Computed values for scores tab
   const classRaces = selectedScoreClass 
@@ -31,6 +33,14 @@ export default function AdminPage() {
   const classSailors = selectedScoreClass
     ? event?.sailors?.filter(s => s.boatClass === selectedScoreClass) || []
     : []
+
+  // Check for unsaved changes
+  useEffect(() => {
+    if (event && savedEvent) {
+      const isDifferent = JSON.stringify(event) !== JSON.stringify(savedEvent)
+      setHasUnsavedChanges(isDifferent)
+    }
+  }, [event, savedEvent])
 
   // Load events on mount
   useEffect(() => {
@@ -41,19 +51,22 @@ export default function AdminPage() {
     if (allEvents.length > 0) {
       setSelectedEventId(allEvents[0].id)
       setEvent(allEvents[0])
+      setSavedEvent(allEvents[0])
     }
     
     setLoading(false)
   }, [])
 
-  // Save event whenever it changes
-  useEffect(() => {
+  // Manual save function
+  const handleSave = () => {
     if (event) {
       saveEvent(event)
-      // Update events list
+      setSavedEvent({...event})
+      setHasUnsavedChanges(false)
       setEvents(getAllEvents())
+      alert('✅ Changes saved and synced to public page!')
     }
-  }, [event])
+  }
 
   // Handle event selection
   const selectEvent = (id) => {
@@ -418,9 +431,38 @@ export default function AdminPage() {
         </div>
         
         {event && (
-          <a href={`/?event=${event.id}`} target="_blank" style={styles.viewLink}>
-            View Public Page →
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {hasUnsavedChanges && (
+              <span style={{ 
+                color: '#ed8936', 
+                fontSize: '13px', 
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}>
+                ● Unsaved Changes
+              </span>
+            )}
+            <button 
+              onClick={handleSave}
+              style={{
+                padding: '8px 16px',
+                background: hasUnsavedChanges ? '#ed8936' : '#38a169',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 'bold'
+              }}
+            >
+              {hasUnsavedChanges ? '💾 Save & Sync' : '✓ Saved'}
+            </button>
+            <a href={`/?event=${event.id}`} target="_blank" style={styles.viewLink}>
+              View Public Page →
+            </a>
+          </div>
         )}
       </div>
 
@@ -435,8 +477,7 @@ export default function AdminPage() {
               { id: 'entries', label: `Entries (${event.sailors.length})` },
               { id: 'races', label: `Races (${event.races.length})` },
               { id: 'scores', label: 'Input Scores' },
-              { id: 'results', label: 'Results' },
-              { id: 'share', label: 'Share' }
+              { id: 'results', label: 'Results' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -1041,72 +1082,7 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* SHARE TAB */}
-          {activeTab === 'share' && (
-            <div style={styles.panel}>
-              <h2>Share & Export</h2>
-              
-              <div style={styles.shareSection}>
-                <h3>🔗 Shareable Link (For Participants)</h3>
-                <p>This link contains all the regatta data and works for anyone:</p>
-                <button onClick={generateShareLink} style={styles.btnPrimary}>
-                  Generate Full Share Link
-                </button>
-                
-                {shareUrl && shareUrl.includes('#') && (
-                  <div style={styles.shareBox}>
-                    <input value={shareUrl} readOnly style={styles.urlInput} />
-                    <p style={styles.success}>✓ Copied to clipboard!</p>
-                    <a href={shareUrl} target="_blank" rel="noreferrer" style={styles.link}>
-                      Open in new tab
-                    </a>
-                  </div>
-                )}
-              </div>
 
-              <div style={styles.shareSection}>
-                <h3>📱 Quick Link (Same Device Only)</h3>
-                <p>For your own use on this device/browser (faster, shorter URL):</p>
-                <button onClick={generateSimpleLink} style={styles.btnSecondary}>
-                  Generate Quick Link
-                </button>
-                
-                {shareUrl && !shareUrl.includes('#') && (
-                  <div style={styles.shareBox}>
-                    <input value={shareUrl} readOnly style={styles.urlInput} />
-                    <p style={styles.success}>✓ Copied to clipboard!</p>
-                  </div>
-                )}
-              </div>
-
-              <div style={{...styles.shareSection, background: '#ebf8ff'}}>
-                <h3>🌐 Custom Domain</h3>
-                <p>
-                  Current URL: <code>{window.location.origin}</code><br/>
-                  To use your own domain (e.g., <strong>results.isa.com</strong>):
-                </p>
-                <ol style={{paddingLeft: '20px', marginTop: '10px'}}>
-                  <li>Buy a domain from Namecheap, GoDaddy, etc.</li>
-                  <li>In Vercel: Project → Settings → Domains</li>
-                  <li>Add your domain and follow DNS setup</li>
-                  <li>Free with Vercel (you just pay for the domain ~$10-15/year)</li>
-                </ol>
-              </div>
-
-              <div style={styles.shareSection}>
-                <h3>💾 Export Regatta</h3>
-                <button onClick={exportJson} style={styles.btnSecondary}>
-                  Download JSON Backup
-                </button>
-              </div>
-
-              <div style={styles.shareSection}>
-                <h3>📂 Import Regatta</h3>
-                <input type="file" accept=".json" onChange={importJson} style={styles.fileInput} />
-                <p style={styles.help}>This will create a new regatta from the imported file</p>
-              </div>
-            </div>
-          )}
         </>
       )}
     </div>
