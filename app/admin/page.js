@@ -309,7 +309,7 @@ export default function AdminPage() {
     return { value: totalSailors + 1, display: 'DNC', isPenalty: true }
   }
 
-  // Generate share link
+  // Generate share link (for external sharing - includes full data)
   const generateShareLink = () => {
     const encoded = encodeRegatta(event)
     if (encoded) {
@@ -317,6 +317,13 @@ export default function AdminPage() {
       setShareUrl(url)
       navigator.clipboard.writeText(url)
     }
+  }
+  
+  // Generate simple link (for same-device use only)
+  const generateSimpleLink = () => {
+    const url = `${window.location.origin}/?event=${event.id}`
+    setShareUrl(url)
+    navigator.clipboard.writeText(url)
   }
 
   // Export/Import
@@ -1040,13 +1047,13 @@ export default function AdminPage() {
               <h2>Share & Export</h2>
               
               <div style={styles.shareSection}>
-                <h3>Public Link for this Regatta</h3>
-                <p>Generate a shareable link for <strong>{event.eventName}</strong>:</p>
+                <h3>🔗 Shareable Link (For Participants)</h3>
+                <p>This link contains all the regatta data and works for anyone:</p>
                 <button onClick={generateShareLink} style={styles.btnPrimary}>
-                  Generate Share Link
+                  Generate Full Share Link
                 </button>
                 
-                {shareUrl && (
+                {shareUrl && shareUrl.includes('#') && (
                   <div style={styles.shareBox}>
                     <input value={shareUrl} readOnly style={styles.urlInput} />
                     <p style={styles.success}>✓ Copied to clipboard!</p>
@@ -1058,14 +1065,43 @@ export default function AdminPage() {
               </div>
 
               <div style={styles.shareSection}>
-                <h3>Export Regatta</h3>
+                <h3>📱 Quick Link (Same Device Only)</h3>
+                <p>For your own use on this device/browser (faster, shorter URL):</p>
+                <button onClick={generateSimpleLink} style={styles.btnSecondary}>
+                  Generate Quick Link
+                </button>
+                
+                {shareUrl && !shareUrl.includes('#') && (
+                  <div style={styles.shareBox}>
+                    <input value={shareUrl} readOnly style={styles.urlInput} />
+                    <p style={styles.success}>✓ Copied to clipboard!</p>
+                  </div>
+                )}
+              </div>
+
+              <div style={{...styles.shareSection, background: '#ebf8ff'}}>
+                <h3>🌐 Custom Domain</h3>
+                <p>
+                  Current URL: <code>{window.location.origin}</code><br/>
+                  To use your own domain (e.g., <strong>results.isa.com</strong>):
+                </p>
+                <ol style={{paddingLeft: '20px', marginTop: '10px'}}>
+                  <li>Buy a domain from Namecheap, GoDaddy, etc.</li>
+                  <li>In Vercel: Project → Settings → Domains</li>
+                  <li>Add your domain and follow DNS setup</li>
+                  <li>Free with Vercel (you just pay for the domain ~$10-15/year)</li>
+                </ol>
+              </div>
+
+              <div style={styles.shareSection}>
+                <h3>💾 Export Regatta</h3>
                 <button onClick={exportJson} style={styles.btnSecondary}>
                   Download JSON Backup
                 </button>
               </div>
 
               <div style={styles.shareSection}>
-                <h3>Import Regatta</h3>
+                <h3>📂 Import Regatta</h3>
                 <input type="file" accept=".json" onChange={importJson} style={styles.fileInput} />
                 <p style={styles.help}>This will create a new regatta from the imported file</p>
               </div>

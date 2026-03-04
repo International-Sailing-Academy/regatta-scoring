@@ -70,34 +70,48 @@ export default function EventPage() {
 
     loadEvent()
 
-    // Listen for storage changes
-    const handleStorageChange = () => {
-      const urlParams = new URLSearchParams(window.location.search)
-      const eventId = urlParams.get('event')
-      
-      if (eventId && event && event.id === eventId) {
-        // Refresh current event if it was updated
-        const updated = getEventById(eventId)
-        if (updated) {
-          setEvent(updated)
+    // Listen for storage changes (from other tabs)
+    const handleStorageChange = (e) => {
+      if (e.key === 'regatta-events') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const eventId = urlParams.get('event')
+        
+        if (eventId) {
+          const updated = getEventById(eventId)
+          if (updated) {
+            setEvent(prev => {
+              // Only update if data actually changed
+              if (JSON.stringify(prev) !== JSON.stringify(updated)) {
+                return updated
+              }
+              return prev
+            })
+          }
         }
       }
     }
     
     window.addEventListener('storage', handleStorageChange)
     
-    // Periodic refresh for current event
+    // More frequent refresh for current event (handles same-tab updates)
     const interval = setInterval(() => {
       const urlParams = new URLSearchParams(window.location.search)
       const eventId = urlParams.get('event')
+      const hash = window.location.hash.slice(1)
       
-      if (eventId && !window.location.hash.slice(1)) {
+      // Only poll if not using encoded URL
+      if (eventId && !hash) {
         const updated = getEventById(eventId)
-        if (updated && JSON.stringify(updated) !== JSON.stringify(event)) {
-          setEvent(updated)
+        if (updated) {
+          setEvent(prev => {
+            if (!prev || JSON.stringify(prev) !== JSON.stringify(updated)) {
+              return updated
+            }
+            return prev
+          })
         }
       }
-    }, 3000)
+    }, 1000) // Check every second
 
     return () => {
       window.removeEventListener('storage', handleStorageChange)
