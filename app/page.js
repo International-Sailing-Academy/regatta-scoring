@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getAllEvents, saveEvent, FLAGS } from './lib/data'
 
-// Default Mexican Midwinters Regatta Data
+// Default Mexican Midwinters Regatta Data (in admin format)
 const DEFAULT_EVENT = {
   id: 'mexican-midwinters-2026',
   eventName: 'ILCA Mexican Midwinter Regatta',
@@ -13,32 +14,26 @@ const DEFAULT_EVENT = {
   description: 'Join us for the premier ILCA regatta in Mexico! Open to all ILCA 7 and Radial sailors. Masters handicap scoring will be used for overall results.',
   classes: ['ILCA 7', 'Radial'],
   sailors: [
-    { id: 1, sailNumber: '123456', name: 'Ksenia Mamontova', boatClass: 'Radial', ageGroup: 'Apprentice Master', country: 'Russia', scores: {} },
-    { id: 2, sailNumber: '123457', name: 'Elena Oetling Ramírez', boatClass: 'Radial', ageGroup: '18-35', country: 'Mexico', scores: {} },
-    { id: 3, sailNumber: '123458', name: 'Greg Jackson', boatClass: 'ILCA 7', ageGroup: 'Legend', country: 'USA', scores: {} },
-    { id: 4, sailNumber: '123459', name: 'Bill Pagels', boatClass: 'Radial', ageGroup: 'Legend', country: 'USA', scores: {} },
-    { id: 5, sailNumber: '123460', name: 'Roy L Lamphier', boatClass: 'Radial', ageGroup: 'Grand Master', country: 'USA', scores: {} },
-    { id: 6, sailNumber: '123461', name: 'Angela de Leo', boatClass: 'Radial', ageGroup: 'Youth', country: 'Mexico', scores: {} },
-    { id: 7, sailNumber: '123462', name: 'Alec Bostan', boatClass: 'Radial', ageGroup: 'Youth', country: 'USA', scores: {} },
-    { id: 8, sailNumber: '123463', name: 'Luis E Barrios', boatClass: 'Radial', ageGroup: 'Great Grand Master', country: 'Mexico', scores: {} },
-    { id: 9, sailNumber: '123464', name: 'Bruce Martinson', boatClass: 'Radial', ageGroup: 'Great Grand Master', country: 'USA', scores: {} },
-    { id: 10, sailNumber: '123465', name: 'Don Hahl', boatClass: 'ILCA 7', ageGroup: 'Legend', country: 'USA', scores: {} },
-    { id: 11, sailNumber: '123466', name: 'Russel Krause', boatClass: 'ILCA 7', ageGroup: 'Grand Master', country: 'USA', scores: {} },
-    { id: 12, sailNumber: '123467', name: 'Mark Kortbeek', boatClass: 'ILCA 7', ageGroup: 'Grand Master', country: 'USA', scores: {} },
-    { id: 13, sailNumber: '123468', name: 'Rachel Kortbeek', boatClass: 'Radial', ageGroup: '18-35', country: 'USA', scores: {} },
-    { id: 14, sailNumber: '123469', name: 'Ryan Kortbeek', boatClass: 'Radial', ageGroup: '18-35', country: 'USA', scores: {} },
-    { id: 15, sailNumber: '123470', name: 'Robert Hodson', boatClass: 'ILCA 7', ageGroup: 'Great Grand Master', country: 'USA', scores: {} },
-    { id: 16, sailNumber: '123471', name: 'Walt Spevak', boatClass: 'Radial', ageGroup: 'Great Grand Master', country: 'USA', scores: {} }
+    { id: '1', sailNumber: 'TBD', name: 'Ksenia Mamontova', boatClass: 'Radial', category: 'Apprentice Master', country: 'RUS', crewName: '', club: '', scores: {} },
+    { id: '2', sailNumber: 'TBD', name: 'Elena Oetling Ramirez', boatClass: 'Radial', category: '18-35', country: 'MEX', crewName: '', club: '', scores: {} },
+    { id: '3', sailNumber: 'TBD', name: 'Greg Jackson', boatClass: 'ILCA 7', category: 'Legend', country: 'USA', crewName: '', club: '', scores: {} },
+    { id: '4', sailNumber: 'TBD', name: 'Bill Pagels', boatClass: 'Radial', category: 'Legend', country: 'USA', crewName: '', club: '', scores: {} },
+    { id: '5', sailNumber: 'TBD', name: 'Roy L Lamphier', boatClass: 'Radial', category: 'Grand Master', country: 'USA', crewName: '', club: '', scores: {} },
+    { id: '6', sailNumber: 'TBD', name: 'Angela de Leo', boatClass: 'Radial', category: 'Youth', country: 'MEX', crewName: '', club: '', scores: {} },
+    { id: '7', sailNumber: 'TBD', name: 'Alec Bostan', boatClass: 'Radial', category: 'Youth', country: 'CAN', crewName: '', club: '', scores: {} },
+    { id: '8', sailNumber: 'TBD', name: 'Luis E Barrios', boatClass: 'Radial', category: 'Great Grand Master', country: 'MEX', crewName: '', club: '', scores: {} },
+    { id: '9', sailNumber: 'TBD', name: 'Bruce Martinson', boatClass: 'Radial', category: 'Great Grand Master', country: 'USA', crewName: '', club: '', scores: {} },
+    { id: '10', sailNumber: 'TBD', name: 'Don Hahl', boatClass: 'ILCA 7', category: 'Legend', country: 'USA', crewName: '', club: '', scores: {} },
+    { id: '11', sailNumber: 'TBD', name: 'Russel Krause', boatClass: 'ILCA 7', category: 'Grand Master', country: 'CAN', crewName: '', club: '', scores: {} },
+    { id: '12', sailNumber: 'TBD', name: 'Mark Kortbeek', boatClass: 'ILCA 7', category: 'Grand Master', country: 'CAN', crewName: '', club: '', scores: {} },
+    { id: '13', sailNumber: 'TBD', name: 'Rachel Kortbeek', boatClass: 'Radial', category: '18-35', country: 'CAN', crewName: '', club: '', scores: {} },
+    { id: '14', sailNumber: 'TBD', name: 'Ryan Kortbeek', boatClass: 'Radial', category: '18-35', country: 'CAN', crewName: '', club: '', scores: {} },
+    { id: '15', sailNumber: 'TBD', name: 'Robert Hodson', boatClass: 'ILCA 7', category: 'Great Grand Master', country: 'USA', crewName: '', club: '', scores: {} },
+    { id: '16', sailNumber: 'TBD', name: 'Walt Spevak', boatClass: 'Radial', category: 'Great Grand Master', country: 'USA', crewName: '', club: '', scores: {} }
   ],
-  races: [
-    { number: 1, date: '2026-03-19', wind: 'TBD' },
-    { number: 2, date: '2026-03-19', wind: 'TBD' },
-    { number: 3, date: '2026-03-20', wind: 'TBD' },
-    { number: 4, date: '2026-03-20', wind: 'TBD' },
-    { number: 5, date: '2026-03-21', wind: 'TBD' },
-    { number: 6, date: '2026-03-21', wind: 'TBD' }
-  ],
-  results: []
+  races: [],
+  createdAt: new Date().toISOString(),
+  lastUpdated: new Date().toLocaleString()
 }
 
 const MASTERS_HANDICAP = {
@@ -50,16 +45,42 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('info')
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [adminPassword, setAdminPassword] = useState('')
+  const [loading, setLoading] = useState(true)
 
+  // Load event from admin's localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('regatta-midwinters-2026')
-    if (saved) {
-      setEvent(JSON.parse(saved))
-    } else {
-      setEvent(DEFAULT_EVENT)
-      localStorage.setItem('regatta-midwinters-2026', JSON.stringify(DEFAULT_EVENT))
+    const loadEvent = () => {
+      const allEvents = getAllEvents()
+      
+      // Look for Mexican Midwinters event
+      let evt = allEvents.find(e => 
+        e.id === 'mexican-midwinters-2026' || 
+        e.eventName?.toLowerCase().includes('mexican')
+      )
+      
+      // If not found, create it
+      if (!evt) {
+        evt = DEFAULT_EVENT
+        saveEvent(evt)
+      }
+      
+      setEvent(evt)
+      setLoading(false)
     }
-  }, [])
+
+    loadEvent()
+
+    // Sync with admin changes
+    const interval = setInterval(() => {
+      const allEvents = getAllEvents()
+      const updated = allEvents.find(e => e.id === event?.id)
+      if (updated && JSON.stringify(updated) !== JSON.stringify(event)) {
+        setEvent(updated)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [event?.id])
 
   const handleAdminLogin = () => {
     if (adminPassword === 'isa2026') {
@@ -69,17 +90,47 @@ export default function HomePage() {
     }
   }
 
-  const getHandicap = (ageGroup) => {
+  const getHandicap = (category) => {
+    if (!category) return 0
     for (const [cat, pts] of Object.entries(MASTERS_HANDICAP)) {
-      if (ageGroup.includes(cat)) return pts
+      if (category.includes(cat)) return pts
     }
     return 0
   }
 
-  if (!event) return <div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>
+  // Calculate results for a class
+  const calculateResults = (sailors, races) => {
+    if (!sailors.length || !races.length) return []
+    
+    return sailors.map(sailor => {
+      const raceScores = races.map(r => {
+        const score = sailor.scores?.[r.number]
+        if (!score) return { race: r.number, value: sailors.length + 1, display: 'DNC' }
+        const num = parseInt(score)
+        if (!isNaN(num)) return { race: r.number, value: num, display: score }
+        return { race: r.number, value: sailors.length + 1, display: score }
+      })
 
-  const ilca7Count = event.sailors.filter(s => s.boatClass === 'ILCA 7').length
-  const radialCount = event.sailors.filter(s => s.boatClass === 'Radial').length
+      // Drop worst race if 2+ races
+      const sorted = [...raceScores].sort((a, b) => b.value - a.value)
+      const dropped = raceScores.length >= 2 ? sorted[0] : null
+      if (dropped) dropped.isDropped = true
+
+      const total = raceScores.reduce((sum, r) => sum + r.value, 0)
+      const net = raceScores.filter(r => !r.isDropped).reduce((sum, r) => sum + r.value, 0)
+
+      return { ...sailor, total, net, raceScores }
+    }).sort((a, b) => a.net - b.net)
+  }
+
+  if (loading || !event) return <div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>
+
+  const ilca7Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 7')
+  const radialSailors = event.sailors.filter(s => s.boatClass === 'Radial')
+  
+  // Get class-specific races
+  const ilca7Races = event.races?.filter(r => r.raceClass === 'ILCA 7') || []
+  const radialRaces = event.races?.filter(r => r.raceClass === 'Radial') || []
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)', color: 'white' }}>
@@ -146,16 +197,16 @@ export default function HomePage() {
             <div style={{ fontSize: '14px', opacity: 0.8 }}>Registered Sailors</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{ilca7Count}</div>
+            <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{ilca7Sailors.length}</div>
             <div style={{ fontSize: '14px', opacity: 0.8 }}>ILCA 7</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{radialCount}</div>
+            <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{radialSailors.length}</div>
             <div style={{ fontSize: '14px', opacity: 0.8 }}>Radial</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{event.races.length}</div>
-            <div style={{ fontSize: '14px', opacity: 0.8 }}>Races</div>
+            <div style={{ fontSize: '36px', fontWeight: 'bold' }}>{ilca7Races.length + radialRaces.length > 0 ? Math.max(ilca7Races.length, radialRaces.length) : 'TBD'}</div>
+            <div style={{ fontSize: '14px', opacity: 0.8 }}>Races Planned</div>
           </div>
         </div>
       </div>
@@ -221,23 +272,35 @@ export default function HomePage() {
           <div>
             <h2 style={{ borderBottom: '2px solid rgba(255,255,255,0.3)', paddingBottom: '10px' }}>Registered Sailors</h2>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' }}>
-              {event.sailors.map((sailor, index) => (
+            {/* ILCA 7 Section */}
+            <h3 style={{ marginTop: '30px', color: '#fc8181' }}>ILCA 7 ({ilca7Sailors.length})</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px', marginBottom: '30px' }}>
+              {ilca7Sailors.map((sailor, index) => (
                 <div key={sailor.id} style={{ background: 'rgba(255,255,255,0.1)', padding: '15px', borderRadius: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 'bold' }}>{index + 1}. {sailor.name}</span>
-                    <span style={{ 
-                      background: sailor.boatClass === 'ILCA 7' ? '#e53e3e' : '#38a169',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      fontSize: '12px'
-                    }}>
-                      {sailor.boatClass}
-                    </span>
+                    <span style={{ fontWeight: 'bold' }}>{index + 1}. {FLAGS[sailor.country] || '🏳️'} {sailor.name}</span>
+                    <span style={{ background: '#e53e3e', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>ILCA 7</span>
                   </div>
                   <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '5px' }}>
-                    Sail: {sailor.sailNumber} | {sailor.ageGroup}
-                    {getHandicap(sailor.ageGroup) > 0 && <span style={{ color: '#fc8181' }}> (+{getHandicap(sailor.ageGroup)})</span>}
+                    Sail: {sailor.sailNumber} | {sailor.category}
+                    {getHandicap(sailor.category) > 0 && <span style={{ color: '#fc8181' }}> (+{getHandicap(sailor.category)})</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Radial Section */}
+            <h3 style={{ color: '#68d391' }}>Radial ({radialSailors.length})</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' }}>
+              {radialSailors.map((sailor, index) => (
+                <div key={sailor.id} style={{ background: 'rgba(255,255,255,0.1)', padding: '15px', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold' }}>{index + 1}. {FLAGS[sailor.country] || '🏳️'} {sailor.name}</span>
+                    <span style={{ background: '#38a169', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>Radial</span>
+                  </div>
+                  <div style={{ fontSize: '14px', opacity: 0.8, marginTop: '5px' }}>
+                    Sail: {sailor.sailNumber} | {sailor.category}
+                    {getHandicap(sailor.category) > 0 && <span style={{ color: '#fc8181' }}> (+{getHandicap(sailor.category)})</span>}
                   </div>
                 </div>
               ))}
@@ -275,12 +338,32 @@ export default function HomePage() {
           <div>
             <h2 style={{ borderBottom: '2px solid rgba(255,255,255,0.3)', paddingBottom: '10px' }}>Live Results</h2>
             
-            <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '20px' }}>🏁</div>
-              <h3>Racing Hasn't Started Yet</h3>
-              <p>Results will be updated live during the regatta.</p>
-              <p style={{ opacity: 0.7 }}>Check back on March 19, 2026!</p>
-            </div>
+            {ilca7Races.length === 0 && radialRaces.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🏁</div>
+                <h3>Racing Hasn't Started Yet</h3>
+                <p>Results will be updated live during the regatta.</p>
+                <p style={{ opacity: 0.7 }}>Check back on March 19, 2026!</p>
+              </div>
+            ) : (
+              <div>
+                {/* ILCA 7 Results */}
+                {ilca7Races.length > 0 && (
+                  <div style={{ marginBottom: '40px' }}>
+                    <h3 style={{ color: '#fc8181' }}>ILCA 7 Results ({ilca7Races.length} races)</h3>
+                    <ResultsTable sailors={ilca7Sailors} races={ilca7Races} />
+                  </div>
+                )}
+
+                {/* Radial Results */}
+                {radialRaces.length > 0 && (
+                  <div>
+                    <h3 style={{ color: '#68d391' }}>Radial Results ({radialRaces.length} races)</h3>
+                    <ResultsTable sailors={radialSailors} races={radialRaces} />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -294,6 +377,71 @@ export default function HomePage() {
           <a href="https://isa-virtual-coaching.circle.so/" style={{ color: '#63b3ed' }}>Virtual Coaching</a>
         </div>
       </div>
+    </div>
+  )
+}
+
+// Results table component
+function ResultsTable({ sailors, races }) {
+  if (!sailors.length || !races.length) return null
+
+  const results = sailors.map(sailor => {
+    const raceScores = races.map(r => {
+      const score = sailor.scores?.[r.number]
+      if (!score) return { race: r.number, value: sailors.length + 1, display: 'DNC', isDropped: false }
+      const num = parseInt(score)
+      if (!isNaN(num)) return { race: r.number, value: num, display: score, isDropped: false }
+      return { race: r.number, value: sailors.length + 1, display: score.toUpperCase(), isDropped: false }
+    })
+
+    // Sort by value (highest first) to find worst race to drop
+    const sorted = [...raceScores].sort((a, b) => b.value - a.value)
+    const droppedRace = raceScores.length >= 2 ? sorted[0]?.race : null
+    
+    raceScores.forEach(rs => {
+      if (rs.race === droppedRace) rs.isDropped = true
+    })
+
+    const total = raceScores.reduce((sum, r) => sum + r.value, 0)
+    const net = raceScores.filter(r => !r.isDropped).reduce((sum, r) => sum + r.value, 0)
+
+    return { ...sailor, total, net, raceScores }
+  }).sort((a, b) => a.net - b.net)
+
+  return (
+    <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '20px' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.3)' }}>
+            <th style={{ padding: '10px', textAlign: 'left' }}>Rank</th>
+            <th style={{ padding: '10px', textAlign: 'left' }}>Sailor</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Net</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Total</th>
+            {races.map(r => (
+              <th key={r.number} style={{ padding: '10px', textAlign: 'center' }}>R{r.number}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {results.map((r, i) => (
+            <tr key={r.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <td style={{ padding: '10px' }}><strong>{i + 1}</strong></td>
+              <td style={{ padding: '10px' }}>{r.name}</td>
+              <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#63b3ed' }}>{r.net}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{r.total}</td>
+              {r.raceScores.map(rs => (
+                <td key={rs.race} style={{ padding: '10px', textAlign: 'center' }}>
+                  {rs.isDropped ? (
+                    <span style={{ textDecoration: 'line-through', opacity: 0.5 }}>({rs.display})</span>
+                  ) : (
+                    rs.display
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
