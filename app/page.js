@@ -2,26 +2,23 @@
 
 import { useState, useEffect } from 'react'
 
-// Masters handicap lookup table - ILCA North America Official
-// Points ADDED to finish position (younger sailors get more points)
 const MASTERS_HANDICAP = {
-  'Apprentice': 4,        // 35-44 years
-  'Master': 3,            // 45-54 years
-  'Grand Master': 2,      // 55-64 years
-  'Great Grand Master': 1,// 65-74 years
-  'Legend': 0             // 75+ years
+  'Apprentice': 4,
+  'Master': 3,
+  'Grand Master': 2,
+  'Great Grand Master': 1,
+  'Legend': 0
 }
 
-// Letter score values
 const LETTER_SCORES = {
-  'DNS': 1000,  // Did Not Start
-  'DNF': 1001,  // Did Not Finish
-  'DSQ': 1002,  // Disqualified
-  'OCS': 1003,  // On Course Side (start line)
-  'BFD': 1004,  // Black Flag Disqualified
-  'RET': 1005,  // Retired
-  'UFD': 1006,  // U Flag Disqualified
-  'NSC': 1007   // Not Sailed Course
+  'DNS': 'DNS',
+  'DNF': 'DNF',
+  'DSQ': 'DSQ',
+  'OCS': 'OCS',
+  'BFD': 'BFD',
+  'RET': 'RET',
+  'UFD': 'UFD',
+  'NSC': 'NSC'
 }
 
 export default function RegattaApp() {
@@ -29,52 +26,26 @@ export default function RegattaApp() {
   const [races, setRaces] = useState([])
   const [activeTab, setActiveTab] = useState('register')
   const [selectedClass, setSelectedClass] = useState('all')
-  const [selectedAge, setSelectedAge] = useState('all')
   const [useHandicap, setUseHandicap] = useState(true)
-  const [dropRaces, setDropRaces] = useState(1)
 
   useEffect(() => {
-    const saved = localStorage.getItem('regatta-data-v2')
-    if (saved) {
-      const data = JSON.parse(saved)
-      setSailors(data.sailors || [])
-      setRaces(data.races || [])
-      setUseHandicap(data.useHandicap !== false)
-      setDropRaces(data.dropRaces || 1)
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('regatta-data')
+      if (saved) {
+        try {
+          const data = JSON.parse(saved)
+          setSailors(data.sailors || [])
+          setRaces(data.races || [])
+        } catch (e) {}
+      }
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('regatta-data-v2', JSON.stringify({ sailors, races, useHandicap, dropRaces }))
-  }, [sailors, races, useHandicap, dropRaces])
-
-  const getHandicap = (ageGroup) => {
-    if (!useHandicap) return 0
-    // Extract masters category from age group string
-    for (const [category, points] of Object.entries(MASTERS_HANDICAP)) {
-      if (ageGroup.includes(category)) return points
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('regatta-data', JSON.stringify({ sailors, races }))
     }
-    return 0
-  }
-
-  const parseScore = (score, numRacers) => {
-    if (!score) return { value: numRacers + 1, display: 'DNS', isLetter: true }
-    
-    const upperScore = score.toString().toUpperCase().trim()
-    
-    // Check if it's a letter score
-    if (LETTER_SCORES[upperScore]) {
-      return { value: numRacers + 1, display: upperScore, isLetter: true }
-    }
-    
-    // Try to parse as number
-    const num = parseInt(score)
-    if (!isNaN(num)) {
-      return { value: num, display: num.toString(), isLetter: false }
-    }
-    
-    return { value: numRacers + 1, display: 'DNS', isLetter: true }
-  }
+  }, [sailors, races])
 
   const addSailor = (e) => {
     e.preventDefault()
@@ -85,74 +56,67 @@ export default function RegattaApp() {
       name: form.name.value,
       boatClass: form.boatClass.value,
       ageGroup: form.ageGroup.value,
-      country: form.country.value || '',
       scores: {}
     }
     setSailors([...sailors, newSailor])
     form.reset()
   }
 
-  const addRace = (e) => {
-    e.preventDefault()
-    const form = e.target
-    const newRace = {
-      number: races.length + 1,
-      windSpeed: form.windSpeed.value,
-      windDir: form.windDir.value,
-      notes: form.notes.value
-    }
-    setRaces([...races, newRace])
-    form.reset()
+  const addRace = () => {
+    setRaces([...races, { number: races.length + 1 }])
   }
 
-  const updateScore = (sailorId, raceNum, position) => {
+  const updateScore = (sailorId, raceNum, value) => {
     setSailors(sailors.map(s => {
       if (s.id === sailorId) {
-        return { ...s, scores: { ...s.scores, [raceNum]: position } }
+        return { ...s, scores: { ...s.scores, [raceNum]: value.toUpperCase() } }
       }
       return s
     }))
   }
 
+  const getHandicap = (ageGroup) => {
+    if (!useHandicap) return 0
+    for (const [cat, pts] of Object.entries(MASTERS_HANDICAP)) {
+      if (ageGroup.includes(cat)) return pts
+    }
+    return 0
+  }
+
+  const parseScore = (score, totalSailors) => {
+    if (!score) return { value: totalSailors + 1, display: 'DNS' }
+    const upper = score.toUpperCase()
+    if (LETTER_SCORES[upper]) return { value: totalSailors + 1, display: upper }
+    const num = parseInt(score)
+    if (!isNaN(num)) return { value: num, display: num.toString() }
+    return { value: totalSailors + 1, display: 'DNS' }
+  }
+
   const calculateResults = () => {
-    const numRaces = races.length
-    const numSailors = sailors.length
+    const totalSailors = sailors.length
     
     return sailors.map(sailor => {
       const handicap = getHandicap(sailor.ageGroup)
       
       const raceScores = races.map(r => {
-        const parsed = parseScore(sailor.scores[r.number], numSailors)
-        const adjustedValue = parsed.value + handicap // Add handicap points (ILCA NA system)
+        const parsed = parseScore(sailor.scores[r.number], totalSailors)
         return {
           race: r.number,
           raw: parsed.value,
-          adjusted: adjustedValue,
-          display: parsed.display,
-          isLetter: parsed.isLetter
+          adjusted: parsed.value + handicap,
+          display: parsed.display
         }
       })
 
-      // Sort by adjusted score (highest first for discarding)
-      const sortedByScore = [...raceScores].sort((a, b) => b.adjusted - a.adjusted)
+      // Sort by adjusted score (highest first) to find worst race to drop
+      const sorted = [...raceScores].sort((a, b) => b.adjusted - a.adjusted)
+      const droppedRace = sorted[0]?.race
       
-      // Drop highest scoring races
-      const droppedRaces = sortedByScore.slice(0, dropRaces)
-      const droppedRaceNumbers = droppedRaces.map(r => r.race)
-      
-      const countedRaces = raceScores.filter(r => !droppedRaceNumbers.includes(r.race))
-      
+      const counted = raceScores.filter(r => r.race !== droppedRace)
       const total = raceScores.reduce((sum, r) => sum + r.adjusted, 0)
-      const net = countedRaces.reduce((sum, r) => sum + r.adjusted, 0)
+      const net = counted.reduce((sum, r) => sum + r.adjusted, 0)
 
-      return { 
-        ...sailor, 
-        total, 
-        net, 
-        raceScores,
-        droppedRaces: droppedRaceNumbers,
-        handicap
-      }
+      return { ...sailor, total, net, raceScores, droppedRace, handicap }
     }).sort((a, b) => a.net - b.net)
   }
 
@@ -161,103 +125,75 @@ export default function RegattaApp() {
     if (selectedClass !== 'all') {
       results = results.filter(r => r.boatClass === selectedClass)
     }
-    if (selectedAge !== 'all') {
-      results = results.filter(r => r.ageGroup === selectedAge)
-    }
     return results
   }
 
-  const exportCSV = () => {
-    const results = calculateResults()
-    const csv = [
-      ['Rank', 'Sail', 'Name', 'Class', 'Age Group', 'Handicap', 'Country', 'Total', 'Net'].join(','),
-      ...results.map((r, i) => [
-        i + 1, r.sailNumber, `"${r.name}"`, r.boatClass, r.ageGroup, r.handicap, r.country, r.total, r.net
-      ].join(','))
-    ].join('\n')
-    
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `regatta-results-${new Date().toISOString().split('T')[0]}.csv`
-    a.click()
-  }
-
   const clearData = () => {
-    if (confirm('Clear all data? This cannot be undone.')) {
+    if (confirm('Clear all data?')) {
       setSailors([])
       setRaces([])
-      localStorage.removeItem('regatta-data-v2')
+      localStorage.removeItem('regatta-data')
     }
   }
 
-  const letterScoreOptions = ['DNS', 'DNF', 'DSQ', 'OCS', 'BFD', 'RET', 'UFD', 'NSC']
+  const styles = {
+    container: { maxWidth: '900px', margin: '0 auto', padding: '20px' },
+    header: { textAlign: 'center', color: '#1a365d' },
+    tabs: { display: 'flex', gap: '10px', marginBottom: '20px' },
+    tab: (active) => ({
+      flex: 1,
+      padding: '12px',
+      background: active ? '#2b6cb0' : '#e2e8f0',
+      color: active ? 'white' : '#4a5568',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      fontWeight: 'bold'
+    }),
+    panel: { background: '#f7fafc', padding: '20px', borderRadius: '8px' },
+    input: { padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0', width: '100%' },
+    button: { padding: '12px', background: '#38a169', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' },
+    table: { width: '100%', borderCollapse: 'collapse', background: 'white' },
+    th: { padding: '10px', textAlign: 'left', background: '#edf2f7' },
+    td: { padding: '10px', borderTop: '1px solid #e2e8f0' }
+  }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', fontFamily: 'system-ui' }}>
-      <h1 style={{ textAlign: 'center', color: '#1a365d' }}>⛵ ISA Regatta Scoring</h1>
+    <div style={styles.container}>
+      <h1 style={styles.header}>⛵ ISA Regatta Scoring</h1>
       
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <div style={styles.tabs}>
         {['register', 'races', 'scores', 'results'].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              flex: 1,
-              padding: '12px',
-              background: activeTab === tab ? '#2b6cb0' : '#e2e8f0',
-              color: activeTab === tab ? 'white' : '#4a5568',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              textTransform: 'capitalize'
-            }}
-          >
-            {tab}
+          <button key={tab} onClick={() => setActiveTab(tab)} style={styles.tab(activeTab === tab)}>
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Settings */}
-      <div style={{ background: '#edf2f7', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-          <input 
-            type="checkbox" 
-            checked={useHandicap} 
-            onChange={(e) => setUseHandicap(e.target.checked)}
-          />
-          <span>Use Masters Handicap Scoring</span>
+      <div style={{ marginBottom: '20px', padding: '15px', background: '#edf2f7', borderRadius: '8px' }}>
+        <label>
+          <input type="checkbox" checked={useHandicap} onChange={(e) => setUseHandicap(e.target.checked)} />
+          Use ILCA NA Masters Handicap
         </label>
-        <div style={{ marginTop: '10px' }}>
-          <label>Drop Races: </label>
-          <select value={dropRaces} onChange={(e) => setDropRaces(parseInt(e.target.value))}
-            style={{ padding: '5px', borderRadius: '4px' }}>
-            <option value={0}>0</option>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-          </select>
-        </div>
+        {useHandicap && <span style={{ marginLeft: '10px', fontSize: '12px', color: '#666' }}>(App +4, M +3, GM +2, GGM +1, L +0)</span>}
       </div>
 
       {activeTab === 'register' && (
-        <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
+        <div style={styles.panel}>
           <h2>Register Sailor</h2>
-          <form onSubmit={addSailor} style={{ display: 'grid', gap: '12px' }}>
-            <input name="sailNumber" placeholder="Sail Number (e.g., 123456)" required 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
-            <input name="name" placeholder="Sailor Name" required 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
-            <select name="boatClass" required 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }}>
+          <form onSubmit={addSailor}>
+            <input name="sailNumber" placeholder="Sail Number" required style={styles.input} />
+            <br /><br />
+            <input name="name" placeholder="Name" required style={styles.input} />
+            <br /><br />
+            <select name="boatClass" required style={styles.input}>
               <option value="">Select Class</option>
               <option value="ILCA 7">ILCA 7</option>
               <option value="Radial">Radial</option>
             </select>
-            <select name="ageGroup" required 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }}>
-              <option value="">Select Age Group / Masters Category</option>
+            <br /><br />
+            <select name="ageGroup" required style={styles.input}>
+              <option value="">Age Group</option>
               <option value="Open">Open</option>
               <option value="Youth">Youth</option>
               <option value="18-35">18-35</option>
@@ -267,53 +203,28 @@ export default function RegattaApp() {
               <option value="Great Grand Master">Great Grand Master</option>
               <option value="Legend">Legend</option>
             </select>
-            <input name="country" placeholder="Country (optional)" 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
-            <button type="submit" 
-              style={{ padding: '12px', background: '#38a169', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
-              Add Sailor
-            </button>
+            <br /><br />
+            <button type="submit" style={styles.button}>Add Sailor</button>
           </form>
 
-          <h3 style={{ marginTop: '30px' }}>Registered Sailors ({sailors.length})</h3>
-          <div style={{ display: 'grid', gap: '8px' }}>
-            {sailors.map(s => (
-              <div key={s.id} style={{ padding: '12px', background: 'white', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                <strong>{s.sailNumber}</strong> — {s.name} 
-                <span style={{ color: '#718096', marginLeft: '10px' }}>
-                  {s.boatClass} • {s.ageGroup}
-                  {useHandicap && <span style={{ color: '#38a169' }}> (Handicap: {getHandicap(s.ageGroup)})</span>}
-                </span>
-              </div>
-            ))}
-          </div>
+          <h3>Sailors ({sailors.length})</h3>
+          {sailors.map(s => (
+            <div key={s.id} style={{ padding: '10px', background: 'white', marginBottom: '8px', borderRadius: '4px' }}>
+              <strong>{s.sailNumber}</strong> — {s.name} — {s.boatClass} — {s.ageGroup}
+              {useHandicap && <span style={{ color: '#38a169' }}> (+{getHandicap(s.ageGroup)})</span>}
+            </div>
+          ))}
         </div>
       )}
 
       {activeTab === 'races' && (
-        <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
-          <h2>Add Race</h2>
-          <form onSubmit={addRace} style={{ display: 'grid', gap: '12px' }}>
-            <input name="windSpeed" placeholder="Wind Speed (e.g., 12-15 knots)" 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
-            <input name="windDir" placeholder="Wind Direction (e.g., NW)" 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
-            <input name="notes" placeholder="Notes (e.g., Shifty, puffy)" 
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }} />
-            <button type="submit" 
-              style={{ padding: '12px', background: '#38a169', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
-              Add Race {races.length + 1}
-            </button>
-          </form>
-
-          <h3 style={{ marginTop: '30px' }}>Races ({races.length})</h3>
-          <div style={{ display: 'grid', gap: '8px' }}>
+        <div style={styles.panel}>
+          <h2>Races ({races.length})</h2>
+          <button onClick={addRace} style={styles.button}>Add Race {races.length + 1}</button>
+          <div style={{ marginTop: '20px' }}>
             {races.map(r => (
-              <div key={r.number} style={{ padding: '12px', background: 'white', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                <strong>Race {r.number}</strong>
-                {r.windSpeed && <span style={{ marginLeft: '10px', color: '#718096' }}>Wind: {r.windSpeed}</span>}
-                {r.windDir && <span style={{ marginLeft: '10px', color: '#718096' }}>Dir: {r.windDir}</span>}
-                {r.notes && <div style={{ marginTop: '4px', color: '#a0aec0', fontSize: '14px' }}>{r.notes}</div>}
+              <div key={r.number} style={{ padding: '10px', background: 'white', marginBottom: '8px', borderRadius: '4px' }}>
+                Race {r.number}
               </div>
             ))}
           </div>
@@ -321,124 +232,81 @@ export default function RegattaApp() {
       )}
 
       {activeTab === 'scores' && (
-        <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
+        <div style={styles.panel}>
           <h2>Input Scores</h2>
-          <p style={{ fontSize: '14px', color: '#718096' }}>
-            Enter position (1, 2, 3...) or letter score. Letter scores: {letterScoreOptions.join(', ')}
-          </p>
-          {races.length === 0 ? (
-            <p>Add races first!</p>
-          ) : (
-            <div style={{ display: 'grid', gap: '20px' }}>
-              {races.map(race => (
-                <div key={race.number} style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
-                  <h3>Race {race.number}</h3>
-                  <div style={{ display: 'grid', gap: '8px', maxHeight: '400px', overflow: 'auto' }}>
-                    {sailors.map(sailor => (
-                      <div key={sailor.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ minWidth: '150px' }}>{sailor.sailNumber} — {sailor.name}</span>
-                        <input
-                          type="text"
-                          placeholder="Pos or DNS/DNF/etc"
-                          value={sailor.scores[race.number] || ''}
-                          onChange={(e) => updateScore(sailor.id, race.number, e.target.value)}
-                          style={{ width: '100px', padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e0' }}
-                        />
-                        <span style={{ color: '#718096', fontSize: '12px' }}>
-                          {sailor.boatClass} • {sailor.ageGroup}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+          <p>Enter position (1,2,3...) or DNS/DNF/OCS/BFD/RET</p>
+          {races.map(race => (
+            <div key={race.number} style={{ marginBottom: '20px', padding: '15px', background: 'white', borderRadius: '8px' }}>
+              <h3>Race {race.number}</h3>
+              {sailors.map(sailor => (
+                <div key={sailor.id} style={{ display: 'flex', gap: '10px', marginBottom: '8px', alignItems: 'center' }}>
+                  <span style={{ minWidth: '150px' }}>{sailor.sailNumber} — {sailor.name}</span>
+                  <input
+                    type="text"
+                    value={sailor.scores[race.number] || ''}
+                    onChange={(e) => updateScore(sailor.id, race.number, e.target.value)}
+                    style={{ width: '80px', padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e0' }}
+                    placeholder="Pos"
+                  />
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
       )}
 
       {activeTab === 'results' && (
-        <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px' }}>
-          <h2>Results {useHandicap && '(with Masters Handicap)'}</h2>
-          <p style={{ fontSize: '14px', color: '#718096' }}>
-            Dropping {dropRaces} highest score(s). Crossed out scores are dropped.
-          </p>
+        <div style={styles.panel}>
+          <h2>Results {useHandicap && '(with Handicap)'}</h2>
+          <p>Worst race (highest score) dropped</p>
           
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-            <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }}>
-              <option value="all">All Classes</option>
-              <option value="ILCA 7">ILCA 7</option>
-              <option value="Radial">Radial</option>
-            </select>
-            <select value={selectedAge} onChange={(e) => setSelectedAge(e.target.value)}
-              style={{ padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e0' }}>
-              <option value="all">All Ages</option>
-              <option value="Open">Open</option>
-              <option value="Youth">Youth</option>
-              <option value="18-35">18-35</option>
-              <option value="Apprentice Master">Apprentice Master</option>
-              <option value="Master">Master</option>
-              <option value="Grand Master">Grand Master</option>
-              <option value="Great Grand Master">Great Grand Master</option>
-              <option value="Legend">Legend</option>
-            </select>
-            <button onClick={exportCSV}
-              style={{ padding: '10px 20px', background: '#4299e1', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
-              Export CSV
-            </button>
-          </div>
+          <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} style={{ marginBottom: '20px', padding: '10px' }}>
+            <option value="all">All Classes</option>
+            <option value="ILCA 7">ILCA 7</option>
+            <option value="Radial">Radial</option>
+          </select>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', borderRadius: '8px', fontSize: '14px' }}>
-              <thead>
-                <tr style={{ background: '#edf2f7' }}>
-                  <th style={{ padding: '10px', textAlign: 'left' }}>Rank</th>
-                  <th style={{ padding: '10px', textAlign: 'left' }}>Sail</th>
-                  <th style={{ padding: '10px', textAlign: 'left' }}>Name</th>
-                  <th style={{ padding: '10px', textAlign: 'left' }}>Class</th>
-                  <th style={{ padding: '10px', textAlign: 'left' }}>Age</th>
-                  {useHandicap && <th style={{ padding: '10px', textAlign: 'center' }}>HCP</th>}
-                  {races.map(r => (
-                    <th key={r.number} style={{ padding: '10px', textAlign: 'center' }}>R{r.number}</th>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Rank</th>
+                <th style={styles.th}>Sail</th>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Class</th>
+                <th style={styles.th}>Age</th>
+                {useHandicap && <th style={styles.th}>HCP</th>}
+                {races.map(r => <th key={r.number} style={{ ...styles.th, textAlign: 'center' }}>R{r.number}</th>)}
+                <th style={styles.th}>Net</th>
+              </tr>
+            </thead>
+            <tbody>
+              {getFilteredResults().map((r, i) => (
+                <tr key={r.id}>
+                  <td style={styles.td}>{i + 1}</td>
+                  <td style={styles.td}>{r.sailNumber}</td>
+                  <td style={styles.td}>{r.name}</td>
+                  <td style={styles.td}>{r.boatClass}</td>
+                  <td style={styles.td}>{r.ageGroup}</td>
+                  {useHandicap && <td style={{ ...styles.td, textAlign: 'center', color: '#38a169' }}>+{r.handicap}</td>}
+                  {r.raceScores.map(rs => (
+                    <td key={rs.race} style={{ ...styles.td, textAlign: 'center' }}>
+                      {rs.race === r.droppedRace ? (
+                        <span style={{ textDecoration: 'line-through', color: '#a0aec0' }}>{rs.display}</span>
+                      ) : (
+                        rs.display
+                      )}
+                    </td>
                   ))}
-                  <th style={{ padding: '10px', textAlign: 'center' }}>Total</th>
-                  <th style={{ padding: '10px', textAlign: 'center' }}>Net</th>
+                  <td style={{ ...styles.td, textAlign: 'center', fontWeight: 'bold', color: '#2b6cb0' }}>{r.net}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {getFilteredResults().map((result, index) => (
-                  <tr key={result.id} style={{ borderTop: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '10px' }}>{index + 1}</td>
-                    <td style={{ padding: '10px' }}>{result.sailNumber}</td>
-                    <td style={{ padding: '10px' }}>{result.name}</td>
-                    <td style={{ padding: '10px' }}>{result.boatClass}</td>
-                    <td style={{ padding: '10px' }}>{result.ageGroup}</td>
-                    {useHandicap && <td style={{ padding: '10px', textAlign: 'center', color: '#38a169' }}>{result.handicap}</td>}
-                    {result.raceScores.map(r => (
-                      <td key={r.race} style={{ padding: '10px', textAlign: 'center' }}>
-                        {result.droppedRaces.includes(r.race) ? (
-                          <span style={{ textDecoration: 'line-through', color: '#a0aec0' }}>
-                            {r.display}
-                          </span>
-                        ) : (
-                          <span>{r.display}</span>
-                        )}
-                      </td>
-                    ))}
-                    <td style={{ padding: '10px', textAlign: 'center' }}>{result.total}</td>
-                    <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#2b6cb0' }}>{result.net}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
       <div style={{ marginTop: '40px', textAlign: 'center' }}>
-        <button onClick={clearData} 
-          style={{ padding: '10px 20px', background: '#e53e3e', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+        <button onClick={clearData} style={{ padding: '10px 20px', background: '#e53e3e', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
           Clear All Data
         </button>
       </div>
