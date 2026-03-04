@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react'
 
-// Masters handicap lookup table (simplified - adjust as needed)
+// Masters handicap lookup table - ILCA North America Official
+// Points ADDED to finish position (younger sailors get more points)
 const MASTERS_HANDICAP = {
-  'Apprentice': 0,
-  'Master': 1,
-  'Grand Master': 3,
-  'Great Grand Master': 6,
-  'Legend': 10
+  'Apprentice': 4,        // 35-44 years
+  'Master': 3,            // 45-54 years
+  'Grand Master': 2,      // 55-64 years
+  'Great Grand Master': 1,// 65-74 years
+  'Legend': 0             // 75+ years
 }
 
 // Letter score values
@@ -122,7 +123,7 @@ export default function RegattaApp() {
       
       const raceScores = races.map(r => {
         const parsed = parseScore(sailor.scores[r.number], numSailors)
-        const adjustedValue = Math.max(1, parsed.value - handicap) // Apply handicap
+        const adjustedValue = parsed.value + handicap // Add handicap points (ILCA NA system)
         return {
           race: r.number,
           raw: parsed.value,
