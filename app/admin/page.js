@@ -12,7 +12,7 @@ import {
 } from '../lib/data'
 
 const COUNTRIES = Object.keys(FLAGS).sort()
-const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', 'Radial', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
+const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
 const CATEGORIES = ['Open', 'Youth', 'Junior', 'Senior', 'Apprentice', 'Master', 'Grand Master', 'Great Grand Master', 'Legend']
 
 export default function AdminPage() {
@@ -596,7 +596,7 @@ export default function AdminPage() {
                   id="bulkImport"
                   rows={5}
                   style={styles.textarea}
-                  placeholder="168123, John Smith, USA, ILCA 7, Miami YC, Master&#10;168456, Jane Doe, GBR, Radial, RYA, Youth"
+                  placeholder="168123, John Smith, USA, ILCA 7, Miami YC, Master&#10;168456, Jane Doe, GBR, ILCA 6, RYA, Youth"
                 />
                 <button 
                   onClick={() => {
@@ -644,21 +644,21 @@ export default function AdminPage() {
                     <button 
                       onClick={() => {
                         const racers = [
-                          { sailNumber: 'TBD', name: 'Ksenia Mamontova', country: 'RUS', boatClass: 'Radial', category: 'Apprentice Master' },
-                          { sailNumber: 'TBD', name: 'Elena Oetling Ramirez', country: 'MEX', boatClass: 'Radial', category: '18-35' },
+                          { sailNumber: 'TBD', name: 'Ksenia Mamontova', country: 'RUS', boatClass: 'ILCA 6', category: 'Apprentice Master' },
+                          { sailNumber: 'TBD', name: 'Elena Oetling Ramirez', country: 'MEX', boatClass: 'ILCA 6', category: '18-35' },
                           { sailNumber: 'TBD', name: 'Greg Jackson', country: 'USA', boatClass: 'ILCA 7', category: 'Legend' },
-                          { sailNumber: 'TBD', name: 'Bill Pagels', country: 'USA', boatClass: 'Radial', category: 'Legend' },
-                          { sailNumber: 'TBD', name: 'Roy L Lamphier', country: 'USA', boatClass: 'Radial', category: 'Grand Master' },
-                          { sailNumber: 'TBD', name: 'Angela de Leo', country: 'MEX', boatClass: 'Radial', category: 'Youth' },
-                          { sailNumber: 'TBD', name: 'Alec Bostan', country: 'CAN', boatClass: 'Radial', category: 'Youth' },
-                          { sailNumber: 'TBD', name: 'Luis E Barrios', country: 'MEX', boatClass: 'Radial', category: 'Great Grand Master' },
-                          { sailNumber: 'TBD', name: 'Bruce Martinson', country: 'USA', boatClass: 'Radial', category: 'Great Grand Master' },
+                          { sailNumber: 'TBD', name: 'Bill Pagels', country: 'USA', boatClass: 'ILCA 6', category: 'Legend' },
+                          { sailNumber: 'TBD', name: 'Roy L Lamphier', country: 'USA', boatClass: 'ILCA 6', category: 'Grand Master' },
+                          { sailNumber: 'TBD', name: 'Angela de Leo', country: 'MEX', boatClass: 'ILCA 6', category: 'Youth' },
+                          { sailNumber: 'TBD', name: 'Alec Bostan', country: 'CAN', boatClass: 'ILCA 6', category: 'Youth' },
+                          { sailNumber: 'TBD', name: 'Luis E Barrios', country: 'MEX', boatClass: 'ILCA 6', category: 'Great Grand Master' },
+                          { sailNumber: 'TBD', name: 'Bruce Martinson', country: 'USA', boatClass: 'ILCA 6', category: 'Great Grand Master' },
                           { sailNumber: 'TBD', name: 'Don Hahl', country: 'USA', boatClass: 'ILCA 7', category: 'Legend' },
                           { sailNumber: 'TBD', name: 'Russel Krause', country: 'CAN', boatClass: 'ILCA 7', category: 'Grand Master' },
                           { sailNumber: 'TBD', name: 'Mark Kortbeek', country: 'CAN', boatClass: 'ILCA 7', category: 'Grand Master' },
-                          { sailNumber: 'TBD', name: 'Rachel Kortbeek', country: 'CAN', boatClass: 'Radial', category: '18-35' },
-                          { sailNumber: 'TBD', name: 'Robert Hodson', country: 'USA', boatClass: 'Radial', category: 'Great Grand Master' },
-                          { sailNumber: 'TBD', name: 'Walt Spevak', country: 'USA', boatClass: 'Radial', category: 'Great Grand Master' }
+                          { sailNumber: 'TBD', name: 'Rachel Kortbeek', country: 'CAN', boatClass: 'ILCA 6', category: '18-35' },
+                          { sailNumber: 'TBD', name: 'Robert Hodson', country: 'USA', boatClass: 'ILCA 6', category: 'Great Grand Master' },
+                          { sailNumber: 'TBD', name: 'Walt Spevak', country: 'USA', boatClass: 'ILCA 6', category: 'Great Grand Master' }
                         ]
                         
                         // Filter out duplicates by name
