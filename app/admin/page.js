@@ -475,7 +475,7 @@ export default function AdminPage() {
             {[
               { id: 'event', label: 'Event Details' },
               { id: 'entries', label: `Entries (${event.sailors.length})` },
-              { id: 'races', label: `Races (${event.races.length})` },
+              { id: 'races', label: `Races (${event.races.filter(r => r.raceClass).length})` },
               { id: 'scores', label: 'Input Scores' },
               { id: 'results', label: 'Results' }
             ].map(tab => (
@@ -881,6 +881,31 @@ export default function AdminPage() {
             <div style={styles.panel}>
               <h2>Manage Races by Class</h2>
               <p style={styles.help}>Races are separate for each class. Add races for each fleet independently.</p>
+              
+              {/* Debug info */}
+              <div style={{marginBottom: '15px', padding: '10px', background: '#edf2f7', borderRadius: '4px', fontSize: '13px'}}>
+                <strong>Total Races: {event.races.length}</strong> | 
+                ILCA 7: {event.races.filter(r => r.raceClass === 'ILCA 7').length} | 
+                ILCA 6: {event.races.filter(r => r.raceClass === 'ILCA 6').length}
+                {event.races.filter(r => !r.raceClass).length > 0 && (
+                  <span style={{color: '#e53e3e'}}> | Unassigned: {event.races.filter(r => !r.raceClass).length}</span>
+                )}
+                {event.races.filter(r => !r.raceClass).length > 0 && (
+                  <button 
+                    onClick={() => {
+                      if (confirm('Delete unassigned races?')) {
+                        setEvent(prev => ({
+                          ...prev,
+                          races: prev.races.filter(r => r.raceClass)
+                        }))
+                      }
+                    }}
+                    style={{marginLeft: '10px', padding: '4px 8px', fontSize: '12px', background: '#e53e3e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+                  >
+                    Clean Up Unassigned
+                  </button>
+                )}
+              </div>
               
               {event.classes.map(cls => {
                 const classRaces = event.races.filter(r => r.raceClass === cls)
