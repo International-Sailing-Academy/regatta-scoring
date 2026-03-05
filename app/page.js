@@ -780,7 +780,6 @@ export default function HomePage() {
                         <li>• Entry to regatta (up to 9 races)</li>
                         <li>• Event t-shirt</li>
                         <li>• Trophy awards ceremony</li>
-                        <li>• Welcome reception</li>
                         <li>• Prize-giving party</li>
                       </ul>
                     </div>
