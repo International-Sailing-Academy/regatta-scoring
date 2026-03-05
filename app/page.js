@@ -1060,7 +1060,7 @@ export default function HomePage() {
                         <span style={{ background: '#e53e3e', padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>ILCA 7</span>
                         <span>{ilca7Sailors.length} Sailors</span>
                       </h2>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', overflowX: 'hidden' }}>
                         {ilca7Sailors.map((sailor, index) => (
                           <SailorRow key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
                         ))}
@@ -1074,7 +1074,7 @@ export default function HomePage() {
                         <span style={{ background: '#38a169', padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>ILCA 6</span>
                         <span>{ilca6Sailors.length} Sailors</span>
                       </h2>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', overflowX: 'hidden' }}>
                         {ilca6Sailors.map((sailor, index) => (
                           <SailorRow key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
                         ))}
@@ -1264,12 +1264,12 @@ function SailorRow({ sailor, index, getHandicap }) {
     <div style={{
       background: 'rgba(255,255,255,0.03)',
       borderRadius: '10px',
-      padding: '14px 20px',
+      padding: '12px 16px',
       border: '1px solid rgba(255,255,255,0.08)',
       transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '20px',
+      gap: '12px',
     }}
     onMouseEnter={(e) => {
       e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
@@ -1282,26 +1282,29 @@ function SailorRow({ sailor, index, getHandicap }) {
     >
       {/* Rank */}
       <div style={{ 
-        minWidth: '36px',
+        minWidth: '28px',
         textAlign: 'center',
-        fontSize: '14px',
+        fontSize: '13px',
         fontWeight: 'bold',
         color: 'rgba(255,255,255,0.5)',
+        flexShrink: 0,
       }}>
         #{index + 1}
       </div>
       
       {/* Flag */}
-      <div style={{ fontSize: '24px', minWidth: '32px' }}>{FLAGS[sailor.country] || '○'}</div>
+      <div style={{ fontSize: '20px', minWidth: '24px', flexShrink: 0 }}>{FLAGS[sailor.country] || '○'}</div>
       
       {/* Name */}
       <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <h3 style={{ 
-          fontSize: 'clamp(14px, 4vw, 16px)', 
+          fontSize: 'clamp(12px, 3.5vw, 15px)', 
           fontWeight: 600, 
           margin: 0,
-          wordWrap: 'break-word',
-          lineHeight: 1.3
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          lineHeight: 1.2
         }}>
           {sailor.name}
         </h3>
@@ -1309,9 +1312,11 @@ function SailorRow({ sailor, index, getHandicap }) {
       
       {/* Sail Number */}
       <div style={{ 
-        fontSize: '14px', 
+        fontSize: '13px', 
         color: 'rgba(255,255,255,0.5)',
-        minWidth: '70px',
+        minWidth: '50px',
+        textAlign: 'right',
+        flexShrink: 0,
       }}>
         {sailor.sailNumber}
       </div>
@@ -1319,14 +1324,18 @@ function SailorRow({ sailor, index, getHandicap }) {
       {/* Category */}
       <div style={{ 
         background: 'rgba(255,255,255,0.08)',
-        padding: '5px 12px',
+        padding: '4px 10px',
         borderRadius: '6px',
-        fontSize: '12px',
+        fontSize: '11px',
         whiteSpace: 'nowrap',
+        flexShrink: 0,
+        maxWidth: '100px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       }}>
         {sailor.category}
         {getHandicap(sailor.category) > 0 && (
-          <span style={{ color: '#fc8181', marginLeft: '6px', fontWeight: 'bold' }}>
+          <span style={{ color: '#fc8181', marginLeft: '4px', fontWeight: 'bold' }}>
             +{getHandicap(sailor.category)}
           </span>
         )}
