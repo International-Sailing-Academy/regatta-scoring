@@ -164,51 +164,6 @@ function CountdownTimer({ targetDate }) {
   )
 }
 
-// Stat Card Component
-function StatCard({ number, label, icon: Icon, delay }) {
-  const [count, setCount] = useState(0)
-  
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const duration = 2000
-      const steps = 60
-      const increment = number / steps
-      let current = 0
-      
-      const timer = setInterval(() => {
-        current += increment
-        if (current >= number) {
-          setCount(number)
-          clearInterval(timer)
-        } else {
-          setCount(Math.floor(current))
-        }
-      }, duration / steps)
-      
-      return () => clearInterval(timer)
-    }, delay)
-    
-    return () => clearTimeout(timeout)
-  }, [number, delay])
-
-  return (
-    <div style={{
-      background: 'rgba(255,255,255,0.1)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
-      padding: '20px',
-      textAlign: 'center',
-      border: '1px solid rgba(255,255,255,0.2)',
-    }}>
-      <div style={{ color: '#63b3ed', marginBottom: '15px', display: 'flex', justifyContent: 'center' }}>
-        <Icon />
-      </div>
-      <div style={{ fontSize: 'clamp(32px, 6vw, 48px)', fontWeight: 'bold', marginBottom: '5px' }}>{count || '-'}</div>
-      <div style={{ fontSize: '14px', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
-    </div>
-  )
-}
-
 export default function HomePage() {
   const [event, setEvent] = useState(null)
   const [activeTab, setActiveTab] = useState('info')
@@ -674,42 +629,6 @@ export default function HomePage() {
           <Icons.ArrowDown />
         </div>
       </div>
-
-      {/* Stats Section */}
-      <section style={{ padding: '60px 15px', background: '#0a192f' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '30px',
-          }}>
-            <StatCard 
-              number={event.sailors.length} 
-              label="Registered Sailors" 
-              icon={Icons.Users} 
-              delay={0}
-            />
-            <StatCard 
-              number={ilca7Sailors.length} 
-              label="ILCA 7 Fleet" 
-              icon={() => <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />} 
-              delay={100}
-            />
-            <StatCard 
-              number={ilca6Sailors.length} 
-              label="ILCA 6 Fleet" 
-              icon={() => <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />} 
-              delay={200}
-            />
-            <StatCard 
-              number={3} 
-              label="Racing Days" 
-              icon={Icons.Calendar} 
-              delay={300}
-            />
-          </div>
-        </div>
-      </section>
 
       {/* Admin Login Modal */}
       {showAdminLogin && (
