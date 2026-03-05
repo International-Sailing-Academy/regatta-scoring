@@ -1260,18 +1260,38 @@ export default function HomePage() {
   )
 }
 
+// Category abbreviations for mobile
+const CATEGORY_ABBR = {
+  'Great Grand Master': 'GGM',
+  'Grand Master': 'GM',
+  'Apprentice Master': 'AM',
+  'Apprentice': 'AM',
+  'Master': 'M',
+  'Legend': 'L',
+  'Youth': 'Y',
+  'Junior': 'J',
+  'Open': 'O',
+  '18-35': '18-35'
+}
+
 // Sailor Card Component
 function SailorRow({ sailor, index, getHandicap }) {
+  // Get abbreviated category
+  const getCategoryAbbr = (cat) => {
+    if (!cat) return '-'
+    return CATEGORY_ABBR[cat] || cat
+  }
+
   return (
     <div style={{
       background: 'rgba(255,255,255,0.03)',
       borderRadius: '10px',
-      padding: '12px 16px',
+      padding: '10px 12px',
       border: '1px solid rgba(255,255,255,0.08)',
       transition: 'all 0.2s ease',
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
+      gap: '8px',
     }}
     onMouseEnter={(e) => {
       e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
@@ -1284,9 +1304,9 @@ function SailorRow({ sailor, index, getHandicap }) {
     >
       {/* Rank */}
       <div style={{ 
-        minWidth: '28px',
-        textAlign: 'center',
-        fontSize: '13px',
+        minWidth: '22px',
+        textAlign: 'left',
+        fontSize: '12px',
         fontWeight: 'bold',
         color: 'rgba(255,255,255,0.5)',
         flexShrink: 0,
@@ -1295,12 +1315,12 @@ function SailorRow({ sailor, index, getHandicap }) {
       </div>
       
       {/* Flag */}
-      <div style={{ fontSize: '20px', minWidth: '24px', flexShrink: 0 }}>{FLAGS[sailor.country] || '○'}</div>
+      <div style={{ fontSize: '18px', minWidth: '20px', flexShrink: 0 }}>{FLAGS[sailor.country] || '○'}</div>
       
       {/* Name */}
       <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
         <h3 style={{ 
-          fontSize: 'clamp(12px, 3.5vw, 15px)', 
+          fontSize: 'clamp(11px, 3vw, 14px)', 
           fontWeight: 600, 
           margin: 0,
           whiteSpace: 'nowrap',
@@ -1314,9 +1334,9 @@ function SailorRow({ sailor, index, getHandicap }) {
       
       {/* Sail Number */}
       <div style={{ 
-        fontSize: '13px', 
+        fontSize: '11px', 
         color: 'rgba(255,255,255,0.5)',
-        minWidth: '50px',
+        minWidth: '40px',
         textAlign: 'right',
         flexShrink: 0,
       }}>
@@ -1326,18 +1346,16 @@ function SailorRow({ sailor, index, getHandicap }) {
       {/* Category */}
       <div style={{ 
         background: 'rgba(255,255,255,0.08)',
-        padding: '4px 10px',
+        padding: '3px 8px',
         borderRadius: '6px',
-        fontSize: '11px',
+        fontSize: '10px',
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        maxWidth: '100px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        fontWeight: 'bold',
       }}>
-        {sailor.category}
+        {getCategoryAbbr(sailor.category)}
         {getHandicap(sailor.category) > 0 && (
-          <span style={{ color: '#fc8181', marginLeft: '4px', fontWeight: 'bold' }}>
+          <span style={{ color: '#fc8181', marginLeft: '3px' }}>
             +{getHandicap(sailor.category)}
           </span>
         )}
