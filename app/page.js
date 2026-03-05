@@ -270,6 +270,7 @@ export default function HomePage() {
       }
       
       console.log('Data source:', source, '| Sailors:', evt.sailors?.length || 0)
+      console.log('Event object:', evt)
       setEvent(evt)
       setDataSource(source)
       setLoading(false)
@@ -697,6 +698,41 @@ export default function HomePage() {
 
       {/* Main Content */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px 40px' }}>
+        
+        {/* Debug Panel - shows data source info */}
+        <div style={{ 
+          background: 'rgba(255,255,255,0.05)', 
+          padding: '10px 15px', 
+          borderRadius: '8px',
+          marginBottom: '20px',
+          fontSize: '12px',
+          fontFamily: 'monospace',
+          color: 'rgba(255,255,255,0.6)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '15px',
+          alignItems: 'center'
+        }}>
+          <span>Source: <strong style={{ color: '#63b3ed' }}>{dataSource}</strong></span>
+          <span>Event: <strong>{event?.eventName?.slice(0, 20) || 'None'}</strong></span>
+          <span>Sailors: <strong style={{ color: event?.sailors?.length ? '#48bb78' : '#fc8181' }}>{event?.sailors?.length || 0}</strong></span>
+          <span>ID: <strong>{event?.id?.slice(0, 8) || 'None'}</strong></span>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              marginLeft: 'auto',
+              padding: '4px 10px',
+              background: 'rgba(99, 179, 237, 0.2)',
+              border: '1px solid rgba(99, 179, 237, 0.5)',
+              borderRadius: '4px',
+              color: '#63b3ed',
+              cursor: 'pointer',
+              fontSize: '11px'
+            }}
+          >
+            🔄 Refresh
+          </button>
+        </div>
         
         {/* Tab Navigation */}
         <div style={{
