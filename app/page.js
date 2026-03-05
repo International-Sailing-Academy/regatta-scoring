@@ -1227,11 +1227,9 @@ export default function HomePage() {
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
-            <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '200px', height: 'auto' }} />
+          <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+            <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '320px', height: 'auto' }} />
           </div>
-          <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>International Sailing Academy</h3>
-          <p style={{ opacity: 0.6, marginBottom: '30px' }}>World-class ILCA coaching in Mexico and beyond</p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
             <a href="https://internationalsailingacademy.com" style={{ color: '#63b3ed', textDecoration: 'none' }}>Website</a>
             <a href="https://isa-virtual-coaching.circle.so/" style={{ color: '#63b3ed', textDecoration: 'none' }}>Virtual Coaching</a>
