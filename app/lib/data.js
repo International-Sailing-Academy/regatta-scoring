@@ -30,24 +30,36 @@ export const createNewEvent = (name = 'New Regatta') => ({
 
 // ============== SUPABASE FUNCTIONS ==============
 
-// Convert camelCase to snake_case for PostgreSQL
+// Deep convert camelCase to snake_case for PostgreSQL
 const toSnakeCase = (obj) => {
-  const result = {}
-  for (const [key, value] of Object.entries(obj)) {
-    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-    result[snakeKey] = value
+  if (Array.isArray(obj)) {
+    return obj.map(toSnakeCase)
   }
-  return result
+  if (obj && typeof obj === 'object') {
+    const result = {}
+    for (const [key, value] of Object.entries(obj)) {
+      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+      result[snakeKey] = toSnakeCase(value)
+    }
+    return result
+  }
+  return obj
 }
 
-// Convert snake_case to camelCase for JavaScript
+// Deep convert snake_case to camelCase for JavaScript
 const toCamelCase = (obj) => {
-  const result = {}
-  for (const [key, value] of Object.entries(obj)) {
-    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
-    result[camelKey] = value
+  if (Array.isArray(obj)) {
+    return obj.map(toCamelCase)
   }
-  return result
+  if (obj && typeof obj === 'object') {
+    const result = {}
+    for (const [key, value] of Object.entries(obj)) {
+      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+      result[camelKey] = toCamelCase(value)
+    }
+    return result
+  }
+  return obj
 }
 
 const getAllEventsSupabase = async () => {
