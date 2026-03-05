@@ -232,28 +232,46 @@ export default function HomePage() {
       // Try Supabase first (for cross-device sync)
       try {
         const supabaseEvents = await getAllEvents()
+        console.log('All Supabase events:', supabaseEvents?.map(e => ({ 
+          id: e.id?.slice(0,8), 
+          name: e.eventName?.slice(0,20), 
+          sailors: e.sailors?.length || 0 
+        })))
         
-        // Find events matching our criteria
-        const matchingEvents = supabaseEvents?.filter(e => 
-          e.id === 'mexican-midwinters-2026' || 
-          e.eventName?.toLowerCase().includes('mexican')
-        ) || []
+        // First try to find by known ID patterns
+        let supabaseEvent = supabaseEvents?.find(e => 
+          e.id === 'mexican-midwinters-2026'
+        )
         
-        console.log('Found', matchingEvents.length, 'matching events in Supabase:', 
-          matchingEvents.map(e => ({ id: e.id.slice(0,8), name: e.eventName.slice(0,20), sailors: e.sailors?.length || 0 })))
+        // Then try by name
+        if (!supabaseEvent) {
+          supabaseEvent = supabaseEvents?.find(e => 
+            e.eventName?.toLowerCase().includes('mexican')
+          )
+        }
         
-        // Use the one with the most sailors, or the first one with any sailors
-        const supabaseEvent = matchingEvents
-          .filter(e => e.sailors && e.sailors.length > 0)
-          .sort((a, b) => (b.sailors?.length || 0) - (a.sailors?.length || 0))[0] || matchingEvents[0]
+        // Then try any event with sailors
+        if (!supabaseEvent) {
+          supabaseEvent = supabaseEvents?.find(e => 
+            e.sailors && e.sailors.length > 0
+          )
+        }
         
-        // Only use Supabase if it has actual data (sailors)
+        // Finally, just use the first event
+        if (!supabaseEvent && supabaseEvents?.length > 0) {
+          supabaseEvent = supabaseEvents[0]
+        }
+        
+        // Use the event if found
         if (supabaseEvent && supabaseEvent.sailors && supabaseEvent.sailors.length > 0) {
           evt = supabaseEvent
           source = 'supabase'
           console.log('✅ Using Supabase event with', supabaseEvent.sailors.length, 'sailors:', supabaseEvent.id)
         } else if (supabaseEvent) {
           console.log('⚠️ Found Supabase event but no sailors:', supabaseEvent.id)
+          // Still use it if it exists, even with 0 sailors
+          evt = supabaseEvent
+          source = 'supabase-empty'
         }
       } catch (err) {
         console.error('Supabase error:', err)
@@ -262,20 +280,24 @@ export default function HomePage() {
       // Fall back to localStorage if Supabase didn't have good data
       if (!evt) {
         const localEvents = getAllEventsSync()
-        const matchingLocal = localEvents.filter(e => 
-          e.id === 'mexican-midwinters-2026' || 
-          e.eventName?.toLowerCase().includes('mexican')
-        )
+        console.log('All localStorage events:', localEvents?.map(e => ({ 
+          id: e.id?.slice(0,8), 
+          name: e.eventName?.slice(0,20), 
+          sailors: e.sailors?.length || 0 
+        })))
         
-        // Use the one with the most sailors
-        const localEvent = matchingLocal
-          .filter(e => e.sailors && e.sailors.length > 0)
-          .sort((a, b) => (b.sailors?.length || 0) - (a.sailors?.length || 0))[0] || matchingLocal[0]
+        // Try any local event first
+        const localEvent = localEvents?.find(e => e.sailors && e.sailors.length > 0) 
+          || localEvents?.[0]
         
         if (localEvent && localEvent.sailors && localEvent.sailors.length > 0) {
           evt = localEvent
           source = 'localStorage'
           console.log('✅ Using localStorage event with', localEvent.sailors.length, 'sailors:', localEvent.id)
+        } else if (localEvent) {
+          evt = localEvent
+          source = 'localStorage-empty'
+          console.log('✅ Using localStorage event (0 sailors):', localEvent.id)
         }
       }
       
