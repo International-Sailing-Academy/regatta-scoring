@@ -16,7 +16,7 @@ const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
 const CATEGORIES = ['Open', 'Youth', 'Junior', 'Senior', 'Apprentice', 'Master', 'Grand Master', 'Great Grand Master', 'Legend']
 
-const ADMIN_PASSWORD = 'isa2026admin'
+const ADMIN_PASSWORD = 'isa2026'
 
 export default function AdminPage() {
   const [events, setEvents] = useState([])
