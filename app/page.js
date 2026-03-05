@@ -215,6 +215,7 @@ export default function HomePage() {
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [adminPassword, setAdminPassword] = useState('')
   const [loading, setLoading] = useState(true)
+  const [dataSource, setDataSource] = useState('loading')
   const [scrollY, setScrollY] = useState(0)
 
   useEffect(() => {
@@ -225,33 +226,52 @@ export default function HomePage() {
 
   useEffect(() => {
     const loadEvent = async () => {
-      // Try Supabase first (for cross-device sync), then fall back to localStorage
-      let allEvents = []
+      let evt = null
+      let source = 'unknown'
+      
+      // Try Supabase first (for cross-device sync)
       try {
         const supabaseEvents = await getAllEvents()
-        if (supabaseEvents && supabaseEvents.length > 0) {
-          allEvents = supabaseEvents
-          console.log('Loaded from Supabase:', supabaseEvents.length, 'events')
-        } else {
-          allEvents = getAllEventsSync()
-          console.log('Loaded from localStorage:', allEvents.length, 'events')
+        const supabaseEvent = supabaseEvents?.find(e => 
+          e.id === 'mexican-midwinters-2026' || 
+          e.eventName?.toLowerCase().includes('mexican')
+        )
+        
+        // Only use Supabase if it has actual data (sailors)
+        if (supabaseEvent && supabaseEvent.sailors && supabaseEvent.sailors.length > 0) {
+          evt = supabaseEvent
+          source = 'supabase'
+          console.log('✅ Using Supabase data:', supabaseEvent.sailors.length, 'sailors')
         }
       } catch (err) {
-        console.error('Error loading from Supabase, using localStorage:', err)
-        allEvents = getAllEventsSync()
+        console.error('Supabase error:', err)
       }
       
-      let evt = allEvents.find(e => 
-        e.id === 'mexican-midwinters-2026' || 
-        e.eventName?.toLowerCase().includes('mexican')
-      )
+      // Fall back to localStorage if Supabase didn't have good data
+      if (!evt) {
+        const localEvents = getAllEventsSync()
+        const localEvent = localEvents.find(e => 
+          e.id === 'mexican-midwinters-2026' || 
+          e.eventName?.toLowerCase().includes('mexican')
+        )
+        
+        if (localEvent && localEvent.sailors && localEvent.sailors.length > 0) {
+          evt = localEvent
+          source = 'localStorage'
+          console.log('✅ Using localStorage data:', localEvent.sailors.length, 'sailors')
+        }
+      }
       
+      // Use default if nothing found
       if (!evt) {
         evt = DEFAULT_EVENT
-        saveEvent(evt)
+        source = 'default'
+        console.log('⚠️ Using default event (no data found)')
       }
       
+      console.log('Data source:', source, '| Sailors:', evt.sailors?.length || 0)
       setEvent(evt)
+      setDataSource(source)
       setLoading(false)
     }
 
@@ -1126,6 +1146,9 @@ export default function HomePage() {
             <a href="https://isa-virtual-coaching.circle.so/" style={{ color: '#63b3ed', textDecoration: 'none' }}>Virtual Coaching</a>
           </div>
           <p style={{ marginTop: '30px', opacity: 0.4, fontSize: '14px' }}>© 2026 International Sailing Academy</p>
+          <p style={{ marginTop: '10px', opacity: 0.3, fontSize: '11px', fontFamily: 'monospace' }}>
+            Source: {dataSource} | Sailors: {event?.sailors?.length || 0} | Event: {event?.eventName?.slice(0, 20)}...
+          </p>
         </div>
       </footer>
     </div>
