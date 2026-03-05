@@ -1393,7 +1393,7 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
     // Only count scored races for drop calculation
     const scoredRaceScores = raceScores.filter(rs => !rs.notScored)
     const sorted = [...scoredRaceScores].sort((a, b) => b.value - a.value)
-    const droppedRace = scoredRaceScores.length >= 2 ? sorted[0]?.race : null
+    const droppedRace = scoredRaceScores.length >= 4 ? sorted[0]?.race : null
     
     raceScores.forEach(rs => {
       if (rs.race === droppedRace) rs.isDropped = true
