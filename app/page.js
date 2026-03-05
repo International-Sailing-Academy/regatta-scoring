@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getAllEventsSync, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
+import { getAllEventsSync, getAllEvents, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
 
 // Default empty event - no sailors until added via admin
 const DEFAULT_EVENT = {
@@ -224,8 +224,23 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    const loadEvent = () => {
-      const allEvents = getAllEventsSync()
+    const loadEvent = async () => {
+      // Try Supabase first (for cross-device sync), then fall back to localStorage
+      let allEvents = []
+      try {
+        const supabaseEvents = await getAllEvents()
+        if (supabaseEvents && supabaseEvents.length > 0) {
+          allEvents = supabaseEvents
+          console.log('Loaded from Supabase:', supabaseEvents.length, 'events')
+        } else {
+          allEvents = getAllEventsSync()
+          console.log('Loaded from localStorage:', allEvents.length, 'events')
+        }
+      } catch (err) {
+        console.error('Error loading from Supabase, using localStorage:', err)
+        allEvents = getAllEventsSync()
+      }
+      
       let evt = allEvents.find(e => 
         e.id === 'mexican-midwinters-2026' || 
         e.eventName?.toLowerCase().includes('mexican')
