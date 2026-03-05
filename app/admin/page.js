@@ -148,11 +148,11 @@ export default function AdminPage() {
   // Add/remove class
   const addClass = (cls) => {
     if (cls && !(event.classes || []).includes(cls)) {
-      setEvent(prev => ({ ...prev, classes: [...prev.classes, cls] }))
+      setEvent(prev => ({ ...prev, classes: [...(prev.classes || []), cls] }))
     }
   }
   const removeClass = (cls) => {
-    setEvent(prev => ({ ...prev, classes: prev.classes.filter(c => c !== cls) }))
+    setEvent(prev => ({ ...prev, classes: (prev.classes || []).filter(c => c !== cls) }))
   }
 
   // Sailor management
@@ -173,7 +173,7 @@ export default function AdminPage() {
     }
     setEvent(prev => ({ 
       ...prev, 
-      sailors: [...prev.sailors, newSailor] 
+      sailors: [...(prev.sailors || []), newSailor] 
     }))
     form.reset()
   }
@@ -182,7 +182,7 @@ export default function AdminPage() {
     if (confirm('Delete this sailor?')) {
       setEvent(prev => ({ 
         ...prev, 
-        sailors: prev.sailors.filter(s => s.id !== id) 
+        sailors: (prev.sailors || []).filter(s => s.id !== id) 
       }))
     }
   }
@@ -190,7 +190,7 @@ export default function AdminPage() {
   const editSailor = (id, field, value) => {
     setEvent(prev => ({
       ...prev,
-      sailors: prev.sailors.map(s => 
+      sailors: (prev.sailors || []).map(s => 
         s.id === id ? { ...s, [field]: value } : s
       )
     }))
@@ -208,7 +208,7 @@ export default function AdminPage() {
       raceClass: raceClass,  // Which class this race is for
       date: new Date().toISOString().split('T')[0]
     }
-    setEvent(prev => ({ ...prev, races: [...prev.races, newRace] }))
+    setEvent(prev => ({ ...prev, races: [...(prev.races || []), newRace] }))
   }
 
   const deleteRace = (raceId) => {
@@ -216,8 +216,8 @@ export default function AdminPage() {
       const raceToDelete = (event.races || []).find(r => r.id === raceId)
       setEvent(prev => ({
         ...prev,
-        races: prev.races.filter(r => r.id !== raceId),
-        sailors: prev.sailors.map(s => {
+        races: (prev.races || []).filter(r => r.id !== raceId),
+        sailors: (prev.sailors || []).map(s => {
           const newScores = { ...s.scores }
           // Delete by race number since scores are stored by number
           if (raceToDelete) {
@@ -233,7 +233,7 @@ export default function AdminPage() {
   const updateScore = (sailorId, raceNum, value) => {
     setEvent(prev => ({
       ...prev,
-      sailors: prev.sailors.map(s => {
+      sailors: (prev.sailors || []).map(s => {
         if (s.id === sailorId) {
           return { 
             ...s, 
@@ -267,7 +267,7 @@ export default function AdminPage() {
     
     setEvent(prev => ({
       ...prev,
-      sailors: [...prev.sailors, ...newSailors]
+      sailors: [...(prev.sailors || []), ...newSailors]
     }))
   }
 
@@ -802,7 +802,7 @@ export default function AdminPage() {
                           
                           setEvent(prev => ({
                             ...prev,
-                            sailors: prev.sailors.filter(s => !importNamesLower.includes(s.name.toLowerCase()))
+                            sailors: (prev.sailors || []).filter(s => !importNamesLower.includes(s.name.toLowerCase()))
                           }))
                           
                           alert('🗑️ Removed all imported FareHarbor racers')
@@ -948,7 +948,7 @@ export default function AdminPage() {
                       if (confirm('Delete unassigned races?')) {
                         setEvent(prev => ({
                           ...prev,
-                          races: prev.races.filter(r => r.raceClass)
+                          races: (prev.races || []).filter(r => r.raceClass)
                         }))
                       }
                     }}
@@ -988,7 +988,7 @@ export default function AdminPage() {
                                 onChange={(e) => {
                                   setEvent(prev => ({
                                     ...prev,
-                                    races: prev.races.map(race => 
+                                    races: (prev.races || []).map(race => 
                                       race.id === r.id 
                                         ? { ...race, date: e.target.value }
                                         : race
