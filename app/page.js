@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getAllEvents, saveEvent, FLAGS } from './lib/data'
+import { getAllEventsSync, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
 
 // Default empty event - no sailors until added via admin
 const DEFAULT_EVENT = {
@@ -225,7 +225,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const loadEvent = () => {
-      const allEvents = getAllEvents()
+      const allEvents = getAllEventsSync()
       let evt = allEvents.find(e => 
         e.id === 'mexican-midwinters-2026' || 
         e.eventName?.toLowerCase().includes('mexican')
@@ -243,19 +243,32 @@ export default function HomePage() {
     loadEvent()
   }, [])
 
-  // Separate sync effect that always runs with stored event ID
+  // Real-time sync via Supabase or polling fallback
   useEffect(() => {
     if (!event?.id) return
     
+    // Try Supabase real-time subscription first
+    const subscription = subscribeToEvents((payload) => {
+      if (payload.new?.id === event.id) {
+        setEvent(payload.new)
+      } else if (payload.eventType === 'DELETE' && payload.old?.id === event.id) {
+        // Event was deleted
+      }
+    })
+    
+    // Fallback to localStorage polling for same-device sync
     const interval = setInterval(() => {
-      const allEvents = getAllEvents()
+      const allEvents = getAllEventsSync()
       const updated = allEvents.find(e => e.id === event.id)
       if (updated && JSON.stringify(updated) !== JSON.stringify(event)) {
         setEvent(updated)
       }
     }, 1000)
 
-    return () => clearInterval(interval)
+    return () => {
+      if (subscription) subscription.unsubscribe()
+      clearInterval(interval)
+    }
   }, [event?.id])
 
   const handleAdminLogin = () => {

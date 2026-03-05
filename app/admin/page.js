@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { 
   FLAGS, 
   createNewEvent, 
-  getAllEvents, 
+  getAllEventsSync, 
   saveEvent, 
   deleteEvent, 
   duplicateEvent,
@@ -44,7 +44,7 @@ export default function AdminPage() {
 
   // Load events on mount
   useEffect(() => {
-    const allEvents = getAllEvents()
+    const allEvents = getAllEventsSync()
     setEvents(allEvents)
     
     // Select first event if exists
@@ -63,7 +63,7 @@ export default function AdminPage() {
       saveEvent(event)
       setSavedEvent({...event})
       setHasUnsavedChanges(false)
-      setEvents(getAllEvents())
+      setEvents(getAllEventsSync())
       alert('✅ Changes saved and synced to public page!')
     }
   }
@@ -84,7 +84,7 @@ export default function AdminPage() {
     if (name) {
       const newEvent = createNewEvent(name)
       saveEvent(newEvent)
-      const allEvents = getAllEvents()
+      const allEvents = getAllEventsSync()
       setEvents(allEvents)
       setSelectedEventId(newEvent.id)
       setEvent(newEvent)
@@ -96,7 +96,7 @@ export default function AdminPage() {
   const handleDeleteEvent = (id) => {
     if (confirm('Delete this regatta? This cannot be undone.')) {
       deleteEvent(id)
-      const allEvents = getAllEvents()
+      const allEvents = getAllEventsSync()
       setEvents(allEvents)
       
       if (selectedEventId === id) {
@@ -114,7 +114,7 @@ export default function AdminPage() {
   // Duplicate event
   const handleDuplicateEvent = (evt) => {
     const newEvent = duplicateEvent(evt)
-    const allEvents = getAllEvents()
+    const allEvents = getAllEventsSync()
     setEvents(allEvents)
     setSelectedEventId(newEvent.id)
     setEvent(newEvent)
@@ -366,7 +366,7 @@ export default function AdminPage() {
           lastUpdated: new Date().toLocaleString()
         }
         saveEvent(newEvent)
-        const allEvents = getAllEvents()
+        const allEvents = getAllEventsSync()
         setEvents(allEvents)
         setSelectedEventId(newEvent.id)
         setEvent(newEvent)
