@@ -738,42 +738,6 @@ export default function HomePage() {
       {/* Main Content */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px 40px' }}>
         
-        {/* Debug Panel - shows data source info */}
-        <div style={{ 
-          background: 'rgba(255,255,255,0.05)', 
-          padding: '10px 15px', 
-          borderRadius: '8px',
-          marginBottom: '20px',
-          fontSize: '12px',
-          fontFamily: 'monospace',
-          color: 'rgba(255,255,255,0.6)',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '15px',
-          alignItems: 'center'
-        }}>
-          <span>Source: <strong style={{ color: '#63b3ed' }}>{dataSource}</strong></span>
-          <span>Event: <strong>{event?.eventName?.slice(0, 20) || 'None'}</strong></span>
-          <span>Sailors: <strong style={{ color: event?.sailors?.length ? '#48bb78' : '#fc8181' }}>{event?.sailors?.length || 0}</strong></span>
-          <span title={event?.eventDate}>Date: <strong>{event?.eventDate?.slice(0, 16) || 'None'}</strong></span>
-          <span title={event?.id}>ID: <strong>{event?.id?.slice(0, 8) || 'None'}...</strong></span>
-          <button 
-            onClick={() => window.location.reload()}
-            style={{
-              marginLeft: 'auto',
-              padding: '4px 10px',
-              background: 'rgba(99, 179, 237, 0.2)',
-              border: '1px solid rgba(99, 179, 237, 0.5)',
-              borderRadius: '4px',
-              color: '#63b3ed',
-              cursor: 'pointer',
-              fontSize: '11px'
-            }}
-          >
-            🔄 Refresh
-          </button>
-        </div>
-        
         {/* Tab Navigation */}
         <div style={{
           display: 'flex',
@@ -1202,6 +1166,41 @@ export default function HomePage() {
             </div>
           )}
         </div>
+        
+        {/* Debug Panel - at bottom */}
+        <div style={{ 
+          background: 'rgba(255,255,255,0.03)', 
+          padding: '8px 12px', 
+          borderRadius: '6px',
+          marginTop: '40px',
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          color: 'rgba(255,255,255,0.4)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <span>Source: {dataSource}</span>
+          <span>|</span>
+          <span>Sailors: {event?.sailors?.length || 0}</span>
+          <span>|</span>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '2px 8px',
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '4px',
+              color: 'rgba(255,255,255,0.5)',
+              cursor: 'pointer',
+              fontSize: '10px'
+            }}
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Footer */}
@@ -1268,8 +1267,14 @@ function SailorRow({ sailor, index, getHandicap }) {
       <div style={{ fontSize: '24px', minWidth: '32px' }}>{FLAGS[sailor.country] || '○'}</div>
       
       {/* Name */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+        <h3 style={{ 
+          fontSize: 'clamp(14px, 4vw, 16px)', 
+          fontWeight: 600, 
+          margin: 0,
+          wordWrap: 'break-word',
+          lineHeight: 1.3
+        }}>
           {sailor.name}
         </h3>
       </div>
@@ -1355,27 +1360,28 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
   return (
     <div style={{ 
       overflowX: 'auto', 
+      WebkitOverflowScrolling: 'touch',
       background: 'rgba(255,255,255,0.05)', 
-      borderRadius: '16px', 
-      padding: '30px',
+      borderRadius: '12px', 
+      padding: '15px 10px',
       border: '1px solid rgba(255,255,255,0.1)',
     }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'clamp(12px, 3vw, 14px)', minWidth: '600px' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.2)' }}>
-            <th style={{ padding: '15px', textAlign: 'left' }}>Rank</th>
-            <th style={{ padding: '15px', textAlign: 'left' }}>Sailor</th>
-            <th style={{ padding: '15px', textAlign: 'center' }}>Net</th>
-            <th style={{ padding: '15px', textAlign: 'center' }}>Total</th>
+            <th style={{ padding: '10px 8px', textAlign: 'left', whiteSpace: 'nowrap' }}>Rank</th>
+            <th style={{ padding: '10px 8px', textAlign: 'left', minWidth: '120px' }}>Sailor</th>
+            <th style={{ padding: '10px 8px', textAlign: 'center', whiteSpace: 'nowrap' }}>Net</th>
+            <th style={{ padding: '10px 8px', textAlign: 'center', whiteSpace: 'nowrap' }}>Tot</th>
             {races.map(r => (
-              <th key={r.number} style={{ padding: '15px', textAlign: 'center' }}>R{r.number}</th>
+              <th key={r.number} style={{ padding: '10px 6px', textAlign: 'center', whiteSpace: 'nowrap' }}>R{r.number}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {results.map((r, i) => (
             <tr key={r.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-              <td style={{ padding: '15px' }}>
+              <td style={{ padding: '10px 8px', whiteSpace: 'nowrap' }}>
                 {i < 3 ? (
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Icons.Medal place={i + 1} />
@@ -1385,38 +1391,38 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '32px',
-                    height: '32px',
+                    width: '28px',
+                    height: '28px',
                     background: 'rgba(255,255,255,0.1)',
                     borderRadius: '50%',
                     fontWeight: 'bold',
-                    fontSize: '14px',
+                    fontSize: '12px',
                   }}>
                     {i + 1}
                   </span>
                 )}
               </td>
-              <td style={{ padding: '15px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <td style={{ padding: '10px 8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   <span>{FLAGS[r.country] || '○'}</span>
-                  <span>{r.name}</span>
+                  <span style={{ wordBreak: 'break-word' }}>{r.name}</span>
                   {mastersScoringEnabled && r.handicap > 0 && (
                     <span style={{ 
-                      fontSize: '11px', 
+                      fontSize: '10px', 
                       background: 'rgba(252, 129, 129, 0.2)', 
                       color: '#fc8181',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
+                      padding: '1px 4px',
+                      borderRadius: '3px',
                     }}>
                       +{r.handicap}
                     </span>
                   )}
                 </div>
               </td>
-              <td style={{ padding: '15px', textAlign: 'center', fontWeight: 'bold', color: '#63b3ed', fontSize: '18px' }}>{r.net}</td>
-              <td style={{ padding: '15px', textAlign: 'center', opacity: 0.6 }}>{r.total}</td>
+              <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold', color: '#63b3ed', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>{r.net}</td>
+              <td style={{ padding: '10px 8px', textAlign: 'center', opacity: 0.6 }}>{r.total}</td>
               {r.raceScores.map(rs => (
-                <td key={rs.race} style={{ padding: '15px', textAlign: 'center' }}>
+                <td key={rs.race} style={{ padding: '10px 6px', textAlign: 'center' }}>
                   {rs.isDropped ? (
                     <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>
                       ({mastersScoringEnabled && rs.handicap > 0 ? `${rs.value}*` : rs.display})

@@ -432,34 +432,6 @@ export default function AdminPage() {
       {/* Data Recovery - Show if no sailors */}
       {event?.sailors?.length === 0 && <DataRecovery />}
 
-      {/* Migration Tools Toggle */}
-      {supabaseEnabled && (
-        <div style={{ marginBottom: '15px' }}>
-          <button 
-            onClick={() => setShowMigrationTools(!showMigrationTools)}
-            style={{
-              padding: '8px 16px',
-              background: showMigrationTools ? '#e2e8f0' : '#f7fafc',
-              border: '1px solid #cbd5e0',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              color: '#4a5568'
-            }}
-          >
-            {showMigrationTools ? '▼ Hide Sync Tools' : '▶ Show Sync Tools'}
-          </button>
-          
-          {showMigrationTools && (
-            <div style={{ marginTop: '15px' }}>
-              <MigrationTool />
-              <SimpleMigration />
-              <SyncDiagnostics />
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Event Manager Header */}
       <div style={styles.eventManager}>
         <div style={styles.eventSelector}>
@@ -1197,6 +1169,34 @@ export default function AdminPage() {
 
 
         </>
+      )}
+
+      {/* Migration Tools - at bottom */}
+      {supabaseEnabled && (
+        <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #e2e8f0' }}>
+          <button 
+            onClick={() => setShowMigrationTools(!showMigrationTools)}
+            style={{
+              padding: '6px 12px',
+              background: 'transparent',
+              border: '1px solid #cbd5e0',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              color: '#718096'
+            }}
+          >
+            {showMigrationTools ? '▼ Hide Sync Tools' : '▶ Sync Tools'}
+          </button>
+          
+          {showMigrationTools && (
+            <div style={{ marginTop: '10px' }}>
+              <MigrationTool />
+              <SimpleMigration />
+              <SyncDiagnostics />
+            </div>
+          )}
+        </div>
       )}
     </div>
   )
