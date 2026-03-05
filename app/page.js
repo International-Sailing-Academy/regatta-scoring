@@ -299,7 +299,7 @@ export default function HomePage() {
         // For non-numeric scores (DNF, DSQ, etc.), still add handicap
         const specialScore = sailors.length + 1 + handicap
         return { race: r.number, value: specialScore, display: `${score} (${specialScore})`, raw: score }
-      }
+      })
 
       const sorted = [...raceScores].sort((a, b) => b.value - a.value)
       const dropped = raceScores.length >= 2 ? sorted[0] : null
