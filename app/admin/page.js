@@ -434,7 +434,7 @@ export default function AdminPage() {
           >
             {events.map(evt => (
               <option key={evt.id} value={evt.id}>
-                {evt.eventName} ({evt.sailors.length} entries)
+                {evt.eventName} ({evt.sailors?.length || 0} entries)
               </option>
             ))}
           </select>
@@ -510,8 +510,8 @@ export default function AdminPage() {
           <nav style={styles.nav}>
             {[
               { id: 'event', label: 'Event Details' },
-              { id: 'entries', label: `Entries (${event.sailors.length})` },
-              { id: 'races', label: `Races (${event.races.filter(r => r.raceClass).length})` },
+              { id: 'entries', label: `Entries (${event.sailors?.length || 0})` },
+              { id: 'races', label: `Races (${event.races?.filter(r => r.raceClass).length || 0})` },
               { id: 'scores', label: 'Input Scores' },
               { id: 'results', label: 'Results' },
               { id: 'docs', label: `Documents (${event.documents?.length || 0})` }
