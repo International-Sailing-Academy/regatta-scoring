@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getAllEventsSync, getAllEvents, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
+import { getAllEventsSync, getAllEvents, getEventById, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
 
 // Default empty event - no sailors until added via admin
 const DEFAULT_EVENT = {
@@ -318,31 +318,55 @@ export default function HomePage() {
     loadEvent()
   }, [])
 
-  // Real-time sync via Supabase or polling fallback
+  // Real-time sync via Supabase subscription + polling
   useEffect(() => {
     if (!event?.id) return
+    
+    let lastEventData = JSON.stringify(event)
     
     // Try Supabase real-time subscription first
     const subscription = subscribeToEvents((payload) => {
       if (payload.new?.id === event.id) {
         setEvent(payload.new)
+        lastEventData = JSON.stringify(payload.new)
       } else if (payload.eventType === 'DELETE' && payload.old?.id === event.id) {
         // Event was deleted
       }
     })
     
-    // Fallback to localStorage polling for same-device sync
-    const interval = setInterval(() => {
+    // Poll Supabase for updates (more reliable than realtime on mobile)
+    const supabasePoll = setInterval(async () => {
+      try {
+        const updated = await getEventById(event.id)
+        if (updated) {
+          const updatedStr = JSON.stringify(updated)
+          if (updatedStr !== lastEventData) {
+            setEvent(updated)
+            lastEventData = updatedStr
+          }
+        }
+      } catch (err) {
+        // Silent fail - will retry next interval
+      }
+    }, 5000)
+    
+    // Fallback to localStorage polling for same-device sync (faster)
+    const localPoll = setInterval(() => {
       const allEvents = getAllEventsSync()
       const updated = allEvents.find(e => e.id === event.id)
-      if (updated && JSON.stringify(updated) !== JSON.stringify(event)) {
-        setEvent(updated)
+      if (updated) {
+        const updatedStr = JSON.stringify(updated)
+        if (updatedStr !== lastEventData) {
+          setEvent(updated)
+          lastEventData = updatedStr
+        }
       }
     }, 1000)
 
     return () => {
       if (subscription) subscription.unsubscribe()
-      clearInterval(interval)
+      clearInterval(supabasePoll)
+      clearInterval(localPoll)
     }
   }, [event?.id])
 
@@ -1120,8 +1144,12 @@ export default function HomePage() {
           {activeTab === 'results' && (
             <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
               {(() => {
-                const hasIlca7Scores = ilca7Sailors.some(s => Object.keys(s.scores || {}).length > 0)
-                const hasIlca6Scores = ilca6Sailors.some(s => Object.keys(s.scores || {}).length > 0)
+                // Check if any sailor has actual scores (non-empty values)
+                const hasScoredRaces = (sailors) => sailors.some(s => 
+                  Object.values(s.scores || {}).some(score => score && score !== '')
+                )
+                const hasIlca7Scores = hasScoredRaces(ilca7Sailors)
+                const hasIlca6Scores = hasScoredRaces(ilca6Sailors)
                 
                 if (!hasIlca7Scores && !hasIlca6Scores) {
                   return (
@@ -1322,11 +1350,18 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
 
   const results = sailors.map(sailor => {
     const handicap = getHandicapForCategory(sailor.category)
+    
+    // Only process races that have been scored
+    const scoredRaces = races.filter(r => {
+      const score = sailor.scores?.[r.number]
+      return score && score !== ''
+    })
+    
     const raceScores = races.map(r => {
       const score = sailor.scores?.[r.number]
-      if (!score) {
-        const dncScore = sailors.length + 1 + handicap
-        return { race: r.number, value: dncScore, display: `DNC`, isDropped: false, raw: 'DNC', handicap }
+      // If no score entered yet, show empty cell (not DNC)
+      if (!score || score === '') {
+        return { race: r.number, value: null, display: '', isDropped: false, raw: null, handicap, notScored: true }
       }
       const num = parseInt(score)
       if (!isNaN(num)) {
@@ -1337,22 +1372,27 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
           display: handicap > 0 ? `${num}` : String(num),
           isDropped: false,
           raw: num,
-          handicap
+          handicap,
+          notScored: false
         }
       }
-      const specialScore = sailors.length + 1 + handicap
-      return { race: r.number, value: specialScore, display: score.toUpperCase(), isDropped: false, raw: score, handicap }
+      // Handle letter scores (DNF, DSQ, etc.)
+      const letterScore = sailors.length + 1 + handicap
+      return { race: r.number, value: letterScore, display: score.toUpperCase(), isDropped: false, raw: score, handicap, notScored: false }
     })
 
-    const sorted = [...raceScores].sort((a, b) => b.value - a.value)
-    const droppedRace = raceScores.length >= 2 ? sorted[0]?.race : null
+    // Only count scored races for drop calculation
+    const scoredRaceScores = raceScores.filter(rs => !rs.notScored)
+    const sorted = [...scoredRaceScores].sort((a, b) => b.value - a.value)
+    const droppedRace = scoredRaceScores.length >= 2 ? sorted[0]?.race : null
     
     raceScores.forEach(rs => {
       if (rs.race === droppedRace) rs.isDropped = true
     })
 
-    const total = raceScores.reduce((sum, r) => sum + r.value, 0)
-    const net = raceScores.filter(r => !r.isDropped).reduce((sum, r) => sum + r.value, 0)
+    // Only sum scored races
+    const total = scoredRaceScores.reduce((sum, r) => sum + r.value, 0)
+    const net = scoredRaceScores.filter(r => !r.isDropped).reduce((sum, r) => sum + r.value, 0)
 
     return { ...sailor, total, net, raceScores, handicap }
   }).sort((a, b) => a.net - b.net)
@@ -1423,7 +1463,9 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
               <td style={{ padding: '10px 8px', textAlign: 'center', opacity: 0.6 }}>{r.total}</td>
               {r.raceScores.map(rs => (
                 <td key={rs.race} style={{ padding: '10px 6px', textAlign: 'center' }}>
-                  {rs.isDropped ? (
+                  {rs.notScored ? (
+                    <span style={{ opacity: 0.2 }}>—</span>
+                  ) : rs.isDropped ? (
                     <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>
                       ({mastersScoringEnabled && rs.handicap > 0 ? `${rs.value}*` : rs.display})
                     </span>
