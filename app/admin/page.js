@@ -11,6 +11,7 @@ import {
   encodeRegatta,
   isSupabaseEnabled
 } from '../lib/data'
+import MigrationTool from '../components/MigrationTool'
 
 const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
@@ -401,6 +402,9 @@ export default function AdminPage() {
 
   return (
     <div style={styles.container}>
+      {/* Migration Tool - Only show if Supabase is enabled */}
+      {supabaseEnabled && <MigrationTool />}
+
       {/* Event Manager Header */}
       <div style={styles.eventManager}>
         <div style={styles.eventSelector}>
