@@ -9,9 +9,11 @@ export default function SyncDiagnostics() {
     supabaseConfigured: false,
     supabaseConnected: false,
     tableExists: false,
-    canInsert: false,
+    canWrite: false,
     localEvents: 0,
+    localSailors: 0,
     cloudEvents: 0,
+    cloudSailors: 0,
     error: null,
     checking: true
   })
@@ -22,9 +24,11 @@ export default function SyncDiagnostics() {
         supabaseConfigured: isSupabaseEnabled(),
         supabaseConnected: false,
         tableExists: false,
-        canInsert: false,
+        canWrite: false,
         localEvents: 0,
+        localSailors: 0,
         cloudEvents: 0,
+        cloudSailors: 0,
         error: null,
         checking: true
       }
@@ -32,6 +36,7 @@ export default function SyncDiagnostics() {
       // Check localStorage
       const localEvents = getAllEventsSync()
       results.localEvents = localEvents.length
+      results.localSailors = localEvents[0]?.sailors?.length || 0
 
       // Check Supabase connection and table
       if (results.supabaseConfigured && supabase) {
@@ -48,19 +53,20 @@ export default function SyncDiagnostics() {
             results.supabaseConnected = true
             results.tableExists = true
             results.cloudEvents = data?.length || 0
+            results.cloudSailors = data?.[0]?.sailors?.length || 0
             
-            // Try a test insert to verify write permissions
+            // Try a test insert to verify write permissions - use snake_case
             const testId = 'test-' + Date.now()
             const { error: insertError } = await supabase
               .from('events')
               .insert({
                 id: testId,
-                eventName: 'Test Event',
-                createdAt: new Date().toISOString()
+                eventname: 'Test Event',
+                createdat: new Date().toISOString()
               })
             
             if (!insertError) {
-              results.canInsert = true
+              results.canWrite = true
               // Clean up test record
               await supabase.from('events').delete().eq('id', testId)
             } else {
@@ -82,15 +88,35 @@ export default function SyncDiagnostics() {
   const getStatusColor = () => {
     if (diagnostics.checking) return '#90cdf4'
     if (diagnostics.error) return '#fed7d7'
-    if (diagnostics.canInsert) return '#c6f6d5'
+    if (diagnostics.canWrite) return '#c6f6d5'
     return '#fefcbf'
   }
 
   const getTextColor = () => {
     if (diagnostics.checking) return '#2c5282'
     if (diagnostics.error) return '#c53030'
-    if (diagnostics.canInsert) return '#22543d'
+    if (diagnostics.canWrite) return '#22543d'
     return '#744210'
+  }
+
+  // Compact view if everything is working
+  if (!diagnostics.checking && diagnostics.canWrite && diagnostics.cloudEvents > 0 && diagnostics.cloudSailors > 0) {
+    return (
+      <div style={{ 
+        background: '#c6f6d5', 
+        color: '#22543d',
+        padding: '10px 15px', 
+        borderRadius: '6px',
+        marginBottom: '15px',
+        fontSize: '13px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px'
+      }}>
+        <span>☁️</span>
+        <span><strong>Cloud sync active</strong> — {diagnostics.cloudSailors} sailors synced</span>
+      </div>
+    )
   }
 
   return (
@@ -107,38 +133,30 @@ export default function SyncDiagnostics() {
       {diagnostics.checking ? (
         <p>Checking configuration...</p>
       ) : (
-        <div style={{ display: 'grid', gap: '8px' }}>
-          <div><strong>Supabase Configured:</strong> {diagnostics.supabaseConfigured ? '✅ Yes' : '❌ No'}</div>
-          <div><strong>Supabase Connected:</strong> {diagnostics.supabaseConnected ? '✅ Yes' : '❌ No'}</div>
-          <div><strong>Table Exists:</strong> {diagnostics.tableExists ? '✅ Yes' : '❌ No'}</div>
-          <div><strong>Can Write:</strong> {diagnostics.canInsert ? '✅ Yes' : '❌ No'}</div>
+        <div style={{ display: 'grid', gap: '6px' }}>
+          <div><strong>Supabase:</strong> {diagnostics.supabaseConfigured ? '✅ Configured' : '❌ Not configured'} | {diagnostics.supabaseConnected ? '✅ Connected' : '❌ Not connected'}</div>
+          <div><strong>Table:</strong> {diagnostics.tableExists ? '✅ Exists' : '❌ Missing'} | <strong>Write:</strong> {diagnostics.canWrite ? '✅ Yes' : '❌ No'}</div>
           
-          <div><strong>Local Events:</strong> {diagnostics.localEvents}</div>
-          <div><strong>Cloud Events:</strong> {diagnostics.cloudEvents}</div>
+          <div style={{ marginTop: '5px', paddingTop: '5px', borderTop: '1px solid rgba(0,0,0,0.1)' }}>
+            <strong>Local:</strong> {diagnostics.localEvents} events, {diagnostics.localSailors} sailors<br/>
+            <strong>Cloud:</strong> {diagnostics.cloudEvents} events, {diagnostics.cloudSailors} sailors
+          </div>
           
           {diagnostics.error && (
             <div style={{ 
               background: 'rgba(0,0,0,0.1)', 
-              padding: '10px', 
+              padding: '8px 10px', 
               borderRadius: '4px',
               fontSize: '12px',
-              marginTop: '5px',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word'
+              marginTop: '5px'
             }}>
-              <strong>Error:</strong> {diagnostics.error}
+              {diagnostics.error}
             </div>
           )}
           
-          {diagnostics.canInsert && diagnostics.cloudEvents === 0 && diagnostics.localEvents > 0 && (
-            <div style={{ marginTop: '10px', fontWeight: 'bold' }}>
-              ⚠️ Ready to migrate! Click &quot;Migrate to Cloud&quot; above.
-            </div>
-          )}
-          
-          {diagnostics.cloudEvents > 0 && (
-            <div style={{ marginTop: '10px', fontWeight: 'bold' }}>
-              ✅ Cloud has {diagnostics.cloudEvents} events.
+          {diagnostics.canWrite && diagnostics.cloudSailors === 0 && diagnostics.localSailors > 0 && (
+            <div style={{ marginTop: '8px', fontWeight: 'bold', fontSize: '13px' }}>
+              ⚠️ Ready to migrate {diagnostics.localSailors} sailors to cloud
             </div>
           )}
         </div>

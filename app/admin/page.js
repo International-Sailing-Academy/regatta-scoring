@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [selectedScoreClass, setSelectedScoreClass] = useState('')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [syncStatus, setSyncStatus] = useState('idle') // idle, syncing, synced, error
+  const [showMigrationTools, setShowMigrationTools] = useState(false)
   const supabaseEnabled = isSupabaseEnabled()
 
   // Computed values for scores tab
@@ -405,17 +406,36 @@ export default function AdminPage() {
 
   return (
     <div style={styles.container}>
-      {/* Data Recovery - Show if data is missing */}
-      <DataRecovery />
+      {/* Data Recovery - Show if no sailors */}
+      {event?.sailors?.length === 0 && <DataRecovery />}
 
-      {/* Migration Tool - Only show if Supabase is enabled */}
-      {supabaseEnabled && <MigrationTool />}
-      
-      {/* Debug Migration Tool */}
-      {supabaseEnabled && <SimpleMigration />}
-      
-      {/* Sync Diagnostics */}
-      <SyncDiagnostics />
+      {/* Migration Tools Toggle */}
+      {supabaseEnabled && (
+        <div style={{ marginBottom: '15px' }}>
+          <button 
+            onClick={() => setShowMigrationTools(!showMigrationTools)}
+            style={{
+              padding: '8px 16px',
+              background: showMigrationTools ? '#e2e8f0' : '#f7fafc',
+              border: '1px solid #cbd5e0',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              color: '#4a5568'
+            }}
+          >
+            {showMigrationTools ? '▼ Hide Sync Tools' : '▶ Show Sync Tools'}
+          </button>
+          
+          {showMigrationTools && (
+            <div style={{ marginTop: '15px' }}>
+              <MigrationTool />
+              <SimpleMigration />
+              <SyncDiagnostics />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Event Manager Header */}
       <div style={styles.eventManager}>
