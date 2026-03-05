@@ -1,8 +1,8 @@
 // Data utilities - supports both Supabase (cross-device sync) and localStorage (fallback)
-import { supabase, isSupabaseEnabled as checkSupabase } from './supabase'
+import { supabase, isSupabaseEnabled } from './supabase'
 
 // Re-export for components
-export { checkSupabase as isSupabaseEnabled }
+export { isSupabaseEnabled }
 
 // Generate unique ID for events
 export const generateId = () => {
@@ -28,39 +28,48 @@ export const createNewEvent = (name = 'New Regatta') => ({
   lastUpdated: new Date().toLocaleString()
 })
 
+// Field name mapping: lowercase PostgreSQL -> camelCase JavaScript
+const FIELD_MAP = {
+  id: 'id',
+  eventname: 'eventName',
+  eventdate: 'eventDate',
+  eventenddate: 'eventEndDate',
+  venue: 'venue',
+  organizer: 'organizer',
+  description: 'description',
+  noticeofrace: 'noticeOfRace',
+  sailinginstructions: 'sailingInstructions',
+  classes: 'classes',
+  sailors: 'sailors',
+  races: 'races',
+  mastersscoringenabled: 'mastersScoringEnabled',
+  createdat: 'createdAt',
+  lastupdated: 'lastUpdated'
+}
+
+// Convert Supabase row (lowercase fields) to JavaScript object (camelCase)
+const fromSupabaseRow = (row) => {
+  if (!row) return null
+  const result = {}
+  for (const [key, value] of Object.entries(row)) {
+    const camelKey = FIELD_MAP[key] || key
+    result[camelKey] = value
+  }
+  return result
+}
+
+// Convert JavaScript object to Supabase row
+const toSupabaseRow = (event) => {
+  const result = {}
+  for (const [key, value] of Object.entries(event)) {
+    // Convert camelCase to lowercase for PostgreSQL
+    const lowerKey = key.toLowerCase()
+    result[lowerKey] = value
+  }
+  return result
+}
+
 // ============== SUPABASE FUNCTIONS ==============
-
-// Deep convert camelCase to snake_case for PostgreSQL
-const toSnakeCase = (obj) => {
-  if (Array.isArray(obj)) {
-    return obj.map(toSnakeCase)
-  }
-  if (obj && typeof obj === 'object') {
-    const result = {}
-    for (const [key, value] of Object.entries(obj)) {
-      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-      result[snakeKey] = toSnakeCase(value)
-    }
-    return result
-  }
-  return obj
-}
-
-// Deep convert snake_case to camelCase for JavaScript
-const toCamelCase = (obj) => {
-  if (Array.isArray(obj)) {
-    return obj.map(toCamelCase)
-  }
-  if (obj && typeof obj === 'object') {
-    const result = {}
-    for (const [key, value] of Object.entries(obj)) {
-      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
-      result[camelKey] = toCamelCase(value)
-    }
-    return result
-  }
-  return obj
-}
 
 const getAllEventsSupabase = async () => {
   if (!supabase) return null
@@ -71,8 +80,8 @@ const getAllEventsSupabase = async () => {
       .order('createdat', { ascending: false })
     
     if (error) throw error
-    // Convert snake_case back to camelCase
-    return data?.map(toCamelCase) || []
+    // Convert lowercase fields to camelCase
+    return data?.map(fromSupabaseRow) || []
   } catch (e) {
     console.error('Supabase error:', e)
     return null
@@ -82,18 +91,18 @@ const getAllEventsSupabase = async () => {
 const saveEventSupabase = async (event) => {
   if (!supabase) return null
   try {
-    const eventToSave = toSnakeCase({
+    const row = toSupabaseRow({
       ...event,
       lastUpdated: new Date().toISOString()
     })
     
     const { data, error } = await supabase
       .from('events')
-      .upsert(eventToSave, { onConflict: 'id' })
+      .upsert(row, { onConflict: 'id' })
       .select()
     
     if (error) throw error
-    return data?.[0] ? toCamelCase(data[0]) : event
+    return data?.[0] ? fromSupabaseRow(data[0]) : event
   } catch (e) {
     console.error('Supabase save error:', e)
     return null
@@ -137,7 +146,7 @@ const saveAllEventsLocal = (events) => {
 // ============== UNIFIED API ==============
 
 // Check if we should use Supabase
-const useSupabase = () => checkSupabase()
+const useSupabase = () => isSupabaseEnabled()
 
 // Get all events - tries Supabase first, falls back to localStorage
 export const getAllEvents = async () => {
@@ -222,7 +231,13 @@ export const subscribeToEvents = (callback) => {
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'events' },
       (payload) => {
-        callback(payload)
+        // Convert payload data
+        const converted = {
+          ...payload,
+          new: fromSupabaseRow(payload.new),
+          old: fromSupabaseRow(payload.old)
+        }
+        callback(converted)
       }
     )
     .subscribe()
