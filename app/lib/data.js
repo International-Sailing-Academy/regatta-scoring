@@ -1,4 +1,4 @@
-// Data utilities - supports both Supabase (cross-device sync) and localStorage (fallback)
+// Data utilities - Supabase only (no localStorage fallback)
 import { supabase, isSupabaseEnabled } from './supabase'
 
 // Re-export for components
@@ -23,6 +23,7 @@ export const createNewEvent = (name = 'New Regatta') => ({
   classes: ['ILCA 7', 'ILCA 6'],
   sailors: [],
   races: [],
+  documents: [],
   mastersScoringEnabled: false,
   createdAt: new Date().toISOString(),
   lastUpdated: new Date().toLocaleString()
@@ -42,6 +43,7 @@ const FIELD_MAP = {
   classes: 'classes',
   sailors: 'sailors',
   races: 'races',
+  documents: 'documents',
   mastersscoringenabled: 'mastersScoringEnabled',
   createdat: 'createdAt',
   lastupdated: 'lastUpdated'
@@ -62,167 +64,84 @@ const fromSupabaseRow = (row) => {
 const toSupabaseRow = (event) => {
   const result = {}
   for (const [key, value] of Object.entries(event)) {
-    // Convert camelCase to lowercase for PostgreSQL
     const lowerKey = key.toLowerCase()
     result[lowerKey] = value
   }
   return result
 }
 
-// ============== SUPABASE FUNCTIONS ==============
+// ============== SUPABASE FUNCTIONS ONLY ==============
 
-const getAllEventsSupabase = async () => {
-  if (!supabase) return null
-  try {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .order('createdat', { ascending: false })
-    
-    if (error) throw error
-    // Convert lowercase fields to camelCase
-    return data?.map(fromSupabaseRow) || []
-  } catch (e) {
-    console.error('Supabase error:', e)
-    return null
-  }
-}
-
-const saveEventSupabase = async (event) => {
-  if (!supabase) return null
-  try {
-    const row = toSupabaseRow({
-      ...event,
-      lastUpdated: new Date().toISOString()
-    })
-    
-    const { data, error } = await supabase
-      .from('events')
-      .upsert(row, { onConflict: 'id' })
-      .select()
-    
-    if (error) throw error
-    return data?.[0] ? fromSupabaseRow(data[0]) : event
-  } catch (e) {
-    console.error('Supabase save error:', e)
-    return null
-  }
-}
-
-const deleteEventSupabase = async (id) => {
-  if (!supabase) return null
-  try {
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', id)
-    
-    if (error) throw error
-    return true
-  } catch (e) {
-    console.error('Supabase delete error:', e)
-    return null
-  }
-}
-
-// ============== LOCALSTORAGE FUNCTIONS ==============
-
-const getAllEventsLocal = () => {
-  if (typeof window === 'undefined') return []
-  try {
-    const saved = localStorage.getItem('regatta-events')
-    if (saved) {
-      return JSON.parse(saved)
-    }
-  } catch (e) {}
-  return []
-}
-
-const saveAllEventsLocal = (events) => {
-  if (typeof window === 'undefined') return
-  localStorage.setItem('regatta-events', JSON.stringify(events))
-}
-
-// ============== UNIFIED API ==============
-
-// Check if we should use Supabase
-const useSupabase = () => isSupabaseEnabled()
-
-// Get all events - tries Supabase first, falls back to localStorage
 export const getAllEvents = async () => {
-  if (useSupabase()) {
-    const data = await getAllEventsSupabase()
-    if (data !== null) return data
-  }
-  return getAllEventsLocal()
+  if (!supabase) throw new Error('Supabase not configured')
+  
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .order('createdat', { ascending: false })
+  
+  if (error) throw error
+  return data?.map(fromSupabaseRow) || []
 }
 
-// Get all events synchronously (for components that need immediate data)
-export const getAllEventsSync = () => {
-  return getAllEventsLocal()
+export const getEventById = async (id) => {
+  if (!supabase) throw new Error('Supabase not configured')
+  
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .eq('id', id)
+    .single()
+  
+  if (error) throw error
+  return fromSupabaseRow(data)
 }
 
-// Save/update a specific event
 export const saveEvent = async (event) => {
-  const eventToSave = {
+  if (!supabase) throw new Error('Supabase not configured')
+  
+  const row = toSupabaseRow({
     ...event,
-    lastUpdated: new Date().toLocaleString()
-  }
+    lastUpdated: new Date().toISOString()
+  })
   
-  // Always save to localStorage as backup
-  const events = getAllEventsLocal()
-  const index = events.findIndex(e => e.id === event.id)
+  const { data, error } = await supabase
+    .from('events')
+    .upsert(row, { onConflict: 'id' })
+    .select()
   
-  if (index >= 0) {
-    events[index] = eventToSave
-  } else {
-    events.push(eventToSave)
-  }
-  saveAllEventsLocal(events)
-  
-  // Also save to Supabase if available
-  if (useSupabase()) {
-    await saveEventSupabase(eventToSave)
-  }
-  
-  return eventToSave
+  if (error) throw error
+  return data?.[0] ? fromSupabaseRow(data[0]) : event
 }
 
-// Get a specific event by ID
-export const getEventById = (id) => {
-  const events = getAllEventsLocal()
-  return events.find(e => e.id === id) || null
-}
-
-// Delete an event
 export const deleteEvent = async (id) => {
-  // Delete from localStorage
-  const events = getAllEventsLocal()
-  const filtered = events.filter(e => e.id !== id)
-  saveAllEventsLocal(filtered)
+  if (!supabase) throw new Error('Supabase not configured')
   
-  // Delete from Supabase if available
-  if (useSupabase()) {
-    await deleteEventSupabase(id)
-  }
+  const { error } = await supabase
+    .from('events')
+    .delete()
+    .eq('id', id)
+  
+  if (error) throw error
+  return true
 }
 
 // Duplicate an event
-export const duplicateEvent = (event) => {
+export const duplicateEvent = async (event) => {
   const newEvent = {
     ...event,
     id: generateId(),
     eventName: `${event.eventName} (Copy)`,
     sailors: event.sailors.map(s => ({ ...s, id: generateId(), scores: {} })),
     races: [],
+    documents: [],
     createdAt: new Date().toISOString(),
     lastUpdated: new Date().toLocaleString()
   }
-  saveEvent(newEvent)
-  return newEvent
+  return saveEvent(newEvent)
 }
 
-// Subscribe to real-time changes (Supabase only)
+// Subscribe to real-time changes
 export const subscribeToEvents = (callback) => {
   if (!supabase) return null
   
@@ -231,7 +150,6 @@ export const subscribeToEvents = (callback) => {
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'events' },
       (payload) => {
-        // Convert payload data
         const converted = {
           ...payload,
           new: fromSupabaseRow(payload.new),
@@ -247,118 +165,160 @@ export const subscribeToEvents = (callback) => {
 
 // ============== URL ENCODING (for sharing) ==============
 
-export const encodeRegatta = (data) => {
+export const encodeRegatta = (event) => {
   try {
-    const json = JSON.stringify(data)
-    const compressed = btoa(json)
-    return compressed
+    const jsonStr = JSON.stringify(event)
+    return btoa(jsonStr)
   } catch (e) {
+    console.error('Encode error:', e)
     return null
   }
 }
 
 export const decodeRegatta = (encoded) => {
   try {
-    const json = atob(encoded)
-    return JSON.parse(json)
+    const jsonStr = atob(encoded)
+    return JSON.parse(jsonStr)
   } catch (e) {
+    console.error('Decode error:', e)
     return null
   }
 }
 
-// ============== CONSTANTS ==============
+// ============== FLAGS ==============
 
-export const LETTER_SCORES = {
-  'DNS': 'DNS',
-  'DNF': 'DNF', 
-  'DSQ': 'DSQ',
-  'OCS': 'OCS',
-  'BFD': 'BFD',
-  'RET': 'RET',
-  'UFD': 'UFD',
-  'NSC': 'NSC',
-  'DNC': 'DNC',
-  'DNE': 'DNE',
-  'DGM': 'DGM',
-  'RDG': 'RDG'
-}
-
-// Country flags mapping
 export const FLAGS = {
-  'POR': '🇵🇹',
-  'GBR': '🇬🇧',
-  'NOR': '🇳🇴',
-  'ITA': '🇮🇹',
-  'GER': '🇩🇪',
-  'TUR': '🇹🇷',
-  'GRE': '🇬🇷',
-  'SWE': '🇸🇪',
+  'Afghanistan': '🇦🇫',
+  'Albania': '🇦🇱',
+  'Algeria': '🇩🇿',
+  'Andorra': '🇦🇩',
+  'Angola': '🇦🇴',
+  'Argentina': '🇦🇷',
+  'Armenia': '🇦🇲',
+  'Australia': '🇦🇺',
+  'Austria': '🇦🇹',
+  'Azerbaijan': '🇦🇿',
+  'Bahamas': '🇧🇸',
+  'Bahrain': '🇧🇭',
+  'Bangladesh': '🇧🇩',
+  'Barbados': '🇧🇧',
+  'Belarus': '🇧🇾',
+  'Belgium': '🇧🇪',
+  'Belize': '🇧🇿',
+  'Benin': '🇧🇯',
+  'Bhutan': '🇧🇹',
+  'Bolivia': '🇧🇴',
+  'Bosnia and Herzegovina': '🇧🇦',
+  'Botswana': '🇧🇼',
+  'Brazil': '🇧🇷',
+  'Bulgaria': '🇧🇬',
+  'Burkina Faso': '🇧🇫',
+  'Burundi': '🇧🇮',
+  'Cambodia': '🇰🇭',
+  'Cameroon': '🇨🇲',
+  'Canada': '🇨🇦',
+  'Chile': '🇨🇱',
+  'China': '🇨🇳',
+  'Colombia': '🇨🇴',
+  'Costa Rica': '🇨🇷',
+  'Croatia': '🇭🇷',
+  'Cuba': '🇨🇺',
+  'Cyprus': '🇨🇾',
+  'Czech Republic': '🇨🇿',
+  'Denmark': '🇩🇰',
+  'Dominican Republic': '🇩🇴',
+  'Ecuador': '🇪🇨',
+  'Egypt': '🇪🇬',
+  'El Salvador': '🇸🇻',
+  'Estonia': '🇪🇪',
+  'Ethiopia': '🇪🇹',
+  'Fiji': '🇫🇯',
+  'Finland': '🇫🇮',
+  'France': '🇫🇷',
+  'Germany': '🇩🇪',
+  'Ghana': '🇬🇭',
+  'Greece': '🇬🇷',
+  'Guatemala': '🇬🇹',
+  'Honduras': '🇭🇳',
+  'Hong Kong': '🇭🇰',
+  'Hungary': '🇭🇺',
+  'Iceland': '🇮🇸',
+  'India': '🇮🇳',
+  'Indonesia': '🇮🇩',
+  'Iran': '🇮🇷',
+  'Iraq': '🇮🇶',
+  'Ireland': '🇮🇪',
+  'Israel': '🇮🇱',
+  'Italy': '🇮🇹',
+  'Jamaica': '🇯🇲',
+  'Japan': '🇯🇵',
+  'Jordan': '🇯🇴',
+  'Kazakhstan': '🇰🇿',
+  'Kenya': '🇰🇪',
+  'Kuwait': '🇰🇼',
+  'Latvia': '🇱🇻',
+  'Lebanon': '🇱🇧',
+  'Libya': '🇱🇾',
+  'Lithuania': '🇱🇹',
+  'Luxembourg': '🇱🇺',
+  'Malaysia': '🇲🇾',
+  'Maldives': '🇲🇻',
+  'Malta': '🇲🇹',
+  'Mexico': '🇲🇽',
+  'Monaco': '🇲🇨',
+  'Mongolia': '🇲🇳',
+  'Montenegro': '🇲🇪',
+  'Morocco': '🇲🇦',
+  'Namibia': '🇳🇦',
+  'Nepal': '🇳🇵',
+  'Netherlands': '🇳🇱',
+  'New Zealand': '🇳🇿',
+  'Nicaragua': '🇳🇮',
+  'Nigeria': '🇳🇬',
+  'North Korea': '🇰🇵',
+  'North Macedonia': '🇲🇰',
+  'Norway': '🇳🇴',
+  'Oman': '🇴🇲',
+  'Pakistan': '🇵🇰',
+  'Panama': '🇵🇦',
+  'Paraguay': '🇵🇾',
+  'Peru': '🇵🇪',
+  'Philippines': '🇵🇭',
+  'Poland': '🇵🇱',
+  'Portugal': '🇵🇹',
+  'Qatar': '🇶🇦',
+  'Romania': '🇷🇴',
+  'Russia': '🇷🇺',
+  'Saudi Arabia': '🇸🇦',
+  'Senegal': '🇸🇳',
+  'Serbia': '🇷🇸',
+  'Singapore': '🇸🇬',
+  'Slovakia': '🇸🇰',
+  'Slovenia': '🇸🇮',
+  'South Africa': '🇿🇦',
+  'South Korea': '🇰🇷',
+  'Spain': '🇪🇸',
+  'Sri Lanka': '🇱🇰',
+  'Sweden': '🇸🇪',
+  'Switzerland': '🇨🇭',
+  'Syria': '🇸🇾',
+  'Taiwan': '🇹🇼',
+  'Tajikistan': '🇹🇯',
+  'Thailand': '🇹🇭',
+  'Tunisia': '🇹🇳',
+  'Turkey': '🇹🇷',
+  'Turkmenistan': '🇹🇲',
+  'Ukraine': '🇺🇦',
+  'UAE': '🇦🇪',
+  'United Arab Emirates': '🇦🇪',
+  'United Kingdom': '🇬🇧',
+  'UK': '🇬🇧',
+  'United States': '🇺🇸',
   'USA': '🇺🇸',
-  'BRA': '🇧🇷',
-  'ARG': '🇦🇷',
-  'CHI': '🇨🇱',
-  'URU': '🇺🇾',
-  'FRA': '🇫🇷',
-  'ESP': '🇪🇸',
-  'NED': '🇳🇱',
-  'DEN': '🇩🇰',
-  'FIN': '🇫🇮',
-  'AUS': '🇦🇺',
-  'NZL': '🇳🇿',
-  'JPN': '🇯🇵',
-  'CHN': '🇨🇳',
-  'CAN': '🇨🇦',
-  'MEX': '🇲🇽',
-  'RSA': '🇿🇦',
-  'CYP': '🇨🇾',
-  'CRO': '🇭🇷',
-  'SLO': '🇸🇮',
-  'POL': '🇵🇱',
-  'CZE': '🇨🇿',
-  'AUT': '🇦🇹',
-  'SUI': '🇨🇭',
-  'BEL': '🇧🇪',
-  'HUN': '🇭🇺',
-  'ISR': '🇮🇱',
-  'THA': '🇹🇭',
-  'SIN': '🇸🇬',
-  'MAS': '🇲🇾',
-  'KOR': '🇰🇷',
-  'HKG': '🇭🇰',
-  'IND': '🇮🇳',
-  'PAK': '🇵🇰',
-  'EGY': '🇪🇬',
-  'TUN': '🇹🇳',
-  'MAR': '🇲🇦',
-  'COL': '🇨🇴',
-  'PER': '🇵🇪',
-  'ECU': '🇪🇨',
-  'VEN': '🇻🇪',
-  'PAN': '🇵🇦',
-  'GUA': '🇬🇹',
-  'ESA': '🇸🇻',
-  'HON': '🇭🇳',
-  'NCA': '🇳🇮',
-  'CRC': '🇨🇷',
-  'BIZ': '🇧🇿',
-  'JAM': '🇯🇲',
-  'TTO': '🇹🇹',
-  'BAR': '🇧🇧',
-  'SVG': '🇻🇨',
-  'GRN': '🇬🇩',
-  'LCA': '🇱🇨',
-  'DMA': '🇩🇲',
-  'ANT': '🇦🇬',
-  'SKN': '🇰🇳',
-  'ISV': '🇻🇮',
-  'PUR': '🇵🇷',
-  'CUB': '🇨🇺',
-  'DOM': '🇩🇴',
-  'HAI': '🇭🇹',
-  'BER': '🇧🇲',
-  'CAY': '🇰🇾',
-  'TCA': '🇹🇨',
-  'BAH': '🇧🇸',
-  'IVB': '🇻🇬',
-  'RUS': '○'
+  'Uruguay': '🇺🇾',
+  'Uzbekistan': '🇺🇿',
+  'Venezuela': '🇻🇪',
+  'Vietnam': '🇻🇳',
+  'Yemen': '🇾🇪',
+  'Zimbabwe': '🇿🇼'
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getAllEventsSync, getAllEvents, getEventById, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
+import { getAllEvents, getEventById, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
 
 // Default empty event - no sailors until added via admin
 const DEFAULT_EVENT = {
@@ -185,12 +185,9 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Load event from Supabase only
   useEffect(() => {
     const loadEvent = async () => {
-      let evt = null
-      let source = 'unknown'
-      
-      // Try Supabase first (for cross-device sync)
       try {
         const supabaseEvents = await getAllEvents()
         console.log('All Supabase events:', supabaseEvents?.map(e => ({ 
@@ -199,80 +196,27 @@ export default function HomePage() {
           sailors: e.sailors?.length || 0 
         })))
         
-        // First try to find by known ID patterns
-        let supabaseEvent = supabaseEvents?.find(e => 
-          e.id === 'mexican-midwinters-2026'
-        )
+        // Find best event
+        let evt = supabaseEvents?.find(e => e.id === 'mexican-midwinters-2026')
+        if (!evt) evt = supabaseEvents?.find(e => e.eventName?.toLowerCase().includes('mexican'))
+        if (!evt) evt = supabaseEvents?.find(e => e.sailors && e.sailors.length > 0)
+        if (!evt && supabaseEvents?.length > 0) evt = supabaseEvents[0]
         
-        // Then try by name
-        if (!supabaseEvent) {
-          supabaseEvent = supabaseEvents?.find(e => 
-            e.eventName?.toLowerCase().includes('mexican')
-          )
-        }
-        
-        // Then try any event with sailors
-        if (!supabaseEvent) {
-          supabaseEvent = supabaseEvents?.find(e => 
-            e.sailors && e.sailors.length > 0
-          )
-        }
-        
-        // Finally, just use the first event
-        if (!supabaseEvent && supabaseEvents?.length > 0) {
-          supabaseEvent = supabaseEvents[0]
-        }
-        
-        // Use the event if found
-        if (supabaseEvent && supabaseEvent.sailors && supabaseEvent.sailors.length > 0) {
-          evt = supabaseEvent
-          source = 'supabase'
-          console.log('✅ Using Supabase event with', supabaseEvent.sailors.length, 'sailors:', supabaseEvent.id)
-        } else if (supabaseEvent) {
-          console.log('⚠️ Found Supabase event but no sailors:', supabaseEvent.id)
-          // Still use it if it exists, even with 0 sailors
-          evt = supabaseEvent
-          source = 'supabase-empty'
+        if (evt) {
+          console.log('✅ Using Supabase event:', evt.id)
+          setEvent(evt)
+          setDataSource('supabase')
+        } else {
+          console.log('⚠️ No events found, using default')
+          setEvent(DEFAULT_EVENT)
+          setDataSource('default')
         }
       } catch (err) {
         console.error('Supabase error:', err)
+        alert('Error loading data: ' + err.message)
+        setEvent(DEFAULT_EVENT)
+        setDataSource('error')
       }
-      
-      // Fall back to localStorage if Supabase didn't have good data
-      if (!evt) {
-        const localEvents = getAllEventsSync()
-        console.log('All localStorage events:', localEvents?.map(e => ({ 
-          id: e.id?.slice(0,8), 
-          name: e.eventName?.slice(0,20), 
-          sailors: e.sailors?.length || 0 
-        })))
-        
-        // Try any local event first
-        const localEvent = localEvents?.find(e => e.sailors && e.sailors.length > 0) 
-          || localEvents?.[0]
-        
-        if (localEvent && localEvent.sailors && localEvent.sailors.length > 0) {
-          evt = localEvent
-          source = 'localStorage'
-          console.log('✅ Using localStorage event with', localEvent.sailors.length, 'sailors:', localEvent.id)
-        } else if (localEvent) {
-          evt = localEvent
-          source = 'localStorage-empty'
-          console.log('✅ Using localStorage event (0 sailors):', localEvent.id)
-        }
-      }
-      
-      // Use default if nothing found
-      if (!evt) {
-        evt = DEFAULT_EVENT
-        source = 'default'
-        console.log('⚠️ Using default event (no data found)')
-      }
-      
-      console.log('Data source:', source, '| Sailors:', evt.sailors?.length || 0)
-      console.log('Event object:', evt)
-      setEvent(evt)
-      setDataSource(source)
       setLoading(false)
     }
 
@@ -311,33 +255,10 @@ export default function HomePage() {
         // Silent fail - will retry next interval
       }
     }, 5000)
-    
-    // Fallback to localStorage polling for same-device sync (faster)
-    // Only update if data is newer (check lastUpdated timestamp)
-    const localPoll = setInterval(() => {
-      const allEvents = getAllEventsSync()
-      const updated = allEvents.find(e => e.id === event.id)
-      if (updated) {
-        const currentEvent = JSON.parse(lastEventData)
-        const localTime = new Date(updated.lastUpdated || 0).getTime()
-        const currentTime = new Date(currentEvent.lastUpdated || 0).getTime()
-        
-        // Only use localStorage if it's actually newer
-        if (localTime > currentTime) {
-          const updatedStr = JSON.stringify(updated)
-          if (updatedStr !== lastEventData) {
-            console.log('📥 LocalStorage poll: Updating event (newer data)')
-            setEvent(updated)
-            lastEventData = updatedStr
-          }
-        }
-      }
-    }, 1000)
 
     return () => {
       if (subscription) subscription.unsubscribe()
       clearInterval(supabasePoll)
-      clearInterval(localPoll)
     }
   }, [event?.id])
 
@@ -462,30 +383,6 @@ export default function HomePage() {
           <img src="/logo-icon.png" alt="ISA" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
           <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
         </div>
-        <button 
-          onClick={() => setShowAdminLogin(true)}
-          style={{ 
-            background: 'rgba(255,255,255,0.1)', 
-            border: '1px solid rgba(255,255,255,0.3)',
-            color: 'white',
-            padding: '8px 16px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            transition: 'all 0.3s ease',
-            whiteSpace: 'nowrap',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = 'rgba(255,255,255,0.2)'
-            e.target.style.transform = 'translateY(-2px)'
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = 'rgba(255,255,255,0.1)'
-            e.target.style.transform = 'translateY(0)'
-          }}
-        >
-          Admin Login
-        </button>
       </nav>
 
       {/* Hero Section */}

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { 
   FLAGS, 
   createNewEvent, 
-  getAllEventsSync, 
   getAllEvents,
   getEventById,
   saveEvent, 
@@ -13,11 +12,6 @@ import {
   encodeRegatta,
   isSupabaseEnabled
 } from '../lib/data'
-import MigrationTool from '../components/MigrationTool'
-import SyncDiagnostics from '../components/SyncDiagnostics'
-import SimpleMigration from '../components/SimpleMigration'
-import DataRecovery from '../components/DataRecovery'
-
 const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
 const CATEGORIES = ['Open', 'Youth', 'Junior', 'Senior', 'Apprentice', 'Master', 'Grand Master', 'Great Grand Master', 'Legend']
@@ -32,8 +26,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [selectedScoreClass, setSelectedScoreClass] = useState('')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [syncStatus, setSyncStatus] = useState('idle') // idle, syncing, synced, error
-  const [showMigrationTools, setShowMigrationTools] = useState(false)
   const supabaseEnabled = isSupabaseEnabled()
 
   // Computed values for scores tab
@@ -90,13 +82,18 @@ export default function AdminPage() {
   }, [])
 
   // Manual save function
-  const handleSave = () => {
+  const handleSave = async () => {
     if (event) {
-      saveEvent(event)
-      setSavedEvent({...event})
-      setHasUnsavedChanges(false)
-      setEvents(getAllEventsSync())
-      alert('✅ Changes saved and synced to public page!')
+      try {
+        await saveEvent(event)
+        setSavedEvent({...event})
+        setHasUnsavedChanges(false)
+        const allEvents = await getAllEvents()
+        setEvents(allEvents)
+        alert('✅ Changes saved and synced to public page!')
+      } catch (err) {
+        alert('Error saving: ' + err.message)
+      }
     }
   }
 
@@ -111,30 +108,32 @@ export default function AdminPage() {
   }
 
   // Create new event
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     const name = prompt('Enter regatta name:', 'New Regatta')
     if (name) {
       const newEvent = createNewEvent(name)
-      saveEvent(newEvent)
-      const allEvents = getAllEventsSync()
+      await saveEvent(newEvent)
+      const allEvents = await getAllEvents()
       setEvents(allEvents)
       setSelectedEventId(newEvent.id)
       setEvent(newEvent)
+      setSavedEvent(newEvent)
       setActiveTab('event')
     }
   }
 
   // Delete event
-  const handleDeleteEvent = (id) => {
+  const handleDeleteEvent = async (id) => {
     if (confirm('Delete this regatta? This cannot be undone.')) {
-      deleteEvent(id)
-      const allEvents = getAllEventsSync()
+      await deleteEvent(id)
+      const allEvents = await getAllEvents()
       setEvents(allEvents)
       
       if (selectedEventId === id) {
         if (allEvents.length > 0) {
           setSelectedEventId(allEvents[0].id)
           setEvent(allEvents[0])
+          setSavedEvent(allEvents[0])
         } else {
           setSelectedEventId(null)
           setEvent(null)
@@ -144,12 +143,13 @@ export default function AdminPage() {
   }
 
   // Duplicate event
-  const handleDuplicateEvent = (evt) => {
-    const newEvent = duplicateEvent(evt)
-    const allEvents = getAllEventsSync()
+  const handleDuplicateEvent = async (evt) => {
+    const newEvent = await duplicateEvent(evt)
+    const allEvents = await getAllEvents()
     setEvents(allEvents)
     setSelectedEventId(newEvent.id)
     setEvent(newEvent)
+    setSavedEvent(newEvent)
   }
 
   // Update event field
@@ -434,9 +434,6 @@ export default function AdminPage() {
 
   return (
     <div style={styles.container}>
-      {/* Data Recovery - Show if no sailors */}
-      {event?.sailors?.length === 0 && <DataRecovery />}
-
       {/* Event Manager Header */}
       <div style={styles.eventManager}>
         <div style={styles.eventSelector}>
