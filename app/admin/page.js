@@ -14,6 +14,7 @@ import {
 import MigrationTool from '../components/MigrationTool'
 import SyncDiagnostics from '../components/SyncDiagnostics'
 import SimpleMigration from '../components/SimpleMigration'
+import DataRecovery from '../components/DataRecovery'
 
 const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
@@ -404,6 +405,9 @@ export default function AdminPage() {
 
   return (
     <div style={styles.container}>
+      {/* Data Recovery - Show if data is missing */}
+      <DataRecovery />
+
       {/* Migration Tool - Only show if Supabase is enabled */}
       {supabaseEnabled && <MigrationTool />}
       
