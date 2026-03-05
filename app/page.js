@@ -637,7 +637,7 @@ export default function HomePage() {
       )}
 
       {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 15px 40px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 15px 40px' }}>
         
         {/* Tab Navigation */}
         <div style={{
