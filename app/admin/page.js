@@ -16,6 +16,8 @@ const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
 const CATEGORIES = ['Open', 'Youth', 'Junior', 'Senior', 'Apprentice', 'Master', 'Grand Master', 'Great Grand Master', 'Legend']
 
+const ADMIN_PASSWORD = 'isa2026admin'
+
 export default function AdminPage() {
   const [events, setEvents] = useState([])
   const [selectedEventId, setSelectedEventId] = useState(null)
@@ -27,6 +29,11 @@ export default function AdminPage() {
   const [selectedScoreClass, setSelectedScoreClass] = useState('')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const supabaseEnabled = isSupabaseEnabled()
+  
+  // Password protection
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [passwordInput, setPasswordInput] = useState('')
+  const [passwordError, setPasswordError] = useState(false)
 
   // Computed values for scores tab
   const classRaces = selectedScoreClass 
@@ -402,6 +409,90 @@ export default function AdminPage() {
     }
     reader.readAsText(file)
     e.target.value = ''
+  }
+
+  // Password protection - show login if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f7fafc',
+        fontFamily: 'system-ui, sans-serif'
+      }}>
+        <div style={{
+          background: 'white',
+          padding: '40px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          width: '100%',
+          maxWidth: '400px',
+          textAlign: 'center'
+        }}>
+          <h1 style={{ marginBottom: '10px', fontSize: '24px' }}>⛵ Regatta Admin</h1>
+          <p style={{ color: '#718096', marginBottom: '30px' }}>Enter password to access admin</p>
+          
+          <input
+            type="password"
+            placeholder="Password"
+            value={passwordInput}
+            onChange={(e) => {
+              setPasswordInput(e.target.value)
+              setPasswordError(false)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (passwordInput === ADMIN_PASSWORD) {
+                  setIsAuthenticated(true)
+                } else {
+                  setPasswordError(true)
+                }
+              }
+            }}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              border: passwordError ? '2px solid #e53e3e' : '1px solid #e2e8f0',
+              fontSize: '16px',
+              marginBottom: passwordError ? '10px' : '20px',
+              outline: 'none'
+            }}
+          />
+          
+          {passwordError && (
+            <p style={{ color: '#e53e3e', fontSize: '14px', marginBottom: '15px' }}>
+              Incorrect password
+            </p>
+          )}
+          
+          <button
+            onClick={() => {
+              if (passwordInput === ADMIN_PASSWORD) {
+                setIsAuthenticated(true)
+              } else {
+                setPasswordError(true)
+              }
+            }}
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: '#3182ce',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (loading) return <div style={styles.loading}>Loading...</div>
