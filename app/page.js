@@ -323,7 +323,7 @@ export default function HomePage() {
     }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ color: '#63b3ed', marginBottom: '20px' }}>
-          <img src="/logo-icon.png" alt="" style={{ width: '32px', height: '32px' }} />
+          <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
         </div>
         <p>Loading regatta data...</p>
       </div>
@@ -365,7 +365,7 @@ export default function HomePage() {
         gap: '10px',
       }}>
         <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo-icon.png" alt="ISA" style={{ width: '28px', height: '28px' }} />
+          <img src="/logo-icon.png" alt="ISA" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
           <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
         </div>
         <button 
@@ -559,13 +559,13 @@ export default function HomePage() {
             <StatCard 
               number={ilca7Sailors.length} 
               label="ILCA 7 Fleet" 
-              icon={() => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />} 
+              icon={() => <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />} 
               delay={100}
             />
             <StatCard 
               number={ilca6Sailors.length} 
               label="ILCA 6 Fleet" 
-              icon={() => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />} 
+              icon={() => <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain' }} />} 
               delay={200}
             />
             <StatCard 
@@ -846,7 +846,7 @@ export default function HomePage() {
               {/* Classes & Awards */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px', verticalAlign: 'middle' }} />
+                  <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle' }} />
                   Classes & Awards
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -935,7 +935,7 @@ export default function HomePage() {
               {event.sailors.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '100px 20px' }}>
                   <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-                    <img src="/logo-icon.png" alt="" style={{ width: '32px', height: '32px' }} />
+                    <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
                   </div>
                   <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Opening Soon</h2>
                   <p style={{ fontSize: '18px', opacity: 0.7 }}>Sailors will appear here once registration opens.</p>
