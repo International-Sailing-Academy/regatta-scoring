@@ -15,12 +15,19 @@ const DEFAULT_EVENT = {
   classes: ['ILCA 7', 'ILCA 6'],
   sailors: [],
   races: [],
+  mastersScoringEnabled: true, // NA ILCA Masters scoring system toggle
   createdAt: new Date().toISOString(),
   lastUpdated: new Date().toLocaleString()
 }
 
+// NA ILCA Masters Scoring System (Low Point - points ADDED to each race score)
 const MASTERS_HANDICAP = {
-  'Apprentice': 4, 'Master': 3, 'Grand Master': 2, 'Great Grand Master': 1, 'Legend': 0
+  'Legend': 0,
+  'Great Grand Master': 1,
+  'Grand Master': 2,
+  'Master': 3,
+  'Apprentice': 4,
+  'Open': 4
 }
 
 // Custom SVG Icons
@@ -255,7 +262,7 @@ export default function HomePage() {
   }
 
   const getHandicap = (category) => {
-    if (!category) return 0
+    if (!event?.mastersScoringEnabled || !category) return 0
     for (const [cat, pts] of Object.entries(MASTERS_HANDICAP)) {
       if (category.includes(cat)) return pts
     }
@@ -266,13 +273,28 @@ export default function HomePage() {
     if (!sailors.length || !races.length) return []
     
     return sailors.map(sailor => {
+      const handicap = getHandicap(sailor.category)
       const raceScores = races.map(r => {
         const score = sailor.scores?.[r.number]
-        if (!score) return { race: r.number, value: sailors.length + 1, display: 'DNC' }
+        if (!score) {
+          // DNC = num sailors + 1 + handicap
+          const dncScore = sailors.length + 1 + handicap
+          return { race: r.number, value: dncScore, display: `DNC (${dncScore})`, raw: 'DNC' }
+        }
         const num = parseInt(score)
-        if (!isNaN(num)) return { race: r.number, value: num, display: score }
-        return { race: r.number, value: sailors.length + 1, display: score }
-      })
+        if (!isNaN(num)) {
+          const finalScore = num + handicap
+          return { 
+            race: r.number, 
+            value: finalScore, 
+            display: handicap > 0 ? `${num}+${handicap}=${finalScore}` : String(finalScore),
+            raw: num
+          }
+        }
+        // For non-numeric scores (DNF, DSQ, etc.), still add handicap
+        const specialScore = sailors.length + 1 + handicap
+        return { race: r.number, value: specialScore, display: `${score} (${specialScore})`, raw: score }
+      }
 
       const sorted = [...raceScores].sort((a, b) => b.value - a.value)
       const dropped = raceScores.length >= 2 ? sorted[0] : null
@@ -296,7 +318,7 @@ export default function HomePage() {
     }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ color: '#63b3ed', marginBottom: '20px' }}>
-          <Icons.Sailboat />
+          <img src="/logo-icon.png" alt="" style={{ width: '32px', height: '32px' }} />
         </div>
         <p>Loading regatta data...</p>
       </div>
@@ -336,9 +358,7 @@ export default function HomePage() {
         alignItems: 'center',
       }}>
         <div style={{ fontSize: '24px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ color: '#63b3ed' }}>
-            <Icons.Sailboat />
-          </div>
+          <img src="/logo-icon.png" alt="ISA" style={{ width: '32px', height: '32px' }} />
           <span>ISA Regattas</span>
         </div>
         <button 
@@ -531,13 +551,13 @@ export default function HomePage() {
             <StatCard 
               number={ilca7Sailors.length} 
               label="ILCA 7 Fleet" 
-              icon={Icons.Sailboat} 
+              icon: () => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />, 
               delay={100}
             />
             <StatCard 
               number={ilca6Sailors.length} 
               label="ILCA 6 Fleet" 
-              icon={Icons.Sailboat} 
+              icon: () => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />, 
               delay={200}
             />
             <StatCard 
@@ -815,7 +835,7 @@ export default function HomePage() {
               {/* Classes & Awards */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#63b3ed' }}><Icons.Sailboat /></span>
+                  <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px', verticalAlign: 'middle' }} />
                   Classes & Awards
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -904,7 +924,7 @@ export default function HomePage() {
               {event.sailors.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '100px 20px' }}>
                   <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-                    <Icons.Sailboat />
+                    <img src="/logo-icon.png" alt="" style={{ width: '32px', height: '32px' }} />
                   </div>
                   <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Opening Soon</h2>
                   <p style={{ fontSize: '18px', opacity: 0.7 }}>Sailors will appear here once registration opens.</p>
@@ -1032,13 +1052,13 @@ export default function HomePage() {
                     {hasIlca7Scores && ilca7Sailors.length > 0 && (
                       <div style={{ marginBottom: '50px' }}>
                         <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 7 Results</h2>
-                        <ResultsTable sailors={ilca7Sailors} races={ilca7Races} />
+                        <ResultsTable sailors={ilca7Sailors} races={ilca7Races} mastersScoringEnabled={event.mastersScoringEnabled} />
                       </div>
                     )}
                     {hasIlca6Scores && ilca6Sailors.length > 0 && (
                       <div>
                         <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 6 Results</h2>
-                        <ResultsTable sailors={ilca6Sailors} races={ilca6Races} />
+                        <ResultsTable sailors={ilca6Sailors} races={ilca6Races} mastersScoringEnabled={event.mastersScoringEnabled} />
                       </div>
                     )}
                   </div>
@@ -1057,8 +1077,8 @@ export default function HomePage() {
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <div style={{ color: '#63b3ed', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
-            <Icons.Sailboat />
+          <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+            <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '200px', height: 'auto' }} />
           </div>
           <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>International Sailing Academy</h3>
           <p style={{ opacity: 0.6, marginBottom: '30px' }}>World-class ILCA coaching in Mexico and beyond</p>
@@ -1145,16 +1165,40 @@ function SailorRow({ sailor, index, getHandicap }) {
 }
 
 // Results table component
-function ResultsTable({ sailors, races }) {
+function ResultsTable({ sailors, races, mastersScoringEnabled }) {
   if (!sailors.length || !races.length) return null
 
+  // Get handicap for a sailor's category
+  const getHandicapForCategory = (category) => {
+    if (!mastersScoringEnabled || !category) return 0
+    for (const [cat, pts] of Object.entries(MASTERS_HANDICAP)) {
+      if (category.includes(cat)) return pts
+    }
+    return 0
+  }
+
   const results = sailors.map(sailor => {
+    const handicap = getHandicapForCategory(sailor.category)
     const raceScores = races.map(r => {
       const score = sailor.scores?.[r.number]
-      if (!score) return { race: r.number, value: sailors.length + 1, display: 'DNC', isDropped: false }
+      if (!score) {
+        const dncScore = sailors.length + 1 + handicap
+        return { race: r.number, value: dncScore, display: `DNC`, isDropped: false, raw: 'DNC', handicap }
+      }
       const num = parseInt(score)
-      if (!isNaN(num)) return { race: r.number, value: num, display: score, isDropped: false }
-      return { race: r.number, value: sailors.length + 1, display: score.toUpperCase(), isDropped: false }
+      if (!isNaN(num)) {
+        const finalScore = num + handicap
+        return { 
+          race: r.number, 
+          value: finalScore, 
+          display: handicap > 0 ? `${num}` : String(num),
+          isDropped: false,
+          raw: num,
+          handicap
+        }
+      }
+      const specialScore = sailors.length + 1 + handicap
+      return { race: r.number, value: specialScore, display: score.toUpperCase(), isDropped: false, raw: score, handicap }
     })
 
     const sorted = [...raceScores].sort((a, b) => b.value - a.value)
@@ -1167,7 +1211,7 @@ function ResultsTable({ sailors, races }) {
     const total = raceScores.reduce((sum, r) => sum + r.value, 0)
     const net = raceScores.filter(r => !r.isDropped).reduce((sum, r) => sum + r.value, 0)
 
-    return { ...sailor, total, net, raceScores }
+    return { ...sailor, total, net, raceScores, handicap }
   }).sort((a, b) => a.net - b.net)
 
   return (
@@ -1218,6 +1262,17 @@ function ResultsTable({ sailors, races }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span>{FLAGS[r.country] || '○'}</span>
                   <span>{r.name}</span>
+                  {mastersScoringEnabled && r.handicap > 0 && (
+                    <span style={{ 
+                      fontSize: '11px', 
+                      background: 'rgba(252, 129, 129, 0.2)', 
+                      color: '#fc8181',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                    }}>
+                      +{r.handicap}
+                    </span>
+                  )}
                 </div>
               </td>
               <td style={{ padding: '15px', textAlign: 'center', fontWeight: 'bold', color: '#63b3ed', fontSize: '18px' }}>{r.net}</td>
@@ -1225,9 +1280,17 @@ function ResultsTable({ sailors, races }) {
               {r.raceScores.map(rs => (
                 <td key={rs.race} style={{ padding: '15px', textAlign: 'center' }}>
                   {rs.isDropped ? (
-                    <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>({rs.display})</span>
+                    <span style={{ textDecoration: 'line-through', opacity: 0.4 }}>
+                      ({mastersScoringEnabled && rs.handicap > 0 ? `${rs.value}*` : rs.display})
+                    </span>
                   ) : (
-                    <span style={{ fontWeight: '500' }}>{rs.display}</span>
+                    <span style={{ fontWeight: '500' }}>
+                      {mastersScoringEnabled && rs.handicap > 0 ? (
+                        <span title={`Raw: ${rs.display}, +${rs.handicap} handicap = ${rs.value}`}>
+                          {rs.value}*
+                        </span>
+                      ) : rs.display}
+                    </span>
                   )}
                 </td>
               ))}

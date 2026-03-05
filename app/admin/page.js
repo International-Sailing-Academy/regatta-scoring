@@ -580,6 +580,21 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              <div style={styles.formGroup}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={event.mastersScoringEnabled || false}
+                    onChange={(e) => updateEventField('mastersScoringEnabled', e.target.checked)}
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                  <span>Enable NA ILCA Masters Scoring System</span>
+                </label>
+                <p style={{ fontSize: '12px', color: '#666', marginTop: '5px', marginLeft: '30px' }}>
+                  When enabled, handicaps are applied: Legend +0, GGM +1, GM +2, Master +3, Apprentice/Open +4
+                </p>
+              </div>
+
               <h3>Classes</h3>
               <div style={styles.classesBox}>
                 {event.classes.map(cls => (
