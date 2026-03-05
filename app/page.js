@@ -755,6 +755,7 @@ export default function HomePage() {
           <span>Source: <strong style={{ color: '#63b3ed' }}>{dataSource}</strong></span>
           <span>Event: <strong>{event?.eventName?.slice(0, 20) || 'None'}</strong></span>
           <span>Sailors: <strong style={{ color: event?.sailors?.length ? '#48bb78' : '#fc8181' }}>{event?.sailors?.length || 0}</strong></span>
+          <span title={event?.eventDate}>Date: <strong>{event?.eventDate?.slice(0, 16) || 'None'}</strong></span>
           <span title={event?.id}>ID: <strong>{event?.id?.slice(0, 8) || 'None'}...</strong></span>
           <button 
             onClick={() => window.location.reload()}
