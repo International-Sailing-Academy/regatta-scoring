@@ -1319,33 +1319,7 @@ export default function AdminPage() {
         </>
       )}
 
-      {/* Migration Tools - at bottom */}
-      {supabaseEnabled && (
-        <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #e2e8f0' }}>
-          <button 
-            onClick={() => setShowMigrationTools(!showMigrationTools)}
-            style={{
-              padding: '6px 12px',
-              background: 'transparent',
-              border: '1px solid #cbd5e0',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              color: '#718096'
-            }}
-          >
-            {showMigrationTools ? '▼ Hide Sync Tools' : '▶ Sync Tools'}
-          </button>
-          
-          {showMigrationTools && (
-            <div style={{ marginTop: '10px' }}>
-              <MigrationTool />
-              <SimpleMigration />
-              <SyncDiagnostics />
-            </div>
-          )}
-        </div>
-      )}
+
     </div>
   )
 }
