@@ -772,14 +772,6 @@ export default function HomePage() {
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Eligibility</h4>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
-                        <li>• Class association membership required</li>
-                        <li>• Boat must conform to class rules</li>
-                        <li>• Proof of insurance required</li>
-                      </ul>
-                    </div>
-                    <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Safety Equipment</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• Whistle required</li>
