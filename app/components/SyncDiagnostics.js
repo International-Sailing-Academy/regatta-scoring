@@ -9,6 +9,7 @@ export default function SyncDiagnostics() {
     supabaseConfigured: false,
     supabaseConnected: false,
     tableExists: false,
+    canInsert: false,
     localEvents: 0,
     cloudEvents: 0,
     error: null,
@@ -21,6 +22,7 @@ export default function SyncDiagnostics() {
         supabaseConfigured: isSupabaseEnabled(),
         supabaseConnected: false,
         tableExists: false,
+        canInsert: false,
         localEvents: 0,
         cloudEvents: 0,
         error: null,
@@ -41,16 +43,29 @@ export default function SyncDiagnostics() {
             .limit(10)
           
           if (error) {
-            // Check if error is because table doesn't exist
-            if (error.message?.includes('does not exist') || error.code === '42P01') {
-              results.error = 'The "events" table does not exist in Supabase. Please run the SQL setup script.'
-            } else {
-              results.error = error.message
-            }
+            results.error = error.message + ' (code: ' + error.code + ')'
           } else {
             results.supabaseConnected = true
             results.tableExists = true
             results.cloudEvents = data?.length || 0
+            
+            // Try a test insert to verify write permissions
+            const testId = 'test-' + Date.now()
+            const { error: insertError } = await supabase
+              .from('events')
+              .insert({
+                id: testId,
+                eventName: 'Test Event',
+                createdAt: new Date().toISOString()
+              })
+            
+            if (!insertError) {
+              results.canInsert = true
+              // Clean up test record
+              await supabase.from('events').delete().eq('id', testId)
+            } else {
+              results.error = 'Cannot write: ' + insertError.message
+            }
           }
         } catch (err) {
           results.error = err.message
@@ -67,14 +82,14 @@ export default function SyncDiagnostics() {
   const getStatusColor = () => {
     if (diagnostics.checking) return '#90cdf4'
     if (diagnostics.error) return '#fed7d7'
-    if (diagnostics.supabaseConnected && diagnostics.tableExists) return '#c6f6d5'
+    if (diagnostics.canInsert) return '#c6f6d5'
     return '#fefcbf'
   }
 
   const getTextColor = () => {
     if (diagnostics.checking) return '#2c5282'
     if (diagnostics.error) return '#c53030'
-    if (diagnostics.supabaseConnected && diagnostics.tableExists) return '#22543d'
+    if (diagnostics.canInsert) return '#22543d'
     return '#744210'
   }
 
@@ -93,27 +108,10 @@ export default function SyncDiagnostics() {
         <p>Checking configuration...</p>
       ) : (
         <div style={{ display: 'grid', gap: '8px' }}>
-          <div>
-            <strong>Supabase Configured:</strong> {diagnostics.supabaseConfigured ? '✅ Yes' : '❌ No'}
-            {!diagnostics.supabaseConfigured && (
-              <div style={{ fontSize: '12px', marginTop: '5px', opacity: 0.8 }}>
-                Environment variables not set. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel.
-              </div>
-            )}
-          </div>
-          
-          <div>
-            <strong>Supabase Connected:</strong> {diagnostics.supabaseConnected ? '✅ Yes' : '❌ No'}
-          </div>
-
-          <div>
-            <strong>Events Table Exists:</strong> {diagnostics.tableExists ? '✅ Yes' : '❌ No'}
-            {diagnostics.supabaseConfigured && !diagnostics.tableExists && !diagnostics.error && (
-              <div style={{ fontSize: '12px', marginTop: '5px', opacity: 0.8 }}>
-                Table may not exist. Run the SQL script from supabase-setup.sql in your Supabase SQL Editor.
-              </div>
-            )}
-          </div>
+          <div><strong>Supabase Configured:</strong> {diagnostics.supabaseConfigured ? '✅ Yes' : '❌ No'}</div>
+          <div><strong>Supabase Connected:</strong> {diagnostics.supabaseConnected ? '✅ Yes' : '❌ No'}</div>
+          <div><strong>Table Exists:</strong> {diagnostics.tableExists ? '✅ Yes' : '❌ No'}</div>
+          <div><strong>Can Write:</strong> {diagnostics.canInsert ? '✅ Yes' : '❌ No'}</div>
           
           <div><strong>Local Events:</strong> {diagnostics.localEvents}</div>
           <div><strong>Cloud Events:</strong> {diagnostics.cloudEvents}</div>
@@ -132,16 +130,15 @@ export default function SyncDiagnostics() {
             </div>
           )}
           
-          {diagnostics.supabaseConnected && diagnostics.tableExists && diagnostics.cloudEvents === 0 && diagnostics.localEvents > 0 && (
+          {diagnostics.canInsert && diagnostics.cloudEvents === 0 && diagnostics.localEvents > 0 && (
             <div style={{ marginTop: '10px', fontWeight: 'bold' }}>
-              ⚠️ You have {diagnostics.localEvents} local events but 0 in the cloud. 
-              Click &quot;Migrate to Cloud&quot; above to sync them.
+              ⚠️ Ready to migrate! Click &quot;Migrate to Cloud&quot; above.
             </div>
           )}
           
-          {diagnostics.supabaseConnected && diagnostics.tableExists && diagnostics.cloudEvents > 0 && (
+          {diagnostics.cloudEvents > 0 && (
             <div style={{ marginTop: '10px', fontWeight: 'bold' }}>
-              ✅ Cloud sync is working! {diagnostics.cloudEvents} events in cloud.
+              ✅ Cloud has {diagnostics.cloudEvents} events.
             </div>
           )}
         </div>
