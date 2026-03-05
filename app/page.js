@@ -783,8 +783,8 @@ export default function HomePage() {
                 flex: '1 1 auto',
                 minWidth: '70px',
                 padding: '12px 16px',
-                background: activeTab === tab ? '#63b3ed' : 'transparent',
-                color: activeTab === tab ? '#0a192f' : 'white',
+                background: activeTab === tab ? '#38a169' : 'transparent',
+                color: activeTab === tab ? 'white' : 'white',
                 border: 'none',
                 borderRadius: '8px',
                 cursor: 'pointer',
@@ -793,6 +793,8 @@ export default function HomePage() {
                 textTransform: 'capitalize',
                 transition: 'all 0.3s ease',
                 whiteSpace: 'nowrap',
+                boxShadow: activeTab === tab ? '0 4px 6px rgba(56, 161, 105, 0.3)' : 'none',
+                transform: activeTab === tab ? 'translateY(-2px)' : 'none',
               }}
             >
               {tab}
