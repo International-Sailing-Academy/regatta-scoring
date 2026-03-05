@@ -13,6 +13,7 @@ import {
 } from '../lib/data'
 import MigrationTool from '../components/MigrationTool'
 import SyncDiagnostics from '../components/SyncDiagnostics'
+import SimpleMigration from '../components/SimpleMigration'
 
 const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
@@ -405,6 +406,9 @@ export default function AdminPage() {
     <div style={styles.container}>
       {/* Migration Tool - Only show if Supabase is enabled */}
       {supabaseEnabled && <MigrationTool />}
+      
+      {/* Debug Migration Tool */}
+      {supabaseEnabled && <SimpleMigration />}
       
       {/* Sync Diagnostics */}
       <SyncDiagnostics />
