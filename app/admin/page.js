@@ -5,6 +5,7 @@ import {
   FLAGS, 
   createNewEvent, 
   getAllEventsSync, 
+  getAllEvents,
   saveEvent, 
   deleteEvent, 
   duplicateEvent,
@@ -50,19 +51,41 @@ export default function AdminPage() {
     }
   }, [event, savedEvent])
 
-  // Load events on mount
+  // Load events on mount - try Supabase first, then localStorage
   useEffect(() => {
-    const allEvents = getAllEventsSync()
-    setEvents(allEvents)
-    
-    // Select first event if exists
-    if (allEvents.length > 0) {
-      setSelectedEventId(allEvents[0].id)
-      setEvent(allEvents[0])
-      setSavedEvent(allEvents[0])
+    const loadEvents = async () => {
+      let allEvents = []
+      
+      // Try Supabase first
+      try {
+        const supabaseEvents = await getAllEvents()
+        if (supabaseEvents && supabaseEvents.length > 0) {
+          allEvents = supabaseEvents
+          console.log('Admin: Loaded', supabaseEvents.length, 'events from Supabase')
+        }
+      } catch (err) {
+        console.error('Admin: Supabase error:', err)
+      }
+      
+      // Fall back to localStorage
+      if (allEvents.length === 0) {
+        allEvents = getAllEventsSync()
+        console.log('Admin: Loaded', allEvents.length, 'events from localStorage')
+      }
+      
+      setEvents(allEvents)
+      
+      // Select first event if exists
+      if (allEvents.length > 0) {
+        setSelectedEventId(allEvents[0].id)
+        setEvent(allEvents[0])
+        setSavedEvent(allEvents[0])
+      }
+      
+      setLoading(false)
     }
     
-    setLoading(false)
+    loadEvents()
   }, [])
 
   // Manual save function
