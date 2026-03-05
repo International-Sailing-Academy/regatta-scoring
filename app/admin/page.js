@@ -299,15 +299,19 @@ export default function AdminPage() {
         }
       })
 
-      const sorted = [...raceScores].sort((a, b) => b.raw - a.raw)
-      const droppedRace = raceScores.length >= 2 ? sorted[0]?.race : null
+      // Count only scored races (non-empty) for drop threshold
+      const scoredRaceCount = raceScores.filter(rs => rs.display !== '').length
+      const sorted = [...raceScores].filter(rs => rs.display !== '').sort((a, b) => b.raw - a.raw)
+      const droppedRace = scoredRaceCount >= 4 ? sorted[0]?.race : null
       
       raceScores.forEach(rs => {
         if (rs.race === droppedRace) rs.isDropped = true
       })
 
-      const total = raceScores.reduce((sum, r) => sum + r.raw, 0)
-      const net = raceScores
+      // Only count scored races in totals
+      const scoredRaces = raceScores.filter(r => r.display !== '')
+      const total = scoredRaces.reduce((sum, r) => sum + r.raw, 0)
+      const net = scoredRaces
         .filter(r => !r.isDropped)
         .reduce((sum, r) => sum + r.raw, 0)
 
@@ -322,8 +326,8 @@ export default function AdminPage() {
       'DGM': true, 'RDG': true
     }
     
-    if (!score) {
-      return { value: totalSailors + 1, display: 'DNC', isPenalty: true }
+    if (!score || score === '') {
+      return { value: 0, display: '', isPenalty: false, notScored: true }
     }
     
     const upper = score.toUpperCase().trim()
@@ -1141,7 +1145,9 @@ export default function AdminPage() {
                                     <td style={{...styles.td, ...styles.pointsCol}}>{r.total}</td>
                                     {r.raceScores.map(rs => (
                                       <td key={rs.race} style={{...styles.td, ...styles.raceCol}}>
-                                        {rs.isDropped ? (
+                                        {rs.display === '' ? (
+                                          <span style={{opacity: 0.3}}>—</span>
+                                        ) : rs.isDropped ? (
                                           <span style={styles.dropped}>({rs.display})</span>
                                         ) : (
                                           rs.display
@@ -1294,8 +1300,11 @@ const styles = {
     fontSize: '14px'
   },
   navTabActive: {
-    background: '#2b6cb0',
-    color: 'white'
+    background: '#38a169',
+    color: 'white',
+    boxShadow: '0 4px 6px rgba(56, 161, 105, 0.3)',
+    transform: 'translateY(-2px)',
+    transition: 'all 0.2s ease'
   },
   panel: {
     background: '#f7fafc',
