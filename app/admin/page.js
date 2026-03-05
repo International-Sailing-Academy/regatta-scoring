@@ -8,7 +8,8 @@ import {
   saveEvent, 
   deleteEvent, 
   duplicateEvent,
-  encodeRegatta 
+  encodeRegatta,
+  isSupabaseEnabled
 } from '../lib/data'
 
 const COUNTRIES = Object.keys(FLAGS).sort()
@@ -25,6 +26,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [selectedScoreClass, setSelectedScoreClass] = useState('')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [syncStatus, setSyncStatus] = useState('idle') // idle, syncing, synced, error
+  const supabaseEnabled = isSupabaseEnabled()
 
   // Computed values for scores tab
   const classRaces = selectedScoreClass 
@@ -442,6 +445,17 @@ export default function AdminPage() {
                 gap: '5px'
               }}>
                 ● Unsaved Changes
+              </span>
+            )}
+            {supabaseEnabled && (
+              <span style={{ 
+                color: '#48bb78', 
+                fontSize: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }} title="Cloud sync enabled">
+                ☁️ Cloud
               </span>
             )}
             <button 

@@ -1,5 +1,8 @@
 // Data utilities - supports both Supabase (cross-device sync) and localStorage (fallback)
-import { supabase, isSupabaseEnabled } from './supabase'
+import { supabase, isSupabaseEnabled as checkSupabase } from './supabase'
+
+// Re-export for components
+export { checkSupabase as isSupabaseEnabled }
 
 // Generate unique ID for events
 export const generateId = () => {
@@ -101,7 +104,7 @@ const saveAllEventsLocal = (events) => {
 // ============== UNIFIED API ==============
 
 // Check if we should use Supabase
-const useSupabase = () => isSupabaseEnabled()
+const useSupabase = () => checkSupabase()
 
 // Get all events - tries Supabase first, falls back to localStorage
 export const getAllEvents = async () => {
