@@ -1156,14 +1156,28 @@ export default function HomePage() {
           {activeTab === 'results' && (
             <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
               {(() => {
+                // Debug logging
+                console.log('Results tab - ILCA 7 sailors:', ilca7Sailors.length, 'races:', ilca7Races.length)
+                console.log('Results tab - ILCA 6 sailors:', ilca6Sailors.length, 'races:', ilca6Races.length)
+                if (ilca7Sailors[0]) console.log('ILCA7 first sailor scores:', ilca7Sailors[0].scores)
+                if (ilca6Sailors[0]) console.log('ILCA6 first sailor scores:', ilca6Sailors[0].scores)
+                
                 // Check if any sailor has actual scores (non-empty values)
                 const hasScoredRaces = (sailors) => sailors.some(s => 
-                  Object.values(s.scores || {}).some(score => score && score !== '')
+                  s.scores && Object.values(s.scores).some(score => 
+                    score !== null && score !== undefined && score !== ''
+                  )
                 )
                 const hasIlca7Scores = hasScoredRaces(ilca7Sailors)
                 const hasIlca6Scores = hasScoredRaces(ilca6Sailors)
                 
-                if (!hasIlca7Scores && !hasIlca6Scores) {
+                console.log('Has scores - ILCA 7:', hasIlca7Scores, 'ILCA 6:', hasIlca6Scores)
+                
+                // Show results if there are sailors AND either scores exist OR races are defined
+                const showIlca7 = ilca7Sailors.length > 0 && (hasIlca7Scores || ilca7Races.length > 0)
+                const showIlca6 = ilca6Sailors.length > 0 && (hasIlca6Scores || ilca6Races.length > 0)
+                
+                if (!showIlca7 && !showIlca6) {
                   return (
                     <div style={{ textAlign: 'center', padding: '100px 20px' }}>
                       <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
@@ -1188,13 +1202,13 @@ export default function HomePage() {
                 
                 return (
                   <div>
-                    {hasIlca7Scores && ilca7Sailors.length > 0 && (
+                    {showIlca7 && (
                       <div style={{ marginBottom: '50px' }}>
                         <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 7 Results</h2>
                         <ResultsTable sailors={ilca7Sailors} races={ilca7Races} mastersScoringEnabled={event.mastersScoringEnabled} />
                       </div>
                     )}
-                    {hasIlca6Scores && ilca6Sailors.length > 0 && (
+                    {showIlca6 && (
                       <div>
                         <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 6 Results</h2>
                         <ResultsTable sailors={ilca6Sailors} races={ilca6Races} mastersScoringEnabled={event.mastersScoringEnabled} />
