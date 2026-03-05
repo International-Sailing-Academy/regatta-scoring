@@ -8,6 +8,7 @@ export default function SyncDiagnostics() {
   const [diagnostics, setDiagnostics] = useState({
     supabaseConfigured: false,
     supabaseConnected: false,
+    tableExists: false,
     localEvents: 0,
     cloudEvents: 0,
     error: null,
@@ -19,6 +20,7 @@ export default function SyncDiagnostics() {
       const results = {
         supabaseConfigured: isSupabaseEnabled(),
         supabaseConnected: false,
+        tableExists: false,
         localEvents: 0,
         cloudEvents: 0,
         error: null,
@@ -29,18 +31,25 @@ export default function SyncDiagnostics() {
       const localEvents = getAllEventsSync()
       results.localEvents = localEvents.length
 
-      // Check Supabase connection
+      // Check Supabase connection and table
       if (results.supabaseConfigured && supabase) {
         try {
+          // Try to query the events table
           const { data, error } = await supabase
             .from('events')
             .select('*')
             .limit(10)
           
           if (error) {
-            results.error = error.message
+            // Check if error is because table doesn't exist
+            if (error.message?.includes('does not exist') || error.code === '42P01') {
+              results.error = 'The "events" table does not exist in Supabase. Please run the SQL setup script.'
+            } else {
+              results.error = error.message
+            }
           } else {
             results.supabaseConnected = true
+            results.tableExists = true
             results.cloudEvents = data?.length || 0
           }
         } catch (err) {
@@ -58,14 +67,14 @@ export default function SyncDiagnostics() {
   const getStatusColor = () => {
     if (diagnostics.checking) return '#90cdf4'
     if (diagnostics.error) return '#fed7d7'
-    if (diagnostics.supabaseConnected && diagnostics.cloudEvents > 0) return '#c6f6d5'
+    if (diagnostics.supabaseConnected && diagnostics.tableExists) return '#c6f6d5'
     return '#fefcbf'
   }
 
   const getTextColor = () => {
     if (diagnostics.checking) return '#2c5282'
     if (diagnostics.error) return '#c53030'
-    if (diagnostics.supabaseConnected && diagnostics.cloudEvents > 0) return '#22543d'
+    if (diagnostics.supabaseConnected && diagnostics.tableExists) return '#22543d'
     return '#744210'
   }
 
@@ -95,9 +104,13 @@ export default function SyncDiagnostics() {
           
           <div>
             <strong>Supabase Connected:</strong> {diagnostics.supabaseConnected ? '✅ Yes' : '❌ No'}
-            {diagnostics.supabaseConfigured && !diagnostics.supabaseConnected && (
+          </div>
+
+          <div>
+            <strong>Events Table Exists:</strong> {diagnostics.tableExists ? '✅ Yes' : '❌ No'}
+            {diagnostics.supabaseConfigured && !diagnostics.tableExists && !diagnostics.error && (
               <div style={{ fontSize: '12px', marginTop: '5px', opacity: 0.8 }}>
-                Cannot connect to Supabase. Check your URL and key are correct.
+                Table may not exist. Run the SQL script from supabase-setup.sql in your Supabase SQL Editor.
               </div>
             )}
           </div>
@@ -110,22 +123,23 @@ export default function SyncDiagnostics() {
               background: 'rgba(0,0,0,0.1)', 
               padding: '10px', 
               borderRadius: '4px',
-              fontFamily: 'monospace',
               fontSize: '12px',
-              marginTop: '5px'
+              marginTop: '5px',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word'
             }}>
-              Error: {diagnostics.error}
+              <strong>Error:</strong> {diagnostics.error}
             </div>
           )}
           
-          {diagnostics.supabaseConnected && diagnostics.cloudEvents === 0 && diagnostics.localEvents > 0 && (
+          {diagnostics.supabaseConnected && diagnostics.tableExists && diagnostics.cloudEvents === 0 && diagnostics.localEvents > 0 && (
             <div style={{ marginTop: '10px', fontWeight: 'bold' }}>
               ⚠️ You have {diagnostics.localEvents} local events but 0 in the cloud. 
               Click &quot;Migrate to Cloud&quot; above to sync them.
             </div>
           )}
           
-          {diagnostics.supabaseConnected && diagnostics.cloudEvents > 0 && (
+          {diagnostics.supabaseConnected && diagnostics.tableExists && diagnostics.cloudEvents > 0 && (
             <div style={{ marginTop: '10px', fontWeight: 'bold' }}>
               ✅ Cloud sync is working! {diagnostics.cloudEvents} events in cloud.
             </div>

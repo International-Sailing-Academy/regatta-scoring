@@ -7,6 +7,7 @@ import { getAllEventsSync } from '../lib/data'
 export default function MigrationTool() {
   const [status, setStatus] = useState('idle') // idle, migrating, done, error
   const [message, setMessage] = useState('')
+  const [details, setDetails] = useState('')
 
   const handleMigrate = async () => {
     if (!supabase) {
@@ -17,9 +18,11 @@ export default function MigrationTool() {
 
     setStatus('migrating')
     setMessage('Migrating data to cloud...')
+    setDetails('')
 
     try {
       const events = getAllEventsSync()
+      console.log('Local events to migrate:', events)
       
       if (events.length === 0) {
         setStatus('error')
@@ -28,24 +31,57 @@ export default function MigrationTool() {
       }
 
       let successCount = 0
+      let errorDetails = []
       
       for (const event of events) {
-        const { error } = await supabase
+        console.log('Migrating event:', event.id, event.eventName)
+        
+        // Ensure all required fields are present
+        const eventToSave = {
+          id: event.id,
+          eventName: event.eventName || 'Untitled',
+          eventDate: event.eventDate || '',
+          eventEndDate: event.eventEndDate || '',
+          venue: event.venue || '',
+          organizer: event.organizer || '',
+          description: event.description || '',
+          noticeOfRace: event.noticeOfRace || '',
+          sailingInstructions: event.sailingInstructions || '',
+          classes: event.classes || ['ILCA 7', 'ILCA 6'],
+          sailors: event.sailors || [],
+          races: event.races || [],
+          mastersScoringEnabled: event.mastersScoringEnabled || false,
+          createdAt: event.createdAt || new Date().toISOString(),
+          lastUpdated: new Date().toLocaleString()
+        }
+        
+        const { data, error } = await supabase
           .from('events')
-          .upsert(event, { onConflict: 'id' })
+          .upsert(eventToSave, { onConflict: 'id' })
+          .select()
         
         if (error) {
-          console.error('Migration error:', error)
+          console.error('Migration error for', event.id, ':', error)
+          errorDetails.push(`${event.eventName}: ${error.message}`)
         } else {
+          console.log('Successfully migrated:', data)
           successCount++
         }
       }
 
-      setStatus('done')
-      setMessage(`Successfully migrated ${successCount} of ${events.length} events to the cloud!`)
+      if (errorDetails.length > 0) {
+        setStatus('error')
+        setMessage(`Migration partially failed. ${successCount} of ${events.length} succeeded.`)
+        setDetails(errorDetails.join('\n'))
+      } else {
+        setStatus('done')
+        setMessage(`Successfully migrated ${successCount} of ${events.length} events to the cloud!`)
+      }
     } catch (err) {
+      console.error('Migration exception:', err)
       setStatus('error')
       setMessage('Migration failed: ' + err.message)
+      setDetails(err.stack || '')
     }
   }
 
@@ -76,10 +112,23 @@ export default function MigrationTool() {
         marginBottom: '20px'
       }}>
         <strong>✗ Error:</strong> {message}
+        {details && (
+          <pre style={{ 
+            background: 'rgba(0,0,0,0.1)', 
+            padding: '10px', 
+            borderRadius: '4px',
+            fontSize: '11px',
+            marginTop: '10px',
+            overflow: 'auto',
+            maxHeight: '150px'
+          }}>
+            {details}
+          </pre>
+        )}
         <button 
           onClick={() => setStatus('idle')}
           style={{
-            marginLeft: '15px',
+            marginTop: '10px',
             padding: '5px 10px',
             background: '#c53030',
             color: 'white',
