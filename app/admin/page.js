@@ -147,7 +147,7 @@ export default function AdminPage() {
 
   // Add/remove class
   const addClass = (cls) => {
-    if (cls && !event.classes.includes(cls)) {
+    if (cls && !(event.classes || []).includes(cls)) {
       setEvent(prev => ({ ...prev, classes: [...prev.classes, cls] }))
     }
   }
@@ -199,7 +199,7 @@ export default function AdminPage() {
   // Race management - now class-specific
   const addRace = (raceClass) => {
     // Count existing races for this class
-    const classRaces = event.races.filter(r => r.raceClass === raceClass)
+    const classRaces = (event.races || []).filter(r => r.raceClass === raceClass)
     const nextNumber = classRaces.length + 1
     
     const newRace = {
@@ -213,7 +213,7 @@ export default function AdminPage() {
 
   const deleteRace = (raceId) => {
     if (confirm('Delete this race and all its scores?')) {
-      const raceToDelete = event.races.find(r => r.id === raceId)
+      const raceToDelete = (event.races || []).find(r => r.id === raceId)
       setEvent(prev => ({
         ...prev,
         races: prev.races.filter(r => r.id !== raceId),
@@ -258,7 +258,7 @@ export default function AdminPage() {
         sailNumber: cols[0] || '',
         name: cols[1] || '',
         country: cols[2] || 'URU',
-        boatClass: cols[3] || event.classes[0] || 'ILCA 7',
+        boatClass: cols[3] || (event.classes || [])[0] || 'ILCA 7',
         club: cols[4] || '',
         category: cols[5] || '',
         scores: {}
@@ -646,7 +646,7 @@ export default function AdminPage() {
                 style={{...styles.input, maxWidth: '200px'}}
               >
                 <option value="">Add class...</option>
-                {BOAT_CLASSES.filter(c => !event.classes.includes(c)).map(c => (
+                {BOAT_CLASSES.filter(c => !(event.classes || []).includes(c)).map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -670,7 +670,7 @@ export default function AdminPage() {
                   </select>
                   <select name="boatClass" required style={styles.input}>
                     <option value="">Class *</option>
-                    {event.classes.map(c => <option key={c} value={c}>{c}</option>)}
+                    {(event.classes || []).map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <input name="boatName" placeholder="Boat Name" style={styles.input} />
                   <input name="club" placeholder="Club" style={styles.input} />
@@ -719,7 +719,7 @@ export default function AdminPage() {
                     const importNames = ['Ksenia Mamontova', 'Elena Oetling Ramirez', 'Greg Jackson', 'Bill Pagels', 
                       'Roy L Lamphier', 'Angela de Leo', 'Alec Bostan', 'Luis E Barrios', 'Bruce Martinson', 
                       'Don Hahl', 'Russel Krause', 'Mark Kortbeek', 'Rachel Kortbeek', 'Robert Hodson', 'Walt Spevak']
-                    const existingNames = event.sailors.map(s => s.name.toLowerCase())
+                    const existingNames = (event.sailors || []).map(s => s.name.toLowerCase())
                     const alreadyImported = importNames.filter(n => existingNames.includes(n.toLowerCase()))
                     const alreadyImportedCount = alreadyImported.length
                     
@@ -755,7 +755,7 @@ export default function AdminPage() {
                         ]
                         
                         // Filter out duplicates by name
-                        const existingNames = event.sailors.map(s => s.name.toLowerCase())
+                        const existingNames = (event.sailors || []).map(s => s.name.toLowerCase())
                         const newRacers = racers.filter(r => !existingNames.includes(r.name.toLowerCase()))
                         
                         if (newRacers.length === 0) {
@@ -815,9 +815,9 @@ export default function AdminPage() {
                     
                     <button 
                       onClick={() => {
-                        const beforeCount = event.sailors.length
+                        const beforeCount = (event.sailors || []).length
                         const seen = new Set()
-                        const unique = event.sailors.filter(s => {
+                        const unique = (event.sailors || []).filter(s => {
                           const key = s.name.toLowerCase()
                           if (seen.has(key)) return false
                           seen.add(key)
@@ -839,8 +839,8 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <h3>Registered Sailors ({event.sailors.length})</h3>
-              {event.sailors.length === 0 ? (
+              <h3>Registered Sailors ({event.sailors?.length || 0})</h3>
+              {(!event.sailors || event.sailors.length === 0) ? (
                 <p style={styles.empty}>No sailors registered yet.</p>
               ) : (
                 <div style={styles.tableContainer}>
@@ -858,7 +858,7 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {event.sailors.map(s => (
+                      {(event.sailors || []).map(s => (
                         <tr key={s.id}>
                           <td>
                             <input 
@@ -896,7 +896,7 @@ export default function AdminPage() {
                               onChange={(e) => editSailor(s.id, 'boatClass', e.target.value)}
                               style={styles.smallInput}
                             >
-                              {event.classes.map(c => <option key={c} value={c}>{c}</option>)}
+                              {(event.classes || []).map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                           </td>
                           <td>
@@ -936,13 +936,13 @@ export default function AdminPage() {
               
               {/* Debug info */}
               <div style={{marginBottom: '15px', padding: '10px', background: '#edf2f7', borderRadius: '4px', fontSize: '13px'}}>
-                <strong>Total Races: {event.races.length}</strong> | 
-                ILCA 7: {event.races.filter(r => r.raceClass === 'ILCA 7').length} | 
-                ILCA 6: {event.races.filter(r => r.raceClass === 'ILCA 6').length}
-                {event.races.filter(r => !r.raceClass).length > 0 && (
+                <strong>Total Races: {event.races?.length || 0}</strong> | 
+                ILCA 7: {(event.races || []).filter(r => r.raceClass === 'ILCA 7').length} | 
+                ILCA 6: {(event.races || []).filter(r => r.raceClass === 'ILCA 6').length}
+                {(event.races || []).filter(r => !r.raceClass).length > 0 && (
                   <span style={{color: '#e53e3e'}}> | Unassigned: {event.races.filter(r => !r.raceClass).length}</span>
                 )}
-                {event.races.filter(r => !r.raceClass).length > 0 && (
+                {(event.races || []).filter(r => !r.raceClass).length > 0 && (
                   <button 
                     onClick={() => {
                       if (confirm('Delete unassigned races?')) {
@@ -959,8 +959,8 @@ export default function AdminPage() {
                 )}
               </div>
               
-              {event.classes.map(cls => {
-                const classRaces = event.races.filter(r => r.raceClass === cls)
+              {(event.classes || []).map(cls => {
+                const classRaces = (event.races || []).filter(r => r.raceClass === cls)
                 
                 return (
                   <div key={cls} style={{...styles.subSection, marginBottom: '20px'}}>
@@ -1230,14 +1230,14 @@ export default function AdminPage() {
                 Dropped races (worst score) are shown in <span style={styles.dropped}>(parentheses)</span>.
               </p>
               
-              {event.races.length === 0 ? (
+              {(!event.races || event.races.length === 0) ? (
                 <p style={styles.empty}>No races to display. Add races in the Races tab.</p>
-              ) : event.sailors.length === 0 ? (
+              ) : (!event.sailors || event.sailors.length === 0) ? (
                 <p style={styles.empty}>No sailors registered. Add entries in the Entries tab.</p>
               ) : (
                 <>
-                  {event.classes.map(cls => {
-                    const classSailors = event.sailors.filter(s => s.boatClass === cls)
+                  {(event.classes || []).map(cls => {
+                    const classSailors = (event.sailors || []).filter(s => s.boatClass === cls)
                     const classRaces = event.races.filter(r => r.raceClass === cls)
                     
                     if (classSailors.length === 0) return null
