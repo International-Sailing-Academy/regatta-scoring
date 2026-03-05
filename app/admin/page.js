@@ -526,7 +526,8 @@ export default function AdminPage() {
               { id: 'entries', label: `Entries (${event.sailors.length})` },
               { id: 'races', label: `Races (${event.races.filter(r => r.raceClass).length})` },
               { id: 'scores', label: 'Input Scores' },
-              { id: 'results', label: 'Results' }
+              { id: 'results', label: 'Results' },
+              { id: 'docs', label: `Documents (${event.documents?.length || 0})` }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -1072,6 +1073,133 @@ export default function AdminPage() {
                           />
                         </div>
                       ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* DOCUMENTS TAB */}
+          {activeTab === 'docs' && (
+            <div style={styles.panel}>
+              <h2>Documents</h2>
+              <p style={styles.help}>
+                Upload PDF documents (sailing instructions, notice of race, etc.) that sailors can download from the public page.
+              </p>
+              
+              {/* Add Document */}
+              <div style={{ marginBottom: '30px', padding: '20px', background: '#edf2f7', borderRadius: '8px' }}>
+                <h3 style={{ marginBottom: '15px' }}>Add Document</h3>
+                <div style={{ display: 'grid', gap: '15px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Document Name</label>
+                    <input
+                      type="text"
+                      id="docName"
+                      placeholder="e.g., Sailing Instructions"
+                      style={{ padding: '10px', width: '100%', borderRadius: '6px', border: '1px solid #cbd5e0' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Description (optional)</label>
+                    <input
+                      type="text"
+                      id="docDesc"
+                      placeholder="e.g., Updated March 15, 2026"
+                      style={{ padding: '10px', width: '100%', borderRadius: '6px', border: '1px solid #cbd5e0' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>PDF URL</label>
+                    <input
+                      type="url"
+                      id="docUrl"
+                      placeholder="https://example.com/document.pdf"
+                      style={{ padding: '10px', width: '100%', borderRadius: '6px', border: '1px solid #cbd5e0' }}
+                    />
+                    <p style={{ fontSize: '12px', color: '#718096', marginTop: '5px' }}>
+                      Upload your PDF to a file host (Dropbox, Google Drive, etc.) and paste the direct link here.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const name = document.getElementById('docName').value
+                      const desc = document.getElementById('docDesc').value
+                      const url = document.getElementById('docUrl').value
+                      if (!name || !url) {
+                        alert('Please enter both name and URL')
+                        return
+                      }
+                      const newDoc = { name, description: desc, url, addedAt: new Date().toISOString() }
+                      setEvent({
+                        ...event,
+                        documents: [...(event.documents || []), newDoc]
+                      })
+                      document.getElementById('docName').value = ''
+                      document.getElementById('docDesc').value = ''
+                      document.getElementById('docUrl').value = ''
+                    }}
+                    style={{
+                      padding: '12px 24px',
+                      background: '#3182ce',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      width: 'fit-content'
+                    }}
+                  >
+                    + Add Document
+                  </button>
+                </div>
+              </div>
+              
+              {/* Document List */}
+              <h3 style={{ marginBottom: '15px' }}>Uploaded Documents</h3>
+              {(!event.documents || event.documents.length === 0) ? (
+                <p style={styles.empty}>No documents added yet.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {event.documents.map((doc, idx) => (
+                    <div key={idx} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '15px',
+                      padding: '15px',
+                      background: 'white',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0'
+                    }}>
+                      <div style={{ fontSize: '24px' }}>📄</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 'bold' }}>{doc.name}</div>
+                        {doc.description && (
+                          <div style={{ fontSize: '13px', color: '#718096' }}>{doc.description}</div>
+                        )}
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#3182ce' }}>
+                          {doc.url.length > 50 ? doc.url.substring(0, 50) + '...' : doc.url}
+                        </a>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newDocs = [...event.documents]
+                          newDocs.splice(idx, 1)
+                          setEvent({ ...event, documents: newDocs })
+                        }}
+                        style={{
+                          padding: '8px 16px',
+                          background: '#e53e3e',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '13px'
+                        }}
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))}
                 </div>

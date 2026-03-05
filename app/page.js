@@ -119,6 +119,12 @@ const Icons = {
       <polyline points="12 6 12 12 16 14" />
     </svg>
   ),
+  FileIcon: () => (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+    </svg>
+  ),
 }
 
 // Countdown Timer Component
@@ -652,7 +658,7 @@ export default function HomePage() {
           margin: '0 auto 40px',
           flexWrap: 'wrap',
         }}>
-          {['info', 'sailors', 'schedule', 'results'].map(tab => (
+          {['info', 'sailors', 'schedule', 'results', 'docs'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -1084,6 +1090,76 @@ export default function HomePage() {
                   </div>
                 )
               })()}
+            </div>
+          )}
+
+          {/* DOCUMENTS TAB */}
+          {activeTab === 'docs' && (
+            <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
+              <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                <h2 style={{ fontSize: '36px', marginBottom: '15px' }}>Documents</h2>
+                <p style={{ fontSize: '18px', opacity: 0.7 }}>Official documents for the regatta</p>
+              </div>
+              
+              {(!event.documents || event.documents.length === 0) ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                  <div style={{ color: '#63b3ed', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                    <Icons.FileIcon />
+                  </div>
+                  <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>No Documents Yet</h3>
+                  <p style={{ fontSize: '16px', opacity: 0.6 }}>Check back later for sailing instructions and other documents.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gap: '15px', maxWidth: '600px', margin: '0 auto' }}>
+                  {event.documents.map((doc, idx) => (
+                    <a 
+                      key={idx}
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '15px',
+                        background: 'rgba(255,255,255,0.05)',
+                        padding: '20px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'white',
+                        textDecoration: 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+                        e.currentTarget.style.borderColor = 'rgba(99, 179, 237, 0.4)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+                      }}
+                    >
+                      <div style={{ 
+                        fontSize: '32px', 
+                        color: '#63b3ed',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '50px',
+                        height: '50px',
+                        background: 'rgba(99, 179, 237, 0.1)',
+                        borderRadius: '8px',
+                      }}>
+                        📄
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '18px', margin: '0 0 5px 0', fontWeight: '600' }}>{doc.name}</h3>
+                        <p style={{ fontSize: '13px', opacity: 0.6, margin: 0 }}>{doc.description || 'Click to download'}</p>
+                      </div>
+                      <div style={{ opacity: 0.5 }}>↓</div>
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
