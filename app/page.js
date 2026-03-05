@@ -1432,21 +1432,46 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
     return 0
   }
 
+  // Determine which races have been completed (at least one sailor has a score)
+  const completedRaces = new Set()
+  races.forEach(r => {
+    const hasAnyScore = sailors.some(s => {
+      const score = s.scores?.[r.number]
+      return score && score !== ''
+    })
+    if (hasAnyScore) completedRaces.add(r.number)
+  })
+
   const results = sailors.map(sailor => {
     const handicap = getHandicapForCategory(sailor.category)
     
-    // Only process races that have been scored
-    const scoredRaces = races.filter(r => {
-      const score = sailor.scores?.[r.number]
-      return score && score !== ''
-    })
-    
     const raceScores = races.map(r => {
       const score = sailor.scores?.[r.number]
-      // If no score entered yet, show empty cell (not DNC)
+      const raceIsCompleted = completedRaces.has(r.number)
+      
+      // If no score entered:
+      // - If race is completed, assign DNC
+      // - If race hasn't started yet, show empty cell
       if (!score || score === '') {
-        return { race: r.number, value: null, display: '', isDropped: false, raw: null, handicap, notScored: true }
+        if (raceIsCompleted) {
+          // Race completed but sailor has no score = DNC
+          const dncScore = sailors.length + 1 + handicap
+          return { 
+            race: r.number, 
+            value: dncScore, 
+            display: 'DNC', 
+            isDropped: false, 
+            raw: dncScore, 
+            handicap, 
+            notScored: false,
+            isDNC: true
+          }
+        } else {
+          // Race hasn't started yet
+          return { race: r.number, value: null, display: '', isDropped: false, raw: null, handicap, notScored: true }
+        }
       }
+      
       const num = parseInt(score)
       if (!isNaN(num)) {
         const finalScore = num + handicap
@@ -1465,7 +1490,7 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
       return { race: r.number, value: letterScore, display: score.toUpperCase(), isDropped: false, raw: score, handicap, notScored: false }
     })
 
-    // Only count scored races for drop calculation
+    // Only count scored races (including DNCs) for drop calculation
     const scoredRaceScores = raceScores.filter(rs => !rs.notScored)
     const sorted = [...scoredRaceScores].sort((a, b) => b.value - a.value)
     const droppedRace = scoredRaceScores.length >= 4 ? sorted[0]?.race : null
@@ -1474,7 +1499,7 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
       if (rs.race === droppedRace) rs.isDropped = true
     })
 
-    // Only sum scored races
+    // Sum all scored races (including DNCs)
     const total = scoredRaceScores.reduce((sum, r) => sum + r.value, 0)
     const net = scoredRaceScores.filter(r => !r.isDropped).reduce((sum, r) => sum + r.value, 0)
 
