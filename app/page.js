@@ -716,7 +716,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Classes</h4>
-                      <p>ILCA 4, ILCA 6, ILCA 7</p>
+                      <p>ILCA 6, ILCA 7</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>All levels including Masters</p>
                     </div>
                     <div>
@@ -850,12 +850,12 @@ export default function HomePage() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Classes</h4>
-                      <p>ILCA 4 • ILCA 6 • ILCA 7</p>
+                      <p>ILCA 6 • ILCA 7</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Open (all ages) and Masters categories (35+)</p>
                     </div>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Scoring</h4>
-                      <p>Masters Handicap Low Point System</p>
+                      <p>Low Point Scoring</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>9 races scheduled • 1 discard after 4+ races</p>
                     </div>
                     <div>
