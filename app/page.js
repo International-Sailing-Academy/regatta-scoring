@@ -559,13 +559,13 @@ export default function HomePage() {
             <StatCard 
               number={ilca7Sailors.length} 
               label="ILCA 7 Fleet" 
-              icon: () => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />, 
+              icon={() => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />} 
               delay={100}
             />
             <StatCard 
               number={ilca6Sailors.length} 
               label="ILCA 6 Fleet" 
-              icon: () => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />, 
+              icon={() => <img src="/logo-icon.png" alt="" style={{ width: '24px', height: '24px' }} />} 
               delay={200}
             />
             <StatCard 
@@ -1086,7 +1086,7 @@ export default function HomePage() {
         padding: '40px 15px', 
         borderTop: '1px solid rgba(255,255,255,0.1)',
         textAlign: 'center',
-      }}
+      }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
             <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '200px', height: 'auto' }} />
