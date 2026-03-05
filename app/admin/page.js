@@ -44,35 +44,23 @@ export default function AdminPage() {
     }
   }, [event, savedEvent])
 
-  // Load events on mount - try Supabase first, then localStorage
+  // Load events on mount from Supabase only
   useEffect(() => {
     const loadEvents = async () => {
-      let allEvents = []
-      
-      // Try Supabase first
       try {
-        const supabaseEvents = await getAllEvents()
-        if (supabaseEvents && supabaseEvents.length > 0) {
-          allEvents = supabaseEvents
-          console.log('Admin: Loaded', supabaseEvents.length, 'events from Supabase')
+        const allEvents = await getAllEvents()
+        console.log('Admin: Loaded', allEvents.length, 'events from Supabase')
+        setEvents(allEvents)
+        
+        // Select first event if exists
+        if (allEvents.length > 0) {
+          setSelectedEventId(allEvents[0].id)
+          setEvent(allEvents[0])
+          setSavedEvent(allEvents[0])
         }
       } catch (err) {
         console.error('Admin: Supabase error:', err)
-      }
-      
-      // Fall back to localStorage
-      if (allEvents.length === 0) {
-        allEvents = getAllEventsSync()
-        console.log('Admin: Loaded', allEvents.length, 'events from localStorage')
-      }
-      
-      setEvents(allEvents)
-      
-      // Select first event if exists
-      if (allEvents.length > 0) {
-        setSelectedEventId(allEvents[0].id)
-        setEvent(allEvents[0])
-        setSavedEvent(allEvents[0])
+        alert('Error loading from Supabase: ' + err.message)
       }
       
       setLoading(false)
@@ -390,7 +378,7 @@ export default function AdminPage() {
     if (!file) return
     
     const reader = new FileReader()
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       try {
         const data = JSON.parse(ev.target.result)
         // Create as new event
@@ -401,11 +389,12 @@ export default function AdminPage() {
           createdAt: new Date().toISOString(),
           lastUpdated: new Date().toLocaleString()
         }
-        saveEvent(newEvent)
-        const allEvents = getAllEventsSync()
+        await saveEvent(newEvent)
+        const allEvents = await getAllEvents()
         setEvents(allEvents)
         setSelectedEventId(newEvent.id)
         setEvent(newEvent)
+        setSavedEvent(newEvent)
         alert('Event imported successfully!')
       } catch (err) {
         alert('Error importing: ' + err.message)
