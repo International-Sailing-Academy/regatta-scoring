@@ -31,26 +31,26 @@ export default function SimpleMigration() {
       for (const evt of events) {
         addLog(`🔄 Migrating: ${evt.eventName} (${evt.id})`)
         
-        // Clean up the data
+        // Use snake_case column names for PostgreSQL
         const cleanEvent = {
           id: evt.id,
-          eventName: evt.eventName || 'Untitled',
-          eventDate: evt.eventDate || null,
-          eventEndDate: evt.eventEndDate || null,
+          eventname: evt.eventName || 'Untitled',
+          eventdate: evt.eventDate || null,
+          eventenddate: evt.eventEndDate || null,
           venue: evt.venue || null,
           organizer: evt.organizer || 'International Sailing Academy',
           description: evt.description || null,
-          noticeOfRace: evt.noticeOfRace || null,
-          sailingInstructions: evt.sailingInstructions || null,
+          noticeofrace: evt.noticeOfRace || null,
+          sailinginstructions: evt.sailingInstructions || null,
           classes: evt.classes || ['ILCA 7', 'ILCA 6'],
           sailors: evt.sailors || [],
           races: evt.races || [],
-          mastersScoringEnabled: evt.mastersScoringEnabled || false,
-          createdAt: evt.createdAt || new Date().toISOString(),
-          lastUpdated: new Date().toISOString()
+          mastersscoringenabled: evt.mastersScoringEnabled || false,
+          createdat: evt.createdAt || new Date().toISOString(),
+          lastupdated: new Date().toISOString()
         }
 
-        // Try insert (not upsert)
+        // Try insert
         const { data, error } = await supabase
           .from('events')
           .insert(cleanEvent)
@@ -78,7 +78,7 @@ export default function SimpleMigration() {
         }
       }
 
-      addLog(`✅ Migration complete!`)
+      addLog(`✅ Migration complete! Refresh the page.`)
       setStatus('done')
     } catch (err) {
       addLog(`❌ Exception: ${err.message}`)
@@ -99,16 +99,16 @@ export default function SimpleMigration() {
 
   return (
     <div style={{ background: '#faf089', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-      <h4 style={{ margin: '0 0 10px 0' }}>🔧 Manual Migration Tool</h4>
+      <h4 style={{ margin: '0 0 10px 0' }}>🔧 Manual Migration Tool (Fixed)</h4>
       <p style={{ fontSize: '13px', margin: '0 0 10px 0' }}>
-        If the regular migration doesn&apos;t work, try this debug version.
+        Uses correct column names for PostgreSQL.
       </p>
       <button 
         onClick={handleMigrate}
         disabled={status === 'migrating'}
         style={{ padding: '8px 16px', background: '#d69e2e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
       >
-        {status === 'migrating' ? 'Running...' : 'Run Debug Migration'}
+        {status === 'migrating' ? 'Running...' : 'Run Migration'}
       </button>
       {log.length > 0 && (
         <pre style={{ fontSize: '11px', marginTop: '10px', maxHeight: '150px', overflow: 'auto', background: 'rgba(0,0,0,0.1)', padding: '10px' }}>

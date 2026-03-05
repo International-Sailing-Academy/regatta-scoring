@@ -30,16 +30,37 @@ export const createNewEvent = (name = 'New Regatta') => ({
 
 // ============== SUPABASE FUNCTIONS ==============
 
+// Convert camelCase to snake_case for PostgreSQL
+const toSnakeCase = (obj) => {
+  const result = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+    result[snakeKey] = value
+  }
+  return result
+}
+
+// Convert snake_case to camelCase for JavaScript
+const toCamelCase = (obj) => {
+  const result = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+    result[camelKey] = value
+  }
+  return result
+}
+
 const getAllEventsSupabase = async () => {
   if (!supabase) return null
   try {
     const { data, error } = await supabase
       .from('events')
       .select('*')
-      .order('createdAt', { ascending: false })
+      .order('createdat', { ascending: false })
     
     if (error) throw error
-    return data || []
+    // Convert snake_case back to camelCase
+    return data?.map(toCamelCase) || []
   } catch (e) {
     console.error('Supabase error:', e)
     return null
@@ -49,10 +70,10 @@ const getAllEventsSupabase = async () => {
 const saveEventSupabase = async (event) => {
   if (!supabase) return null
   try {
-    const eventToSave = {
+    const eventToSave = toSnakeCase({
       ...event,
-      lastUpdated: new Date().toLocaleString()
-    }
+      lastUpdated: new Date().toISOString()
+    })
     
     const { data, error } = await supabase
       .from('events')
@@ -60,7 +81,7 @@ const saveEventSupabase = async (event) => {
       .select()
     
     if (error) throw error
-    return data?.[0] || eventToSave
+    return data?.[0] ? toCamelCase(data[0]) : event
   } catch (e) {
     console.error('Supabase save error:', e)
     return null
