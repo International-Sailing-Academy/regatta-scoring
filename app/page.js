@@ -564,69 +564,6 @@ export default function HomePage() {
             <CountdownTimer targetDate={event.eventDate} />
           </div>
 
-          <div className="animate-fadeInUp" style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button 
-              onClick={() => setActiveTab('sailors')}
-              style={{
-                background: '#63b3ed',
-                color: '#0a192f',
-                padding: '16px 32px',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-3px) scale(1.05)'
-                e.target.style.boxShadow = '0 10px 30px rgba(99, 179, 237, 0.4)'
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0) scale(1)'
-                e.target.style.boxShadow = 'none'
-              }}
-            >
-              View Sailors <Icons.ArrowRight />
-            </button>
-            <button 
-              onClick={() => setActiveTab('results')}
-              style={{
-                background: 'transparent',
-                color: 'white',
-                padding: '16px 32px',
-                borderRadius: '8px',
-                border: '2px solid rgba(255,255,255,0.3)',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.borderColor = 'rgba(255,255,255,0.8)'
-                e.target.style.background = 'rgba(255,255,255,0.1)'
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.borderColor = 'rgba(255,255,255,0.3)'
-                e.target.style.background = 'transparent'
-              }}
-            >
-              Live Results
-            </button>
-          </div>
-        </div>
-
-        <div style={{
-          position: 'absolute',
-          bottom: '40px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          opacity: 0.6,
-        }}>
-          <Icons.ArrowDown />
         </div>
       </div>
 
@@ -700,7 +637,7 @@ export default function HomePage() {
       )}
 
       {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px 40px' }}>
+      <div style={{ maxWidth: '1200px', margin: '-30px auto 0', padding: '0 15px 40px' }}>
         
         {/* Tab Navigation */}
         <div style={{
