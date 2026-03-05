@@ -454,8 +454,19 @@ export default function HomePage() {
 
   const ilca7Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 7')
   const ilca6Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 6' || s.boatClass === 'Radial')
-  const ilca7Races = event.races?.filter(r => r.raceClass === 'ILCA 7') || []
-  const ilca6Races = event.races?.filter(r => r.raceClass === 'ILCA 6' || r.raceClass === 'Radial') || []
+  
+  // Deduplicate races by race number to prevent duplicate columns
+  const dedupeRaces = (races) => {
+    const seen = new Set()
+    return races.filter(r => {
+      if (seen.has(r.number)) return false
+      seen.add(r.number)
+      return true
+    }).sort((a, b) => a.number - b.number)
+  }
+  
+  const ilca7Races = dedupeRaces(event.races?.filter(r => r.raceClass === 'ILCA 7') || [])
+  const ilca6Races = dedupeRaces(event.races?.filter(r => r.raceClass === 'ILCA 6' || r.raceClass === 'Radial') || [])
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a192f', color: 'white', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
