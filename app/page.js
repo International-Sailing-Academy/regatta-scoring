@@ -341,6 +341,7 @@ export default function HomePage() {
         if (updated) {
           const updatedStr = JSON.stringify(updated)
           if (updatedStr !== lastEventData) {
+            console.log('📥 Supabase poll: Updating event', updated.sailors?.length, 'sailors')
             setEvent(updated)
             lastEventData = updatedStr
           }
@@ -351,14 +352,23 @@ export default function HomePage() {
     }, 5000)
     
     // Fallback to localStorage polling for same-device sync (faster)
+    // Only update if data is newer (check lastUpdated timestamp)
     const localPoll = setInterval(() => {
       const allEvents = getAllEventsSync()
       const updated = allEvents.find(e => e.id === event.id)
       if (updated) {
-        const updatedStr = JSON.stringify(updated)
-        if (updatedStr !== lastEventData) {
-          setEvent(updated)
-          lastEventData = updatedStr
+        const currentEvent = JSON.parse(lastEventData)
+        const localTime = new Date(updated.lastUpdated || 0).getTime()
+        const currentTime = new Date(currentEvent.lastUpdated || 0).getTime()
+        
+        // Only use localStorage if it's actually newer
+        if (localTime > currentTime) {
+          const updatedStr = JSON.stringify(updated)
+          if (updatedStr !== lastEventData) {
+            console.log('📥 LocalStorage poll: Updating event (newer data)')
+            setEvent(updated)
+            lastEventData = updatedStr
+          }
         }
       }
     }, 1000)
@@ -1217,7 +1227,27 @@ export default function HomePage() {
           <span>Sailors: {event?.sailors?.length || 0}</span>
           <span>|</span>
           <button 
-            onClick={() => window.location.reload()}
+            onClick={async () => {
+              // Force refresh from Supabase by clearing and reloading
+              setLoading(true)
+              try {
+                const supabaseEvents = await getAllEvents()
+                console.log('Force refresh - Supabase events:', supabaseEvents)
+                if (supabaseEvents && supabaseEvents.length > 0) {
+                  // Find the event with the most sailors
+                  const bestEvent = supabaseEvents.reduce((best, e) => 
+                    (e.sailors?.length || 0) > (best?.sailors?.length || 0) ? e : best
+                  , supabaseEvents[0])
+                  console.log('Setting event with', bestEvent.sailors?.length, 'sailors')
+                  setEvent(bestEvent)
+                  setDataSource('supabase-force')
+                }
+              } catch (err) {
+                console.error('Force refresh error:', err)
+              } finally {
+                setLoading(false)
+              }
+            }}
             style={{
               padding: '2px 8px',
               background: 'transparent',
