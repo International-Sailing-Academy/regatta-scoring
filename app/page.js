@@ -145,19 +145,19 @@ function CountdownTimer({ targetDate }) {
   }, [targetDate])
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
       {Object.entries(timeLeft).map(([unit, value]) => (
         <div key={unit} style={{
           background: 'rgba(255,255,255,0.15)',
           backdropFilter: 'blur(10px)',
-          borderRadius: '12px',
-          padding: '20px 30px',
+          borderRadius: '10px',
+          padding: '15px 20px',
           textAlign: 'center',
-          minWidth: '80px',
+          minWidth: '65px',
           border: '1px solid rgba(255,255,255,0.2)',
         }}>
-          <div style={{ fontSize: '48px', fontWeight: 'bold', lineHeight: 1 }}>{String(value).padStart(2, '0')}</div>
-          <div style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', marginTop: '5px' }}>{unit}</div>
+          <div style={{ fontSize: 'clamp(28px, 8vw, 48px)', fontWeight: 'bold', lineHeight: 1 }}>{String(value).padStart(2, '0')}</div>
+          <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '5px' }}>{unit}</div>
         </div>
       ))}
     </div>
@@ -196,14 +196,14 @@ function StatCard({ number, label, icon: Icon, delay }) {
       background: 'rgba(255,255,255,0.1)',
       backdropFilter: 'blur(10px)',
       borderRadius: '16px',
-      padding: '30px',
+      padding: '20px',
       textAlign: 'center',
       border: '1px solid rgba(255,255,255,0.2)',
     }}>
       <div style={{ color: '#63b3ed', marginBottom: '15px', display: 'flex', justifyContent: 'center' }}>
         <Icon />
       </div>
-      <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '5px' }}>{count || '-'}</div>
+      <div style={{ fontSize: 'clamp(32px, 6vw, 48px)', fontWeight: 'bold', marginBottom: '5px' }}>{count || '-'}</div>
       <div style={{ fontSize: '14px', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
     </div>
   )
@@ -241,10 +241,15 @@ export default function HomePage() {
     }
 
     loadEvent()
+  }, [])
 
+  // Separate sync effect that always runs with stored event ID
+  useEffect(() => {
+    if (!event?.id) return
+    
     const interval = setInterval(() => {
       const allEvents = getAllEvents()
-      const updated = allEvents.find(e => e.id === event?.id)
+      const updated = allEvents.find(e => e.id === event.id)
       if (updated && JSON.stringify(updated) !== JSON.stringify(event)) {
         setEvent(updated)
       }
@@ -352,14 +357,16 @@ export default function HomePage() {
         background: scrollY > 100 ? 'rgba(10, 25, 47, 0.95)' : 'transparent',
         backdropFilter: scrollY > 100 ? 'blur(20px)' : 'none',
         transition: 'all 0.3s ease',
-        padding: '20px 40px',
+        padding: '15px 20px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '10px',
       }}>
-        <div style={{ fontSize: '24px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src="/logo-icon.png" alt="ISA" style={{ width: '32px', height: '32px' }} />
-          <span>ISA Regattas</span>
+        <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/logo-icon.png" alt="ISA" style={{ width: '28px', height: '28px' }} />
+          <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
         </div>
         <button 
           onClick={() => setShowAdminLogin(true)}
@@ -367,11 +374,12 @@ export default function HomePage() {
             background: 'rgba(255,255,255,0.1)', 
             border: '1px solid rgba(255,255,255,0.3)',
             color: 'white',
-            padding: '10px 20px',
+            padding: '8px 16px',
             borderRadius: '8px',
             cursor: 'pointer',
-            fontSize: '14px',
+            fontSize: '13px',
             transition: 'all 0.3s ease',
+            whiteSpace: 'nowrap',
           }}
           onMouseEnter={(e) => {
             e.target.style.background = 'rgba(255,255,255,0.2)'
@@ -535,7 +543,7 @@ export default function HomePage() {
       </div>
 
       {/* Stats Section */}
-      <section style={{ padding: '80px 40px', background: '#0a192f' }}>
+      <section style={{ padding: '60px 15px', background: '#0a192f' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
@@ -640,36 +648,39 @@ export default function HomePage() {
       )}
 
       {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px 80px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px 40px' }}>
         
         {/* Tab Navigation */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: '10px',
-          marginBottom: '60px',
+          gap: '6px',
+          marginBottom: '40px',
           background: 'rgba(255,255,255,0.05)',
-          padding: '10px',
-          borderRadius: '16px',
-          maxWidth: '600px',
-          margin: '0 auto 60px',
+          padding: '8px',
+          borderRadius: '12px',
+          maxWidth: '100%',
+          margin: '0 auto 40px',
+          flexWrap: 'wrap',
         }}>
           {['info', 'sailors', 'schedule', 'results'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               style={{
-                flex: 1,
-                padding: '16px 24px',
+                flex: '1 1 auto',
+                minWidth: '70px',
+                padding: '12px 16px',
                 background: activeTab === tab ? '#63b3ed' : 'transparent',
                 color: activeTab === tab ? '#0a192f' : 'white',
                 border: 'none',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 cursor: 'pointer',
-                fontSize: '15px',
+                fontSize: '14px',
                 fontWeight: '600',
                 textTransform: 'capitalize',
                 transition: 'all 0.3s ease',
+                whiteSpace: 'nowrap',
               }}
             >
               {tab}
@@ -1072,10 +1083,10 @@ export default function HomePage() {
       {/* Footer */}
       <footer style={{ 
         background: 'rgba(255,255,255,0.03)', 
-        padding: '60px 40px', 
+        padding: '40px 15px', 
         borderTop: '1px solid rgba(255,255,255,0.1)',
         textAlign: 'center',
-      }}>
+      }}
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
             <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '200px', height: 'auto' }} />
