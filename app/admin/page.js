@@ -6,6 +6,7 @@ import {
   createNewEvent, 
   getAllEventsSync, 
   getAllEvents,
+  getEventById,
   saveEvent, 
   deleteEvent, 
   duplicateEvent,
@@ -1083,9 +1084,36 @@ export default function AdminPage() {
           {/* DOCUMENTS TAB */}
           {activeTab === 'docs' && (
             <div style={styles.panel}>
-              <h2>Documents</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h2 style={{ margin: 0 }}>Documents</h2>
+                <button
+                  onClick={async () => {
+                    // Force refresh from Supabase
+                    const refreshed = await getEventById(event.id)
+                    if (refreshed) {
+                      setEvent(refreshed)
+                      setSavedEvent(refreshed)
+                      alert('✅ Refreshed from Supabase')
+                    }
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    background: '#4299e1',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '13px'
+                  }}
+                >
+                  ↻ Refresh from Cloud
+                </button>
+              </div>
               <p style={styles.help}>
                 Upload PDF documents (sailing instructions, notice of race, etc.) that sailors can download from the public page.
+                {event.documents?.length > 0 && (
+                  <span style={{ color: '#38a169', fontWeight: 'bold' }}> {event.documents.length} document(s) uploaded.</span>
+                )}
               </p>
               
               {/* Add Document */}
