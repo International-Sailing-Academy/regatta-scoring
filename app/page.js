@@ -21,6 +21,32 @@ const DEFAULT_EVENT = {
   lastUpdated: new Date().toLocaleString()
 }
 
+const getEventStartMs = (evt) => {
+  if (!evt?.eventDate) return Number.POSITIVE_INFINITY
+  const time = evt?.eventStartTime || '12:00'
+  const parsed = new Date(`${evt.eventDate}T${time}:00-06:00`).getTime()
+  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed
+}
+
+const pickPrimaryEvent = (events, requestedId) => {
+  if (!events?.length) return null
+  if (requestedId) {
+    const requested = events.find(e => e.id === requestedId)
+    if (requested) return requested
+  }
+
+  const now = Date.now()
+  const sorted = [...events].sort((a, b) => getEventStartMs(a) - getEventStartMs(b))
+  const upcoming = sorted.find(evt => getEventStartMs(evt) >= now)
+  return upcoming || sorted[sorted.length - 1] || events[0]
+}
+
+const buildArchiveEvents = (events, primaryEventId) => {
+  return [...(events || [])]
+    .filter(evt => evt.id !== primaryEventId)
+    .sort((a, b) => getEventStartMs(b) - getEventStartMs(a))
+}
+
 // NA ILCA Masters Scoring System (Low Point - points ADDED to each race score)
 const MASTERS_HANDICAP = {
   'Legend': 0,
@@ -179,6 +205,8 @@ function CountdownTimer({ targetDate }) {
 
 export default function HomePage() {
   const [event, setEvent] = useState(null)
+  const [allEvents, setAllEvents] = useState([])
+  const [archiveEvents, setArchiveEvents] = useState([])
   const [activeTab, setActiveTab] = useState('info')
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [adminPassword, setAdminPassword] = useState('')
@@ -196,32 +224,37 @@ export default function HomePage() {
   useEffect(() => {
     const loadEvent = async () => {
       try {
+        const params = new URLSearchParams(window.location.search)
+        const requestedId = params.get('event')
+        const requestedTab = params.get('tab')
+        if (requestedTab) setActiveTab(requestedTab)
+
         const supabaseEvents = await getAllEvents()
         console.log('All Supabase events:', supabaseEvents?.map(e => ({ 
           id: e.id?.slice(0,8), 
           name: e.eventName?.slice(0,20), 
           sailors: e.sailors?.length || 0 
         })))
-        
-        // Find best event
-        let evt = supabaseEvents?.find(e => e.id === 'mexican-midwinters-2026')
-        if (!evt) evt = supabaseEvents?.find(e => e.eventName?.toLowerCase().includes('mexican'))
-        if (!evt) evt = supabaseEvents?.find(e => e.sailors && e.sailors.length > 0)
-        if (!evt && supabaseEvents?.length > 0) evt = supabaseEvents[0]
+
+        setAllEvents(supabaseEvents || [])
+        const evt = pickPrimaryEvent(supabaseEvents || [], requestedId)
         
         if (evt) {
           console.log('✅ Using Supabase event:', evt.id)
           setEvent(evt)
+          setArchiveEvents(buildArchiveEvents(supabaseEvents || [], evt.id))
           setDataSource('supabase')
         } else {
           console.log('⚠️ No events found, using default')
           setEvent(DEFAULT_EVENT)
+          setArchiveEvents([])
           setDataSource('default')
         }
       } catch (err) {
         console.error('Supabase error:', err)
         alert('Error loading data: ' + err.message)
         setEvent(DEFAULT_EVENT)
+        setArchiveEvents([])
         setDataSource('error')
       }
       setLoading(false)
@@ -563,7 +596,7 @@ export default function HomePage() {
           margin: '0 auto 40px',
           flexWrap: 'wrap',
         }}>
-          {['info', 'sailors', 'schedule', 'results', 'docs'].map(tab => (
+          {['info', 'sailors', 'schedule', 'results', 'docs', 'archive'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -607,11 +640,9 @@ export default function HomePage() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Dates</h4>
-                      <p>March 19 – 21, 2026</p>
+                      <p>{event.eventDate || 'Date TBA'}{event.eventEndDate ? ` – ${event.eventEndDate}` : ''}</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>
-                        <a href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/24490/availability/1754243089/book/?full-items=yes" target="_blank" style={{ color: '#63b3ed' }}>
-                          Optional Pre-Clinic: March 16-18 →
-                        </a>
+                        Start time: {event.eventStartTime || '12:00'}
                       </p>
                     </div>
                     <div>
@@ -1052,6 +1083,55 @@ export default function HomePage() {
                         <p style={{ fontSize: '13px', opacity: 0.6, margin: 0 }}>{doc.description || 'Click to download'}</p>
                       </div>
                       <div style={{ opacity: 0.5 }}>↓</div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ARCHIVE TAB */}
+          {activeTab === 'archive' && (
+            <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
+              <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                <h2 style={{ fontSize: '36px', marginBottom: '15px' }}>Results Archive</h2>
+                <p style={{ fontSize: '18px', opacity: 0.7 }}>Open past regattas without losing year-over-year results.</p>
+              </div>
+
+              {archiveEvents.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                  <div style={{ color: '#63b3ed', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                    <Icons.Trophy />
+                  </div>
+                  <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>No Archived Regattas Yet</h3>
+                  <p style={{ fontSize: '16px', opacity: 0.6 }}>When you create future events, older regattas will stay clickable here.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gap: '16px', maxWidth: '760px', margin: '0 auto' }}>
+                  {archiveEvents.map((archiveEvent) => (
+                    <a
+                      key={archiveEvent.id}
+                      href={`/?event=${archiveEvent.id}&tab=results`}
+                      style={{
+                        display: 'block',
+                        background: 'rgba(255,255,255,0.05)',
+                        padding: '22px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'white',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div>
+                          <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>{archiveEvent.eventName}</h3>
+                          <p style={{ margin: 0, opacity: 0.7 }}>{archiveEvent.venue || 'Venue TBA'}</p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontWeight: 'bold', color: '#63b3ed' }}>{archiveEvent.eventDate || 'Date TBA'}</div>
+                          <div style={{ opacity: 0.7, fontSize: '14px' }}>{archiveEvent.sailors?.length || 0} sailors • {(archiveEvent.races || []).length || 0} races</div>
+                        </div>
+                      </div>
                     </a>
                   ))}
                 </div>
