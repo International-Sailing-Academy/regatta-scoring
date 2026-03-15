@@ -765,6 +765,16 @@ export default function AdminPage() {
                     style={styles.input}
                   />
                 </div>
+
+                <div style={styles.formGroup}>
+                  <label>Event Start Time</label>
+                  <input 
+                    type="time"
+                    value={event.eventStartTime || '12:00'}
+                    onChange={(e) => updateEventField('eventStartTime', e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
                 
                 <div style={styles.formGroup}>
                   <label>End Date</label>

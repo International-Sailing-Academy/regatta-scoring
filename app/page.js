@@ -7,7 +7,8 @@ import { getAllEvents, getEventById, saveEvent, FLAGS, subscribeToEvents } from 
 const DEFAULT_EVENT = {
   id: 'mexican-midwinters-2026',
   eventName: 'ILCA Mexican Midwinter Regatta',
-  eventDate: '2026-03-19T12:00:00-06:00', // 12:00 PM CST (Mexico City)
+  eventDate: '2026-03-19',
+  eventStartTime: '12:00',
   eventEndDate: '2026-03-21',
   venue: 'La Cruz, Nayarit, Mexico',
   organizer: 'International Sailing Academy',
@@ -128,6 +129,12 @@ const Icons = {
 }
 
 // Countdown Timer Component
+function buildEventStartDateTime(event) {
+  if (!event?.eventDate) return null
+  const time = event?.eventStartTime || '12:00'
+  return `${event.eventDate}T${time}:00-06:00`
+}
+
 function CountdownTimer({ targetDate }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
@@ -334,6 +341,7 @@ export default function HomePage() {
     </div>
   )
 
+  const eventStartDateTime = buildEventStartDateTime(event)
   const ilca7Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 7')
   const ilca6Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 6' || s.boatClass === 'Radial')
   
@@ -464,7 +472,7 @@ export default function HomePage() {
             <p style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '20px', opacity: 0.8 }}>
               Regatta Starts In
             </p>
-            <CountdownTimer targetDate={event.eventDate} />
+            <CountdownTimer targetDate={eventStartDateTime} />
           </div>
 
         </div>
