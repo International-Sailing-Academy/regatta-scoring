@@ -14,9 +14,51 @@ import {
 } from '../lib/data'
 const COUNTRIES = Object.keys(FLAGS).sort()
 const BOAT_CLASSES = ['ILCA 7', 'ILCA 6', '4.7', '470', '49er', '49erFX', 'Nacra 17', 'Optimist', 'Snipe', 'Star']
-const CATEGORIES = ['Open', 'Youth', 'Junior', 'Senior', 'Apprentice', 'Master', 'Grand Master', 'Great Grand Master', 'Legend']
+const CATEGORIES = ['Open', 'Youth', 'Junior', 'Senior', '18-35', 'Apprentice', 'Apprentice Master', 'Master', 'Grand Master', 'Great Grand Master', 'Legend']
 
 const ADMIN_PASSWORD = 'isa2026'
+const FAREHARBOR_ICS_URL = 'https://fareharbor.com/integrations/ics/internationalsailingacademy/calendar/?token=4fe73056-a3cf-4822-a7bb-64c222d433f3'
+
+const normalizeName = (value = '') => value
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .toLowerCase()
+
+const guessCountryByName = (name = '') => {
+  const normalized = normalizeName(name)
+  const known = {
+    'ross de leo': 'Mexico',
+    'angela de leo': 'Mexico',
+    'elena oetling ramirez': 'Mexico',
+    'luis e barrios': 'Mexico',
+    'alec bostan': 'Canada',
+    'mark kortbeek': 'Canada',
+    'rachel kortbeek': 'Canada',
+    'russel krause': 'Canada',
+    'don hahl': 'United States',
+    'greg jackson': 'United States',
+    'bill pagels': 'United States',
+    'roy l lamphier': 'United States',
+    'bruce martinson': 'United States',
+    'robert hodson': 'United States',
+    'walt spevak': 'United States',
+    'namkhai bourquin': 'Mexico',
+    'sanka bourquin': 'Mexico',
+    'inti bourquin': 'Mexico',
+    'ksenia mamontova': 'Russia'
+  }
+  return known[normalized] || 'Mexico'
+}
+
+const mapFareHarborBoatClass = (boat = '') => {
+  const value = boat.toLowerCase()
+  if (value.includes('ilca 7') || value.includes('standard') || value.includes('full rig')) return 'ILCA 7'
+  if (value.includes('ilca 6') || value.includes('radial')) return 'ILCA 6'
+  if (value.includes('4.7') || value.includes('ilca 4')) return '4.7'
+  return 'ILCA 6'
+}
 
 export default function AdminPage() {
   const [events, setEvents] = useState([])
@@ -28,6 +70,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [selectedScoreClass, setSelectedScoreClass] = useState('')
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [fareHarborSyncing, setFareHarborSyncing] = useState(false)
+  const [fareHarborLastSync, setFareHarborLastSync] = useState(null)
   const supabaseEnabled = isSupabaseEnabled()
   
   // Password protection
@@ -264,7 +308,7 @@ export default function AdminPage() {
         id: `import_${Date.now()}_${idx}`,
         sailNumber: cols[0] || '',
         name: cols[1] || '',
-        country: cols[2] || 'URU',
+        country: cols[2] || 'Uruguay',
         boatClass: cols[3] || (event.classes || [])[0] || 'ILCA 7',
         club: cols[4] || '',
         category: cols[5] || '',
@@ -276,6 +320,64 @@ export default function AdminPage() {
       ...prev,
       sailors: [...(prev.sailors || []), ...newSailors]
     }))
+  }
+
+  const syncFareHarborRegistrations = async () => {
+    if (!event) return
+
+    setFareHarborSyncing(true)
+    try {
+      const response = await fetch('/api/fareharbor-sync')
+      const payload = await response.json()
+
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Failed to fetch FareHarbor registrations')
+      }
+
+      const currentSailors = event.sailors || []
+      const existingKeys = new Set(
+        currentSailors.map(s => `${normalizeName(s.name)}|${(s.boatClass || '').toLowerCase()}`)
+      )
+
+      const freshEntries = (payload.entrants || []).filter(entry => {
+        const key = `${normalizeName(entry.name)}|${(entry.boatClass || '').toLowerCase()}`
+        return !existingKeys.has(key)
+      })
+
+      if (freshEntries.length === 0) {
+        setFareHarborLastSync({ added: 0, total: payload.entrants?.length || 0, duplicateCount: payload.duplicateCount || 0 })
+        alert(`No new registrants found. Feed currently has ${payload.entrants?.length || 0} unique entrants.`)
+        return
+      }
+
+      const imported = freshEntries.map((entry, idx) => ({
+        id: `fh_${Date.now()}_${idx}`,
+        sailNumber: 'TBD',
+        name: entry.name,
+        crewName: '',
+        country: guessCountryByName(entry.name),
+        boatClass: entry.boatClass,
+        boatName: '',
+        club: '',
+        category: entry.category,
+        scores: {},
+        source: 'fareharbor',
+        bookingId: entry.bookingId || '',
+        syncedAt: new Date().toISOString()
+      }))
+
+      setEvent(prev => ({
+        ...prev,
+        sailors: [...(prev.sailors || []), ...imported]
+      }))
+
+      setFareHarborLastSync({ added: imported.length, total: payload.entrants?.length || 0, duplicateCount: payload.duplicateCount || 0 })
+      alert(`Imported ${imported.length} new registrants from FareHarbor. Save & Sync to publish them.`)
+    } catch (err) {
+      alert(`FareHarbor sync failed: ${err.message}`)
+    } finally {
+      setFareHarborSyncing(false)
+    }
   }
 
   // Calculate results
@@ -797,111 +899,42 @@ export default function AdminPage() {
               {/* Import from FareHarbor */}
               {event.eventName.toLowerCase().includes('mexican') && (
                 <div style={{...styles.subSection, background: '#fffbeb', border: '2px solid #f6ad55'}}>
-                  <h3>📥 Import from FareHarbor</h3>
+                  <h3>📥 Sync from FareHarbor</h3>
                   <p style={styles.help}>
-                    Import racers from ILCA Mexican Midwinter Regatta (March 19-21)<br/>
-                    <strong>15 racers:</strong> Ksenia Mamontova, Elena Oetling, Greg Jackson, Bill Pagels, 
-                    Roy Lamphier, Angela de Leo, Alec Bostan, Luis Barrios, Bruce Martinson, Don Hahl, 
-                    Russel Krause, Mark/Rachel Kortbeek, Robert Hodson, Walt Spevak
+                    Pull live registrations from the FareHarbor ICS feed and add only entrants not already on this regatta.
                   </p>
-                  
-                  {/* Check if already imported */}
-                  {(() => {
-                    const importNames = ['Ksenia Mamontova', 'Elena Oetling Ramirez', 'Greg Jackson', 'Bill Pagels', 
-                      'Roy L Lamphier', 'Angela de Leo', 'Alec Bostan', 'Luis E Barrios', 'Bruce Martinson', 
-                      'Don Hahl', 'Russel Krause', 'Mark Kortbeek', 'Rachel Kortbeek', 'Robert Hodson', 'Walt Spevak']
-                    const existingNames = (event.sailors || []).map(s => s.name.toLowerCase())
-                    const alreadyImported = importNames.filter(n => existingNames.includes(n.toLowerCase()))
-                    const alreadyImportedCount = alreadyImported.length
-                    
-                    if (alreadyImportedCount > 0) {
-                      return (
-                        <div style={{marginBottom: '15px', padding: '10px', background: '#fed7d7', borderRadius: '4px'}}>
-                          <strong>⚠️ {alreadyImportedCount} racers already imported:</strong> {alreadyImported.join(', ')}
-                        </div>
-                      )
-                    }
-                    return null
-                  })()}
+                  <p style={{...styles.help, wordBreak: 'break-all'}}>
+                    Feed: <a href={FAREHARBOR_ICS_URL} target="_blank" rel="noreferrer" style={{ color: '#b7791f' }}>{FAREHARBOR_ICS_URL}</a>
+                  </p>
+
+                  {fareHarborLastSync && (
+                    <div style={{marginBottom: '15px', padding: '10px', background: '#fef3c7', borderRadius: '4px'}}>
+                      <strong>Last sync:</strong> added {fareHarborLastSync.added} entrant(s) • feed contains {fareHarborLastSync.total} unique entrant(s)
+                      {fareHarborLastSync.duplicateCount > 0 && ` • removed ${fareHarborLastSync.duplicateCount} duplicate registration(s) from feed`}
+                    </div>
+                  )}
                   
                   <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
                     <button 
-                      onClick={() => {
-                        const racers = [
-                          { sailNumber: 'TBD', name: 'Ksenia Mamontova', country: 'RUS', boatClass: 'ILCA 6', category: 'Apprentice Master' },
-                          { sailNumber: 'TBD', name: 'Elena Oetling Ramirez', country: 'MEX', boatClass: 'ILCA 6', category: '18-35' },
-                          { sailNumber: 'TBD', name: 'Greg Jackson', country: 'USA', boatClass: 'ILCA 7', category: 'Legend' },
-                          { sailNumber: 'TBD', name: 'Bill Pagels', country: 'USA', boatClass: 'ILCA 6', category: 'Legend' },
-                          { sailNumber: 'TBD', name: 'Roy L Lamphier', country: 'USA', boatClass: 'ILCA 6', category: 'Grand Master' },
-                          { sailNumber: 'TBD', name: 'Angela de Leo', country: 'MEX', boatClass: 'ILCA 6', category: 'Youth' },
-                          { sailNumber: 'TBD', name: 'Alec Bostan', country: 'CAN', boatClass: 'ILCA 6', category: 'Youth' },
-                          { sailNumber: 'TBD', name: 'Luis E Barrios', country: 'MEX', boatClass: 'ILCA 6', category: 'Great Grand Master' },
-                          { sailNumber: 'TBD', name: 'Bruce Martinson', country: 'USA', boatClass: 'ILCA 6', category: 'Great Grand Master' },
-                          { sailNumber: 'TBD', name: 'Don Hahl', country: 'USA', boatClass: 'ILCA 7', category: 'Legend' },
-                          { sailNumber: 'TBD', name: 'Russel Krause', country: 'CAN', boatClass: 'ILCA 7', category: 'Grand Master' },
-                          { sailNumber: 'TBD', name: 'Mark Kortbeek', country: 'CAN', boatClass: 'ILCA 7', category: 'Grand Master' },
-                          { sailNumber: 'TBD', name: 'Rachel Kortbeek', country: 'CAN', boatClass: 'ILCA 6', category: '18-35' },
-                          { sailNumber: 'TBD', name: 'Robert Hodson', country: 'USA', boatClass: 'ILCA 6', category: 'Great Grand Master' },
-                          { sailNumber: 'TBD', name: 'Walt Spevak', country: 'USA', boatClass: 'ILCA 6', category: 'Great Grand Master' }
-                        ]
-                        
-                        // Filter out duplicates by name
-                        const existingNames = (event.sailors || []).map(s => s.name.toLowerCase())
-                        const newRacers = racers.filter(r => !existingNames.includes(r.name.toLowerCase()))
-                        
-                        if (newRacers.length === 0) {
-                          alert('All 15 racers are already imported!')
-                          return
-                        }
-                        
-                        const newSailors = newRacers.map((r, idx) => ({
-                          id: `fh_${Date.now()}_${idx}`,
-                          sailNumber: r.sailNumber,
-                          name: r.name,
-                          crewName: '',
-                          country: r.country,
-                          boatClass: r.boatClass,
-                          boatName: '',
-                          club: '',
-                          category: r.category,
-                          scores: {}
-                        }))
-                        
-                        setEvent(prev => ({
-                          ...prev,
-                          sailors: [...prev.sailors, ...newSailors]
-                        }))
-                        
-                        if (newRacers.length < racers.length) {
-                          alert(`✅ Imported ${newRacers.length} new racers! (${racers.length - newRacers.length} were already imported)`)
-                        } else {
-                          alert(`✅ Imported ${newSailors.length} racers from FareHarbor!`)
-                        }
-                      }}
-                      style={{...styles.btnPrimary, background: '#ed8936'}}
+                      onClick={syncFareHarborRegistrations}
+                      disabled={fareHarborSyncing}
+                      style={{...styles.btnPrimary, background: '#ed8936', opacity: fareHarborSyncing ? 0.7 : 1}}
                     >
-                      Import Racers (Skip Duplicates)
+                      {fareHarborSyncing ? 'Syncing…' : 'Sync New Registrations'}
                     </button>
                     
                     <button 
                       onClick={() => {
-                        if (confirm('Remove all imported FareHarbor racers?')) {
-                          const importNames = ['Ksenia Mamontova', 'Elena Oetling Ramirez', 'Greg Jackson', 'Bill Pagels', 
-                            'Roy L Lamphier', 'Angela de Leo', 'Alec Bostan', 'Luis E Barrios', 'Bruce Martinson', 
-                            'Don Hahl', 'Russel Krause', 'Mark Kortbeek', 'Rachel Kortbeek', 'Robert Hodson', 'Walt Spevak']
-                          const importNamesLower = importNames.map(n => n.toLowerCase())
-                          
-                          setEvent(prev => ({
-                            ...prev,
-                            sailors: (prev.sailors || []).filter(s => !importNamesLower.includes(s.name.toLowerCase()))
-                          }))
-                          
-                          alert('🗑️ Removed all imported FareHarbor racers')
+                        if (confirm('Remove all FareHarbor-imported entrants?')) {
+                          const beforeCount = (event.sailors || []).length
+                          const kept = (event.sailors || []).filter(s => s.source !== 'fareharbor')
+                          setEvent(prev => ({ ...prev, sailors: kept }))
+                          alert(`🗑️ Removed ${beforeCount - kept.length} FareHarbor import(s)`)
                         }
                       }}
                       style={styles.btnDanger}
                     >
-                      Clear All Imports
+                      Clear FareHarbor Imports
                     </button>
                     
                     <button 
@@ -909,7 +942,7 @@ export default function AdminPage() {
                         const beforeCount = (event.sailors || []).length
                         const seen = new Set()
                         const unique = (event.sailors || []).filter(s => {
-                          const key = s.name.toLowerCase()
+                          const key = `${normalizeName(s.name)}|${(s.boatClass || '').toLowerCase()}`
                           if (seen.has(key)) return false
                           seen.add(key)
                           return true
