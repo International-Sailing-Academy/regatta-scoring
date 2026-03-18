@@ -1295,11 +1295,14 @@ function SailorRow({ sailor, index, getHandicap }) {
       
       {/* Sail Number */}
       <div style={{ 
-        fontSize: '11px', 
-        color: 'rgba(255,255,255,0.5)',
-        minWidth: '40px',
-        textAlign: 'right',
+        fontSize: '12.5px',
+        color: 'rgba(255,255,255,0.82)',
+        minWidth: '52px',
+        textAlign: 'center',
         flexShrink: 0,
+        fontWeight: 600,
+        letterSpacing: '0.02em',
+        marginLeft: '6px'
       }}>
         {sailor.sailNumber}
       </div>
