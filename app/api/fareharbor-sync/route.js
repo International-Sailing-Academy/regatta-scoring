@@ -20,55 +20,70 @@ const mapFareHarborBoatClass = (boat = '') => {
 
 const unfoldIcs = (text) => text.replace(/\r?\n[ \t]/g, '')
 
-const extractRegattaDescription = (icsText) => {
+const extractMatchingRegattaDescriptions = (icsText) => {
   const unfolded = unfoldIcs(icsText)
-  const regex = new RegExp(`${REGATTA_SUMMARY_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}.*?DESCRIPTION:(.*?)END:VEVENT`, 's')
-  const match = unfolded.match(regex)
-  return match?.[1] || null
+  const events = [...unfolded.matchAll(/BEGIN:VEVENT(.*?)END:VEVENT/gms)]
+
+  return events
+    .map(match => match[1])
+    .filter(block => block.includes(REGATTA_SUMMARY_PREFIX))
+    .map(block => {
+      const summary = block.match(/SUMMARY:(.*?)(?:\r?\n|$)/)?.[1]?.trim() || ''
+      const description = block.match(/DESCRIPTION:(.*?)(?:\r?\n[A-Z-]+[:;]|$)/s)?.[1] || ''
+      return { summary, description }
+    })
+    .filter(item => item.description)
 }
 
-const parseEntrants = (description) => {
-  const sections = description.split('----------')
+const parseEntrants = (descriptions = []) => {
   const entrants = []
 
-  for (const section of sections) {
-    const bookingId = section.match(/BOOKING #(\d+)/)?.[1] || ''
-    const blocks = section.split('* ILCA Regatta Participant').slice(1)
+  for (const description of descriptions) {
+    const sections = description.split('----------')
 
-    for (const block of blocks) {
-      const name = block.match(/Full Name: (.*?) \\n/)?.[1]?.trim() || ''
-      const category = block.match(/Scoring Category: (.*?) \\n/)?.[1]?.trim() || ''
-      const boatRaw = block.match(/What will you be sailing\?: (.*?) \\n/)?.[1]?.trim() || ''
-      const phone = block.match(/Phone: (.*?) \\n/)?.[1]?.trim() || ''
+    for (const section of sections) {
+      const bookingId = section.match(/BOOKING #(\d+)/)?.[1] || ''
+      const blocks = section.split('* ILCA Regatta Participant').slice(1)
 
-      if (!name) continue
+      for (const block of blocks) {
+        const name = block.match(/Full Name: (.*?) \\n/)?.[1]?.trim() || ''
+        const category = block.match(/Scoring Category: (.*?) \\n/)?.[1]?.trim() || ''
+        const boatRaw = block.match(/What will you be sailing\?: (.*?) \\n/)?.[1]?.trim() || ''
+        const phone = block.match(/Phone: (.*?) \\n/)?.[1]?.trim() || ''
 
-      entrants.push({
-        bookingId,
-        name,
-        category,
-        boatClass: mapFareHarborBoatClass(boatRaw),
-        boatRaw,
-        phone
-      })
+        if (!name) continue
+
+        entrants.push({
+          bookingId,
+          name,
+          category,
+          boatClass: mapFareHarborBoatClass(boatRaw),
+          boatRaw,
+          phone
+        })
+      }
     }
   }
 
   const seen = new Set()
   const unique = []
-  let duplicateCount = 0
+  const duplicates = []
 
   for (const entrant of entrants) {
     const key = `${normalizeName(entrant.name)}|${entrant.boatClass.toLowerCase()}`
     if (seen.has(key)) {
-      duplicateCount += 1
+      duplicates.push({ ...entrant, duplicateKey: key })
       continue
     }
     seen.add(key)
-    unique.push(entrant)
+    unique.push({ ...entrant, duplicateKey: key })
   }
 
-  return { entrants: unique, duplicateCount }
+  return {
+    entrants: unique,
+    duplicateCount: duplicates.length,
+    duplicates
+  }
 }
 
 export async function GET() {
@@ -79,18 +94,22 @@ export async function GET() {
     }
 
     const icsText = await response.text()
-    const description = extractRegattaDescription(icsText)
+    const matches = extractMatchingRegattaDescriptions(icsText)
 
-    if (!description) {
+    if (matches.length === 0) {
       return NextResponse.json({ error: 'Could not find Mexican Midwinter regatta in FareHarbor feed' }, { status: 404 })
     }
 
-    const { entrants, duplicateCount } = parseEntrants(description)
+    const { entrants, duplicateCount, duplicates } = parseEntrants(matches.map(item => item.description))
 
     return NextResponse.json({
       source: FAREHARBOR_ICS_URL,
+      matchedEvents: matches.map(item => item.summary),
+      matchedEventCount: matches.length,
       entrants,
-      duplicateCount
+      duplicateCount,
+      duplicates,
+      uniqueEntrantCount: entrants.length
     })
   } catch (error) {
     return NextResponse.json({ error: error.message || 'FareHarbor sync failed' }, { status: 500 })

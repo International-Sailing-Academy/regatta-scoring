@@ -72,6 +72,7 @@ export default function AdminPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [fareHarborSyncing, setFareHarborSyncing] = useState(false)
   const [fareHarborLastSync, setFareHarborLastSync] = useState(null)
+  const [fareHarborDebug, setFareHarborDebug] = useState(null)
   const supabaseEnabled = isSupabaseEnabled()
   
   // Password protection
@@ -344,9 +345,24 @@ export default function AdminPage() {
         return !existingKeys.has(key)
       })
 
+      const skippedExisting = (payload.entrants || []).filter(entry => {
+        const key = `${normalizeName(entry.name)}|${(entry.boatClass || '').toLowerCase()}`
+        return existingKeys.has(key)
+      })
+
+      setFareHarborDebug({
+        matchedEventCount: payload.matchedEventCount || 0,
+        matchedEvents: payload.matchedEvents || [],
+        feedUniqueEntrants: payload.uniqueEntrantCount || payload.entrants?.length || 0,
+        feedDuplicates: payload.duplicateCount || 0,
+        skippedExisting,
+        freshEntries,
+        duplicateEntries: payload.duplicates || []
+      })
+
       if (freshEntries.length === 0) {
         setFareHarborLastSync({ added: 0, total: payload.entrants?.length || 0, duplicateCount: payload.duplicateCount || 0 })
-        alert(`No new registrants found. Feed currently has ${payload.entrants?.length || 0} unique entrants.`)
+        alert(`No new registrants found. Feed currently has ${payload.uniqueEntrantCount || payload.entrants?.length || 0} unique entrants. ${skippedExisting.length} already match sailors on this event.`)
         return
       }
 
@@ -921,6 +937,20 @@ export default function AdminPage() {
                     <div style={{marginBottom: '15px', padding: '10px', background: '#fef3c7', borderRadius: '4px'}}>
                       <strong>Last sync:</strong> added {fareHarborLastSync.added} entrant(s) • feed contains {fareHarborLastSync.total} unique entrant(s)
                       {fareHarborLastSync.duplicateCount > 0 && ` • removed ${fareHarborLastSync.duplicateCount} duplicate registration(s) from feed`}
+                    </div>
+                  )}
+
+                  {fareHarborDebug && (
+                    <div style={{marginBottom: '15px', padding: '12px', background: '#fff7ed', border: '1px solid #f6ad55', borderRadius: '6px', fontSize: '13px'}}>
+                      <div><strong>Feed diagnostics:</strong> {fareHarborDebug.feedUniqueEntrants} unique entrant(s) across {fareHarborDebug.matchedEventCount} matched FareHarbor event(s)</div>
+                      {fareHarborDebug.feedDuplicates > 0 && (
+                        <div style={{marginTop: '6px'}}>Deduped inside feed: {fareHarborDebug.feedDuplicates}</div>
+                      )}
+                      <div style={{marginTop: '6px'}}>Already on this event: {fareHarborDebug.skippedExisting.length}</div>
+                      <div style={{marginTop: '6px'}}>Ready to import: {fareHarborDebug.freshEntries.length}</div>
+                      {fareHarborDebug.freshEntries.length > 0 && (
+                        <div style={{marginTop: '8px'}}><strong>Missing names:</strong> {fareHarborDebug.freshEntries.map(e => e.name).join(', ')}</div>
+                      )}
                     </div>
                   )}
                   
