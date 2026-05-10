@@ -773,6 +773,7 @@ export default function HomePage() {
                     <a 
                       href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/2080738754/book/?full-items=yes" 
                       target="_blank"
+                      rel="noopener noreferrer"
                       style={{
                         background: '#63b3ed',
                         color: '#0a192f',
@@ -847,6 +848,7 @@ export default function HomePage() {
                     <a 
                       href="https://maps.app.goo.gl/R3H3UwEeaY8MSpjw6" 
                       target="_blank"
+                      rel="noopener noreferrer"
                       style={{ color: '#63b3ed', display: 'flex', alignItems: 'center', gap: '8px' }}
                     >
                       <Icons.Location /> View on Google Maps →

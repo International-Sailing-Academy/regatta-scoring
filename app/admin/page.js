@@ -73,6 +73,8 @@ export default function AdminPage() {
   const [fareHarborSyncing, setFareHarborSyncing] = useState(false)
   const [fareHarborLastSync, setFareHarborLastSync] = useState(null)
   const [fareHarborDebug, setFareHarborDebug] = useState(null)
+  const [registrations, setRegistrations] = useState([])
+  const [registrationsLoading, setRegistrationsLoading] = useState(false)
   const supabaseEnabled = isSupabaseEnabled()
   
   // Password protection
@@ -120,6 +122,27 @@ export default function AdminPage() {
     
     loadEvents()
   }, [])
+
+  const loadRegistrations = async (eventId = selectedEventId) => {
+    if (!eventId) return
+    setRegistrationsLoading(true)
+    try {
+      const response = await fetch(`/api/registrations?eventId=${encodeURIComponent(eventId)}`, {
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
+      })
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.error || 'Unable to load registrations')
+      setRegistrations(payload.registrations || [])
+    } catch (err) {
+      console.error('Registration load error:', err)
+      setRegistrations([])
+    }
+    setRegistrationsLoading(false)
+  }
+
+  useEffect(() => {
+    if (activeTab === 'registrations' && selectedEventId) loadRegistrations(selectedEventId)
+  }, [activeTab, selectedEventId])
 
   // Manual save function
   const handleSave = async () => {
@@ -720,6 +743,7 @@ export default function AdminPage() {
             {[
               { id: 'event', label: 'Event Details' },
               { id: 'entries', label: `Entries (${event.sailors?.length || 0})` },
+              { id: 'registrations', label: `Stripe Registrations (${registrations.length || 0})` },
               { id: 'races', label: `Races (${event.races?.filter(r => r.raceClass).length || 0})` },
               { id: 'scores', label: 'Input Scores' },
               { id: 'results', label: 'Results' },
@@ -1083,6 +1107,49 @@ export default function AdminPage() {
                           <td>
                             <button onClick={() => deleteSailor(s.id)} style={styles.btnDanger}>×</button>
                           </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* STRIPE REGISTRATIONS TAB */}
+          {activeTab === 'registrations' && (
+            <div style={styles.panel}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <h2>Stripe Registrations</h2>
+                <button onClick={() => loadRegistrations()} style={styles.btnSecondary}>{registrationsLoading ? 'Loading…' : 'Refresh'}</button>
+              </div>
+              <p style={styles.help}>Paid Stripe registrations are automatically added to the public sailor list by the webhook.</p>
+              {registrations.length === 0 ? (
+                <div style={styles.emptyState}>No Stripe registrations found for this event yet.</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Class</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Paid</th>
+                        <th>Created</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {registrations.map(reg => (
+                        <tr key={reg.id}>
+                          <td>{reg.full_name}</td>
+                          <td>{reg.email}</td>
+                          <td>{reg.boat_class}</td>
+                          <td>{reg.scoring_category}</td>
+                          <td><strong>{reg.payment_status}</strong></td>
+                          <td>{reg.paid_at ? new Date(reg.paid_at).toLocaleString() : '—'}</td>
+                          <td>{reg.created_at ? new Date(reg.created_at).toLocaleString() : '—'}</td>
                         </tr>
                       ))}
                     </tbody>
