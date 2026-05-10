@@ -1284,7 +1284,7 @@ export default function AdminPage() {
                     <input
                       type="text"
                       id="docDesc"
-                      placeholder="e.g., Updated March 15, 2026"
+                      placeholder="e.g., Updated March 10, 2027"
                       style={{ padding: '10px', width: '100%', borderRadius: '6px', border: '1px solid #cbd5e0' }}
                     />
                   </div>

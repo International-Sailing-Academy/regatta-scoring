@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { saveEvent } from '../lib/data'
 
 const DEFAULT_EVENT = {
-  id: 'mexican-midwinters-2026',
-  eventName: 'ILCA Mexican Midwinter Regatta',
-  eventDate: '2026-03-19T12:00:00-06:00',
-  eventEndDate: '2026-03-21',
+  id: 'mexican-midwinters-2027',
+  eventName: 'ILCA Mexican Midwinter Regatta 2027',
+  eventDate: '2027-03-11T12:00:00-06:00',
+  eventEndDate: '2027-03-13',
   venue: 'La Cruz, Nayarit, Mexico',
   organizer: 'International Sailing Academy',
   description: 'Join us for the premier ILCA regatta in Mexico!',

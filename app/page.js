@@ -5,11 +5,11 @@ import { getAllEvents, getEventById, saveEvent, FLAGS, subscribeToEvents } from 
 
 // Default empty event - no sailors until added via admin
 const DEFAULT_EVENT = {
-  id: 'mexican-midwinters-2026',
-  eventName: 'ILCA Mexican Midwinter Regatta',
-  eventDate: '2026-03-19',
+  id: 'mexican-midwinters-2027',
+  eventName: 'ILCA Mexican Midwinter Regatta 2027',
+  eventDate: '2027-03-11',
   eventStartTime: '12:00',
-  eventEndDate: '2026-03-21',
+  eventEndDate: '2027-03-13',
   venue: 'La Cruz, Nayarit, Mexico',
   organizer: 'International Sailing Academy',
   description: 'Join us for the premier ILCA regatta in Mexico! Open to all ILCA 7 and ILCA 6 sailors.',
@@ -476,7 +476,7 @@ export default function HomePage() {
               letterSpacing: '2px',
               marginBottom: '30px',
             }}>
-              March 19-21, 2026 • La Cruz, Mexico
+              March 11-13, 2027 • La Cruz, Mexico
             </div>
           </div>
 
@@ -691,7 +691,7 @@ export default function HomePage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', marginBottom: '25px' }}>
                     <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#63b3ed' }}>$100</div>
                     <a 
-                      href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/1772134672/book/?full-items=yes" 
+                      href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/2080738754/book/?full-items=yes" 
                       target="_blank"
                       style={{
                         background: '#63b3ed',
@@ -908,9 +908,9 @@ export default function HomePage() {
 
               <div style={{ display: 'grid', gap: '25px', maxWidth: '800px', margin: '0 auto' }}>
                 {[
-                  { day: 'Thursday, March 19', races: [1, 2, 3], active: true },
-                  { day: 'Friday, March 20', races: [4, 5, 6], active: false },
-                  { day: 'Saturday, March 21', races: [7, 8, 9], active: false },
+                  { day: 'Thursday, March 11', races: [1, 2, 3], active: true },
+                  { day: 'Friday, March 12', races: [4, 5, 6], active: false },
+                  { day: 'Saturday, March 13', races: [7, 8, 9], active: false },
                 ].map((day, idx) => (
                   <div key={idx} style={{
                     background: day.active ? 'rgba(99, 179, 237, 0.15)' : 'rgba(255,255,255,0.05)',
@@ -994,7 +994,7 @@ export default function HomePage() {
                         borderRadius: '12px',
                         border: '1px solid rgba(99, 179, 237, 0.3)',
                       }}>
-                        <p style={{ margin: 0 }}>Check back on March 19, 2026</p>
+                        <p style={{ margin: 0 }}>Check back on March 11, 2027</p>
                       </div>
                     </div>
                   )
@@ -1211,7 +1211,7 @@ export default function HomePage() {
             <a href="https://internationalsailingacademy.com" style={{ color: '#63b3ed', textDecoration: 'none' }}>Website</a>
             <a href="https://isa-virtual-coaching.circle.so/" style={{ color: '#63b3ed', textDecoration: 'none' }}>Virtual Coaching</a>
           </div>
-          <p style={{ marginTop: '30px', opacity: 0.4, fontSize: '14px' }}>© 2026 International Sailing Academy</p>
+          <p style={{ marginTop: '30px', opacity: 0.4, fontSize: '14px' }}>© 2027 International Sailing Academy</p>
           <p style={{ marginTop: '10px', opacity: 0.3, fontSize: '11px', fontFamily: 'monospace' }}>
             Source: {dataSource} | Sailors: {event?.sailors?.length || 0} | Event: {event?.eventName?.slice(0, 20)}...
           </p>
