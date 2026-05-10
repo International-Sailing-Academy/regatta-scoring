@@ -941,8 +941,26 @@ export default function HomePage() {
                   <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
                     <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
                   </div>
-                  <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Opening Soon</h2>
-                  <p style={{ fontSize: '18px', opacity: 0.7 }}>Sailors will appear here once registration opens.</p>
+                  <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Open</h2>
+                  <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '25px' }}>Sailors will appear here as registrations come in.</p>
+                  <a
+                    href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/2080738754/book/?full-items=yes"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: '#63b3ed',
+                      color: '#0a192f',
+                      padding: '12px 22px',
+                      borderRadius: '8px',
+                      textDecoration: 'none',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Register Now <Icons.ArrowRight />
+                  </a>
                 </div>
               ) : (
                 <>
