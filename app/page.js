@@ -28,6 +28,14 @@ const getEventStartMs = (evt) => {
   return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed
 }
 
+const pickCurrentEvent = (events) => {
+  if (!events?.length) return null
+  const now = Date.now()
+  const sorted = [...events].sort((a, b) => getEventStartMs(a) - getEventStartMs(b))
+  const upcoming = sorted.find(evt => getEventStartMs(evt) >= now)
+  return upcoming || sorted[sorted.length - 1] || events[0]
+}
+
 const pickPrimaryEvent = (events, requestedId) => {
   if (!events?.length) return null
   if (requestedId) {
@@ -35,10 +43,7 @@ const pickPrimaryEvent = (events, requestedId) => {
     if (requested) return requested
   }
 
-  const now = Date.now()
-  const sorted = [...events].sort((a, b) => getEventStartMs(a) - getEventStartMs(b))
-  const upcoming = sorted.find(evt => getEventStartMs(evt) >= now)
-  return upcoming || sorted[sorted.length - 1] || events[0]
+  return pickCurrentEvent(events)
 }
 
 const buildArchiveEvents = (events, primaryEventId) => {
@@ -161,6 +166,20 @@ function buildEventStartDateTime(event) {
   return `${event.eventDate}T${time}:00-06:00`
 }
 
+function formatEventDateRange(event) {
+  if (!event?.eventDate) return 'Dates TBA'
+
+  const format = (date) => {
+    const parsed = new Date(`${date}T12:00:00-06:00`)
+    if (Number.isNaN(parsed.getTime())) return date
+    return parsed.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  }
+
+  const start = format(event.eventDate)
+  const end = event.eventEndDate ? format(event.eventEndDate) : null
+  return end ? `${start} – ${end}` : start
+}
+
 function CountdownTimer({ targetDate }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
@@ -207,6 +226,7 @@ export default function HomePage() {
   const [event, setEvent] = useState(null)
   const [allEvents, setAllEvents] = useState([])
   const [archiveEvents, setArchiveEvents] = useState([])
+  const [currentEventId, setCurrentEventId] = useState(null)
   const [activeTab, setActiveTab] = useState('info')
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [adminPassword, setAdminPassword] = useState('')
@@ -237,7 +257,9 @@ export default function HomePage() {
         })))
 
         setAllEvents(supabaseEvents || [])
+        const currentEvt = pickCurrentEvent(supabaseEvents || [])
         const evt = pickPrimaryEvent(supabaseEvents || [], requestedId)
+        setCurrentEventId(currentEvt?.id || null)
         
         if (evt) {
           console.log('✅ Using Supabase event:', evt.id)
@@ -375,6 +397,7 @@ export default function HomePage() {
   )
 
   const eventStartDateTime = buildEventStartDateTime(event)
+  const eventDateRange = formatEventDateRange(event)
   const ilca7Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 7')
   const ilca6Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 6' || s.boatClass === 'Radial')
   
@@ -390,6 +413,9 @@ export default function HomePage() {
   
   const ilca7Races = dedupeRaces(event.races?.filter(r => r.raceClass === 'ILCA 7') || [])
   const ilca6Races = dedupeRaces(event.races?.filter(r => r.raceClass === 'ILCA 6' || r.raceClass === 'Radial') || [])
+  const viewingArchivedEvent = currentEventId && event.id !== currentEventId
+  const currentEvent = allEvents.find(evt => evt.id === currentEventId) || event
+  const currentEventHref = currentEventId ? `/?event=${currentEventId}&tab=info` : '/'
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a192f', color: 'white', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -424,6 +450,24 @@ export default function HomePage() {
           <img src="/logo-icon.png" alt="ISA" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
           <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
         </div>
+        {viewingArchivedEvent && (
+          <a
+            href={currentEventHref}
+            style={{
+              background: '#63b3ed',
+              color: '#0a192f',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontSize: '13px',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            Current Event
+          </a>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -476,7 +520,7 @@ export default function HomePage() {
               letterSpacing: '2px',
               marginBottom: '30px',
             }}>
-              March 11-13, 2027 • La Cruz, Mexico
+              {eventDateRange} • La Cruz, Mexico
             </div>
           </div>
 
@@ -622,6 +666,42 @@ export default function HomePage() {
             </button>
           ))}
         </div>
+
+        {viewingArchivedEvent && (
+          <div style={{
+            maxWidth: '900px',
+            margin: '0 auto 35px',
+            padding: '18px 22px',
+            borderRadius: '14px',
+            background: 'rgba(99, 179, 237, 0.12)',
+            border: '1px solid rgba(99, 179, 237, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}>
+            <div>
+              <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#63b3ed', fontWeight: 'bold', marginBottom: '4px' }}>Archive mode</div>
+              <div style={{ fontSize: '16px', opacity: 0.9 }}>You are viewing an archived regatta. Use the button to return to the current event.</div>
+            </div>
+            <a
+              href={currentEventHref}
+              style={{
+                background: '#63b3ed',
+                color: '#0a192f',
+                padding: '12px 18px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Back to Current Event
+            </a>
+          </div>
+        )}
 
         {/* Tab Content */}
         <div style={{ minHeight: '400px' }}>
@@ -1093,9 +1173,37 @@ export default function HomePage() {
           {/* ARCHIVE TAB */}
           {activeTab === 'archive' && (
             <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-              <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <h2 style={{ fontSize: '36px', marginBottom: '15px' }}>Results Archive</h2>
                 <p style={{ fontSize: '18px', opacity: 0.7 }}>Open past regattas without losing year-over-year results.</p>
+              </div>
+
+              <div style={{ maxWidth: '760px', margin: '0 auto 28px' }}>
+                <a
+                  href={currentEventHref}
+                  style={{
+                    display: 'block',
+                    background: 'linear-gradient(135deg, rgba(99, 179, 237, 0.22), rgba(56, 161, 105, 0.14))',
+                    padding: '22px',
+                    borderRadius: '14px',
+                    border: '1px solid rgba(99, 179, 237, 0.45)',
+                    color: 'white',
+                    textDecoration: 'none',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div>
+                      <div style={{ color: '#63b3ed', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 'bold', marginBottom: '6px' }}>Current event</div>
+                      <h3 style={{ fontSize: '22px', margin: '0 0 8px 0' }}>{currentEvent?.eventName || 'Current Regatta'}</h3>
+                      <p style={{ margin: 0, opacity: 0.75 }}>Return to the live/current regatta page</p>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontWeight: 'bold', color: '#63b3ed' }}>{currentEvent?.eventDate || 'Date TBA'}</div>
+                      <div style={{ opacity: 0.85, fontSize: '14px', marginTop: '6px' }}>Back to current →</div>
+                    </div>
+                  </div>
+                </a>
               </div>
 
               {archiveEvents.length === 0 ? (
