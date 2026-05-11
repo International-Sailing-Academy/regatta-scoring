@@ -1386,20 +1386,41 @@ export default function AdminPage() {
               </div>
               {boatYardRows.length === 0 ? <div style={styles.emptyState}>No boat-yard items yet.</div> : (
                 <div style={{ overflowX: 'auto' }}>
-                  <table style={styles.table}>
-                    <thead><tr><th>Sailor</th><th>Rig</th><th>Sail #</th><th>Charter Package Dates</th><th>Charter Days</th><th>Pro Kit</th><th>Insurance</th><th>Sail/Battens</th><th>WhatsApp</th></tr></thead>
+                  <table style={{ ...styles.table, minWidth: '960px', tableLayout: 'fixed' }}>
+                    <colgroup>
+                      <col style={{ width: '17%' }} />
+                      <col style={{ width: '9%' }} />
+                      <col style={{ width: '10%' }} />
+                      <col style={{ width: '18%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '8%' }} />
+                      <col style={{ width: '10%' }} />
+                      <col style={{ width: '12%' }} />
+                    </colgroup>
+                    <thead><tr>
+                      <th style={styles.tableHeader}>Sailor</th>
+                      <th style={styles.tableHeader}>Rig</th>
+                      <th style={styles.tableHeader}>Sail #</th>
+                      <th style={styles.tableHeader}>Package Dates</th>
+                      <th style={styles.tableHeader}>Days</th>
+                      <th style={styles.tableHeader}>Pro Kit</th>
+                      <th style={styles.tableHeader}>Ins.</th>
+                      <th style={styles.tableHeader}>Sail + Battens</th>
+                      <th style={styles.tableHeader}>WhatsApp</th>
+                    </tr></thead>
                     <tbody>{boatYardRows.map(reg => {
                       const charterDays = Number(reg.charter_days_short || 0) + Number(reg.charter_days_extended || 0)
                       return <tr key={reg.id}>
-                        <td>{reg.full_name}</td>
-                        <td><strong>{reg.boat_class}</strong></td>
-                        <td>{reg.sail_number || '—'}</td>
-                        <td><strong>{boatYardDateLabel(reg)}</strong></td>
-                        <td>{charterDays || '—'}</td>
-                        <td>{reg.pro_kit_rental ? 'Yes' : 'No'}</td>
-                        <td>{reg.boat_insurance ? 'Yes' : 'No'}</td>
-                        <td>{reg.sail_batten_rental ? 'Yes' : 'No'}</td>
-                        <td>{reg.whatsapp || reg.phone || '—'}</td>
+                        <td style={styles.tableCell}>{reg.full_name}</td>
+                        <td style={styles.tableCell}><strong>{reg.boat_class}</strong></td>
+                        <td style={styles.tableCell}>{reg.sail_number || '—'}</td>
+                        <td style={styles.tableCell}><strong>{boatYardDateLabel(reg)}</strong></td>
+                        <td style={styles.tableCell}>{charterDays || '—'}</td>
+                        <td style={styles.tableCell}>{reg.pro_kit_rental ? 'Yes' : 'No'}</td>
+                        <td style={styles.tableCell}>{reg.boat_insurance ? 'Yes' : 'No'}</td>
+                        <td style={styles.tableCell}>{reg.sail_batten_rental ? 'Yes' : 'No'}</td>
+                        <td style={styles.tableCell}>{reg.whatsapp || reg.phone || '—'}</td>
                       </tr>
                     })}</tbody>
                   </table>
@@ -2016,6 +2037,20 @@ const styles = {
     width: '100%',
     borderCollapse: 'collapse',
     fontSize: '13px'
+  },
+  tableHeader: {
+    textAlign: 'left',
+    verticalAlign: 'bottom',
+    padding: '10px 8px',
+    lineHeight: 1.2,
+    whiteSpace: 'normal'
+  },
+  tableCell: {
+    textAlign: 'left',
+    verticalAlign: 'top',
+    padding: '10px 8px',
+    lineHeight: 1.35,
+    overflowWrap: 'anywhere'
   },
   raceList: {
     marginTop: '20px',
