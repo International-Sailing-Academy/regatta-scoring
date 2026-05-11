@@ -26,7 +26,7 @@ const LANGUAGE_COPY = {
   en: {
     switchLabel: 'EN / ES',
     brandSub: 'An ISA Regatta · Est. 2009',
-    nav: { info: 'Regatta', sailors: 'Sailors', archive: 'Past Winners', results: 'Results', docs: 'Docs' },
+    nav: { info: 'Regatta', sailors: 'Sailors', schedule: 'Schedule', winners: 'Past Winners', results: 'Results', docs: 'Docs' },
     race: 'Race 2027',
     open: 'Registration Open',
     eyebrow: 'ILCA · Open Fleet · Mar 11–13, 2027',
@@ -43,7 +43,7 @@ const LANGUAGE_COPY = {
   es: {
     switchLabel: 'ES / EN',
     brandSub: 'Una regata ISA · Desde 2009',
-    nav: { info: 'Regata', sailors: 'Veleristas', archive: 'Ganadores', results: 'Resultados', docs: 'Docs' },
+    nav: { info: 'Regata', sailors: 'Veleristas', schedule: 'Programa', winners: 'Ganadores', results: 'Resultados', docs: 'Docs' },
     race: 'Regata 2027',
     open: 'Inscripción abierta',
     eyebrow: 'ILCA · Flota abierta · 11–13 marzo, 2027',
@@ -357,10 +357,13 @@ export default function HomePage() {
     }
   }, [event?.id])
 
-  const selectTab = (tab) => {
+  const selectTab = (tab, targetId = 'regatta-content') => {
     setActiveTab(tab)
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `#${targetId}`)
+    }
     setTimeout(() => {
-      document.getElementById('regatta-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 0)
   }
 
@@ -545,13 +548,14 @@ export default function HomePage() {
             </a>
             <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
               {[
-                [copy.nav.info, 'info'],
-                [copy.nav.sailors, 'sailors'],
-                [copy.nav.archive, 'archive'],
-                [copy.nav.results, 'results'],
-                [copy.nav.docs, 'docs'],
-              ].map(([label, tab]) => (
-                <button key={label} onClick={() => selectTab(tab)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
+                [copy.nav.info, 'info', 'regatta-content'],
+                [copy.nav.sailors, 'sailors', 'regatta-content'],
+                [copy.nav.schedule, 'schedule', 'regatta-content'],
+                [copy.nav.winners, 'info', 'past-winners'],
+                [copy.nav.results, 'results', 'regatta-content'],
+                [copy.nav.docs, 'docs', 'regatta-content'],
+              ].map(([label, tab, targetId]) => (
+                <button key={label} onClick={() => selectTab(tab, targetId)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: (activeTab === tab && targetId !== 'past-winners') ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
               ))}
             </nav>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -815,7 +819,7 @@ export default function HomePage() {
 
 
               {/* Past Winners / Record */}
-              <section style={{ marginBottom: '60px', position: 'relative', overflow: 'hidden', background: 'var(--mm-ink-2)', border: '1px solid rgba(244,168,42,0.26)', borderRadius: '4px', padding: '34px clamp(22px, 4vw, 44px)' }}>
+              <section id="past-winners" style={{ scrollMarginTop: '24px', marginBottom: '60px', position: 'relative', overflow: 'hidden', background: 'var(--mm-ink-2)', border: '1px solid rgba(244,168,42,0.26)', borderRadius: '4px', padding: '34px clamp(22px, 4vw, 44px)' }}>
                 <div style={{ position: 'absolute', top: '-110px', left: '-80px', width: '260px', height: '260px', borderRadius: '999px', background: 'rgba(244,168,42,0.20)', filter: 'blur(52px)', pointerEvents: 'none' }} />
                 <div style={{ position: 'absolute', left: '24px', top: '24px', bottom: '24px', width: '38%', border: '1px solid rgba(244,168,42,0.34)', borderRight: 'none', transform: 'skewX(-6deg)', pointerEvents: 'none' }} />
                 <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }}>
