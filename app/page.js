@@ -537,7 +537,7 @@ export default function HomePage() {
         .mm-page .mm-tabbar { background:rgba(242,237,224,.055) !important; border:1px solid rgba(242,237,224,.10); border-radius:4px !important; }
         .mm-page button, .mm-page a { transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
         .mm-page a:focus-visible, .mm-page button:focus-visible { outline:2px solid var(--mm-sun); outline-offset:3px; }
-        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; overflow:hidden !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-hero-bottom { width:100% !important; } .mm-hero-bottom > div, .mm-hero-bottom aside { width:100% !important; min-width:0 !important; max-width:100% !important; } .mm-headline { font-size:clamp(46px, 13.4vw, 52px) !important; max-width:100% !important; overflow-wrap:normal !important; letter-spacing:-0.04em !important; } .mm-hero-bottom p { max-width:100% !important; font-size:16px !important; } .mm-hero-bottom .mm-btn { max-width:100% !important; } .mm-count-row { width:100% !important; flex-wrap:wrap !important; gap:14px 18px !important; } .mm-count-n { font-size:40px !important; } .mm-eyebrow-mobile-wrap { flex-wrap:wrap !important; } }
+        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; overflow:hidden !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-hero-bottom { width:100% !important; } .mm-hero-bottom > div, .mm-hero-bottom aside { width:100% !important; min-width:0 !important; max-width:100% !important; } .mm-headline { font-size:clamp(46px, 13.4vw, 52px) !important; max-width:100% !important; overflow-wrap:normal !important; letter-spacing:-0.04em !important; } .mm-hero-bottom p { max-width:100% !important; font-size:16px !important; } .mm-hero-bottom .mm-btn { max-width:100% !important; } .mm-count-row { width:100% !important; flex-wrap:wrap !important; gap:14px 18px !important; } .mm-count-n { font-size:40px !important; } .mm-eyebrow-mobile-wrap { flex-wrap:wrap !important; } .mm-past-winners-section { padding:30px 18px 32px !important; } .mm-past-winners-grid { grid-template-columns:1fr !important; gap:30px !important; } .mm-past-winners-title { font-size:clamp(44px, 13vw, 50px) !important; letter-spacing:-0.04em !important; } .mm-past-winners-stats { grid-template-columns:1fr !important; max-width:100% !important; } .mm-past-winner-row { grid-template-columns:54px minmax(0, 1fr) !important; gap:12px !important; } .mm-past-winner-points { grid-column:2 !important; text-align:left !important; margin-top:-6px !important; } }
       `}</style>
 
       {/* Hero Section */}
@@ -935,19 +935,19 @@ export default function HomePage() {
               </section>
 
               {/* Past Winners / Record */}
-              <section id="past-winners" style={{ scrollMarginTop: '24px', marginBottom: '60px', position: 'relative', overflow: 'hidden', background: 'var(--mm-ink-2)', border: '1px solid rgba(244,168,42,0.26)', borderRadius: '4px', padding: '34px clamp(22px, 4vw, 44px)' }}>
+              <section id="past-winners" className="mm-past-winners-section" style={{ scrollMarginTop: '24px', marginBottom: '60px', position: 'relative', overflow: 'hidden', background: 'var(--mm-ink-2)', border: '1px solid rgba(244,168,42,0.26)', borderRadius: '4px', padding: '34px clamp(22px, 4vw, 44px)' }}>
                 <div style={{ position: 'absolute', top: '-110px', left: '-80px', width: '260px', height: '260px', borderRadius: '999px', background: 'rgba(244,168,42,0.20)', filter: 'blur(52px)', pointerEvents: 'none' }} />
                 <div style={{ position: 'absolute', left: '24px', top: '24px', bottom: '24px', width: '38%', border: '1px solid rgba(244,168,42,0.34)', borderRight: 'none', transform: 'skewX(-6deg)', pointerEvents: 'none' }} />
-                <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }}>
+                <div className="mm-past-winners-grid" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }}>
                   <div>
                     <div className="mm-hero-mono" style={{ color: 'rgba(242,237,224,0.56)', fontSize: '11px', letterSpacing: '0.24em', marginBottom: '16px' }}>2026 · THE RECORD</div>
-                    <h2 style={{ fontSize: 'clamp(54px, 8vw, 112px)', lineHeight: 0.88, margin: 0, color: 'var(--mm-cream)' }}>
+                    <h2 className="mm-past-winners-title" style={{ fontSize: 'clamp(54px, 8vw, 112px)', lineHeight: 0.88, margin: 0, color: 'var(--mm-cream)' }}>
                       Past<br /><span style={{ color: 'var(--mm-sun)' }}>winners.</span>
                     </h2>
                     <p style={{ maxWidth: '390px', margin: '24px 0 0', color: 'rgba(242,237,224,0.62)', fontSize: '15px', lineHeight: 1.65 }}>
                       The real 2026 Mexican Midwinters record: {archived2026Sailors.length || 20} sailors, {archived2026Countries} countries, {archived2026Races.length || 9} completed races in Banderas Bay.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '24px', maxWidth: '420px' }}>
+                    <div className="mm-past-winners-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '24px', maxWidth: '420px' }}>
                       {[['Entries', archived2026Sailors.length || 20], ['Countries', archived2026Countries], ['Races', archived2026Races.length || 9]].map(([label, value]) => (
                         <div key={label} style={{ borderTop: '1px solid rgba(244,168,42,0.42)', paddingTop: '10px' }}>
                           <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: '30px', color: 'var(--mm-cream)', lineHeight: 1 }}>{value}</div>
@@ -959,13 +959,13 @@ export default function HomePage() {
 
                   <div>
                     {archived2026Results.map((sailor, index) => (
-                      <div key={`${sailor.name}-${index}`} style={{ display: 'grid', gridTemplateColumns: '74px 1fr auto', gap: '18px', alignItems: 'center', padding: '18px 0', borderTop: index === 0 ? '1px solid rgba(244,168,42,0.38)' : '1px solid rgba(242,237,224,0.14)' }}>
+                      <div key={`${sailor.name}-${index}`} className="mm-past-winner-row" style={{ display: 'grid', gridTemplateColumns: '74px 1fr auto', gap: '18px', alignItems: 'center', padding: '18px 0', borderTop: index === 0 ? '1px solid rgba(244,168,42,0.38)' : '1px solid rgba(242,237,224,0.14)' }}>
                         <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: '42px', color: index === 0 ? 'var(--mm-sun)' : 'rgba(242,237,224,0.76)', lineHeight: 1 }}>{index + 1}{index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'}</div>
                         <div>
                           <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(24px, 3.2vw, 42px)', lineHeight: 0.98, textTransform: 'uppercase', color: index === 0 ? 'var(--mm-sun)' : 'var(--mm-cream)' }}>{sailor.name}</div>
                           <div className="mm-hero-mono" style={{ marginTop: '8px', fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.48)' }}>{sailor.country || '—'} · {sailor.boatClass || 'ILCA 6'} · Sail #{sailor.sailNumber || '—'}</div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
+                        <div className="mm-past-winner-points" style={{ textAlign: 'right' }}>
                           <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: '34px', color: 'var(--mm-cream)', lineHeight: 1 }}>{sailor.net}</div>
                           <div className="mm-hero-mono" style={{ fontSize: '9px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.48)' }}>NET PTS</div>
                         </div>
