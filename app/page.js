@@ -258,6 +258,7 @@ export default function HomePage() {
   const [archiveEvents, setArchiveEvents] = useState([])
   const [currentEventId, setCurrentEventId] = useState(null)
   const [activeTab, setActiveTab] = useState('info')
+  const [resultsEventId, setResultsEventId] = useState(null)
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [adminPassword, setAdminPassword] = useState('')
   const [loading, setLoading] = useState(true)
@@ -280,7 +281,9 @@ export default function HomePage() {
         const params = new URLSearchParams(window.location.search)
         const requestedId = params.get('event')
         const requestedTab = params.get('tab')
+        const requestedResultsEvent = params.get('resultsEvent')
         if (requestedTab) setActiveTab(requestedTab)
+        if (requestedResultsEvent) setResultsEventId(requestedResultsEvent)
 
         const supabaseEvents = await getAllEvents()
         console.log('All Supabase events:', supabaseEvents?.map(e => ({ 
@@ -359,11 +362,24 @@ export default function HomePage() {
 
   const selectTab = (tab, targetId = 'regatta-content') => {
     setActiveTab(tab)
+    if (tab !== 'results') setResultsEventId(null)
     if (typeof window !== 'undefined') {
       window.history.replaceState(null, '', `#${targetId}`)
     }
     setTimeout(() => {
       document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 0)
+  }
+
+  const openResultsForEvent = (eventId) => {
+    const nextId = eventId && eventId !== currentEventId ? eventId : null
+    setResultsEventId(nextId)
+    setActiveTab('results')
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', nextId ? `?tab=results&resultsEvent=${nextId}` : '?tab=results')
+    }
+    setTimeout(() => {
+      document.getElementById('regatta-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 0)
   }
 
@@ -705,7 +721,6 @@ export default function HomePage() {
             ['winners', 'info', 'past-winners'],
             ['results', 'results', 'regatta-content'],
             ['docs', 'docs', 'regatta-content'],
-            ['archive', 'archive', 'regatta-content'],
           ].map(([label, tab, targetId]) => {
             const isPrimaryActive = activeTab === tab && targetId === 'regatta-content'
             return (
@@ -956,7 +971,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     ))}
-                    <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ display: 'inline-flex', marginTop: '18px', color: 'var(--mm-sun)', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>View full 2026 results →</a>
+                    <button type="button" onClick={() => openResultsForEvent('mmcm1ps9woa49fdzxl')} style={{ display: 'inline-flex', marginTop: '18px', color: 'var(--mm-sun)', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>View full 2026 results →</button>
                   </div>
                 </div>
                 <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '2px', background: 'var(--mm-sun)' }} />
@@ -1179,62 +1194,70 @@ export default function HomePage() {
           {activeTab === 'results' && (
             <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
               {(() => {
-                // Debug logging
-                console.log('Results tab - ILCA 7 sailors:', ilca7Sailors.length, 'races:', ilca7Races.length)
-                console.log('Results tab - ILCA 6 sailors:', ilca6Sailors.length, 'races:', ilca6Races.length)
-                if (ilca7Sailors[0]) console.log('ILCA7 first sailor scores:', ilca7Sailors[0].scores)
-                if (ilca6Sailors[0]) console.log('ILCA6 first sailor scores:', ilca6Sailors[0].scores)
-                
-                // Check if any sailor has actual scores (non-empty values)
+                const resultsEvent = resultsEventId ? allEvents.find(evt => evt.id === resultsEventId) : event
+                const isPastResults = Boolean(resultsEventId && resultsEvent)
+                const resultSailors = resultsEvent?.sailors || []
+                const resultIlca7Sailors = resultSailors.filter(s => s.boatClass === 'ILCA 7')
+                const resultIlca6Sailors = resultSailors.filter(s => s.boatClass === 'ILCA 6' || s.boatClass === 'Radial')
+                const resultIlca7Races = dedupeRaces(resultsEvent?.races?.filter(r => r.raceClass === 'ILCA 7') || [])
+                const resultIlca6Races = dedupeRaces(resultsEvent?.races?.filter(r => r.raceClass === 'ILCA 6' || r.raceClass === 'Radial') || [])
                 const hasScoredRaces = (sailors) => sailors.some(s => 
                   s.scores && Object.values(s.scores).some(score => 
                     score !== null && score !== undefined && score !== ''
                   )
                 )
-                const hasIlca7Scores = hasScoredRaces(ilca7Sailors)
-                const hasIlca6Scores = hasScoredRaces(ilca6Sailors)
-                
-                console.log('Has scores - ILCA 7:', hasIlca7Scores, 'ILCA 6:', hasIlca6Scores)
-                
-                // Show results if there are sailors AND either scores exist OR races are defined
-                const showIlca7 = ilca7Sailors.length > 0 && (hasIlca7Scores || ilca7Races.length > 0)
-                const showIlca6 = ilca6Sailors.length > 0 && (hasIlca6Scores || ilca6Races.length > 0)
-                
-                if (!showIlca7 && !showIlca6) {
-                  return (
-                    <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-                      <div style={{ color: 'var(--mm-sun)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-                        <Icons.CheckeredFlag />
-                      </div>
-                      <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Racing Hasn't Started Yet</h2>
-                      <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '30px' }}>
-                        Results will be updated live during the regatta.
-                      </p>
-                      <div style={{
-                        display: 'inline-block',
-                        background: 'rgba(244, 168, 42, 0.1)',
-                        padding: '20px 40px',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(244, 168, 42, 0.3)',
-                      }}>
-                        <p style={{ margin: 0 }}>Check back on March 11, 2027</p>
-                      </div>
-                    </div>
-                  )
-                }
-                
+                const showIlca7 = resultIlca7Sailors.length > 0 && (hasScoredRaces(resultIlca7Sailors) || resultIlca7Races.length > 0)
+                const showIlca6 = resultIlca6Sailors.length > 0 && (hasScoredRaces(resultIlca6Sailors) || resultIlca6Races.length > 0)
+                const resultArchiveEvents = archiveEvents.filter(archiveEvent => archiveEvent.id !== resultsEventId)
+
                 return (
                   <div>
-                    {showIlca7 && (
-                      <div style={{ marginBottom: '50px' }}>
-                        <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 7 Results</h2>
-                        <ResultsTable sailors={ilca7Sailors} races={ilca7Races} mastersScoringEnabled={event.mastersScoringEnabled} />
+                    <div style={{ marginBottom: '28px', padding: '22px', borderRadius: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '18px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                        <div>
+                          <div style={{ fontFamily: 'var(--mm-mono)', color: 'var(--mm-sun)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '8px' }}>{isPastResults ? 'Past year results' : 'Current year results'}</div>
+                          <h2 style={{ fontSize: '32px', margin: '0 0 8px' }}>{resultsEvent?.eventName || 'Mexican Midwinters Results'}</h2>
+                          <p style={{ margin: 0, opacity: 0.72 }}>{isPastResults ? 'Past results are loaded here so you can compare without leaving the current regatta page.' : 'Current year stays as the default. Past years can be loaded below and cleared anytime.'}</p>
+                        </div>
+                        {isPastResults && (
+                          <button type="button" onClick={() => openResultsForEvent(currentEventId)} style={{ background: 'var(--mm-sun)', color: 'var(--mm-ink)', border: 'none', borderRadius: '4px', padding: '12px 16px', fontFamily: 'var(--mm-mono)', fontSize: '11px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap' }}>Clear back to current year</button>
+                        )}
                       </div>
-                    )}
-                    {showIlca6 && (
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '18px' }}>
+                        <button type="button" onClick={() => openResultsForEvent(currentEventId)} style={{ background: !isPastResults ? 'var(--mm-sun)' : 'rgba(255,255,255,0.06)', color: !isPastResults ? 'var(--mm-ink)' : 'var(--mm-cream)', border: !isPastResults ? '1px solid var(--mm-sun)' : '1px solid rgba(255,255,255,0.16)', borderRadius: '999px', padding: '10px 14px', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer' }}>Current year</button>
+                        {resultArchiveEvents.map(archiveEvent => (
+                          <button key={archiveEvent.id} type="button" onClick={() => openResultsForEvent(archiveEvent.id)} style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--mm-cream)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: '999px', padding: '10px 14px', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer' }}>{archiveEvent.eventDate ? archiveEvent.eventDate.slice(0, 4) : 'Past year'}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {!showIlca7 && !showIlca6 ? (
+                      <div style={{ textAlign: 'center', padding: '70px 20px' }}>
+                        <div style={{ color: 'var(--mm-sun)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+                          <Icons.CheckeredFlag />
+                        </div>
+                        <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Racing Hasn't Started Yet</h2>
+                        <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '30px' }}>
+                          Current-year results will be updated live during the regatta.
+                        </p>
+                        <div style={{ display: 'inline-block', background: 'rgba(244, 168, 42, 0.1)', padding: '20px 40px', borderRadius: '12px', border: '1px solid rgba(244, 168, 42, 0.3)' }}>
+                          <p style={{ margin: 0 }}>Check back on March 11, 2027</p>
+                        </div>
+                      </div>
+                    ) : (
                       <div>
-                        <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 6 Results</h2>
-                        <ResultsTable sailors={ilca6Sailors} races={ilca6Races} mastersScoringEnabled={event.mastersScoringEnabled} />
+                        {showIlca7 && (
+                          <div style={{ marginBottom: '50px' }}>
+                            <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 7 Results</h2>
+                            <ResultsTable sailors={resultIlca7Sailors} races={resultIlca7Races} mastersScoringEnabled={resultsEvent.mastersScoringEnabled} />
+                          </div>
+                        )}
+                        {showIlca6 && (
+                          <div>
+                            <h2 style={{ fontSize: '28px', marginBottom: '30px' }}>ILCA 6 Results</h2>
+                            <ResultsTable sailors={resultIlca6Sailors} races={resultIlca6Races} mastersScoringEnabled={resultsEvent.mastersScoringEnabled} />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
