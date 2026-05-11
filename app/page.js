@@ -34,7 +34,7 @@ const LANGUAGE_COPY = {
     titleB: 'Midwinters.',
     lede: 'Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management. Sign up for the regatta experience of the year today.',
     registerShort: 'Register',
-    register: 'Register for 2027',
+    register: 'Register',
     viewResults: 'View 2026 results',
     scroll: 'Scroll ↓ the regatta',
     countdown: 'Racing commences in',
@@ -1420,7 +1420,7 @@ export default function HomePage() {
             <p style={{ margin: '0 0 22px', fontSize: '17px', lineHeight: 1.55, color: 'rgba(10,25,41,0.82)', fontWeight: 700 }}>
               Registration is open for 2027. Charter boats are limited. Sign up now and make Banderas Bay your March racing block.
             </p>
-            <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--mm-ink)', color: 'var(--mm-cream)', padding: '16px 20px', borderRadius: '3px', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', fontWeight: 900 }}>Register for 2027 →</a>
+            <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--mm-ink)', color: 'var(--mm-cream)', padding: '16px 20px', borderRadius: '3px', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', fontWeight: 900 }}>Register →</a>
           </div>
         </div>
       </section>
