@@ -72,6 +72,7 @@ export default function RegisterPage() {
         <a href="/" style={{ color: '#F4A82A', textDecoration: 'none', fontWeight: '700' }}>← Back to regatta site</a>
         <div style={{ marginTop: '28px', marginBottom: '28px' }}>
           <div style={{ color: '#F4A82A', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '13px', fontWeight: '800' }}>Registration open</div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginTop: '12px', padding: '10px 13px', border: '1px solid rgba(10,25,41,0.18)', borderRadius: '4px', background: 'rgba(10,25,41,0.04)', fontFamily: 'JetBrains Mono, ui-monospace, monospace', fontSize: '12px', fontWeight: 900, letterSpacing: '0.16em', textTransform: 'uppercase' }}>March 11–13, 2027 · La Cruz, Mexico</div>
           <h1 style={{ fontFamily: 'Archivo, system-ui, sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.025em', fontSize: 'clamp(48px, 9vw, 104px)', lineHeight: 0.92, margin: '12px 0' }}>ILCA Mexican Midwinter Regatta 2027</h1>
           <p style={{ fontSize: '18px', opacity: 0.78, maxWidth: '760px' }}>Register one or multiple sailors in a single secure checkout. Entry is <strong>$100 USD per sailor</strong>; charter/facility-use add-ons are selected per sailor.</p>
         </div>
