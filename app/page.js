@@ -585,10 +585,6 @@ export default function HomePage() {
 
           <div className="mm-hero-bottom" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '64px', paddingTop: '80px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="mm-eyebrow-mobile-wrap" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                <span style={{ width: '64px', height: '1px', background: 'var(--mm-sun)' }} />
-                <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-sun)' }}>{copy.eyebrow}</span>
-              </div>
               <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(72px, 11vw, 180px)', lineHeight: 0.92, letterSpacing: '-0.025em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
                 {copy.titleA}<br />
                 <span style={{ color: 'var(--mm-sun)' }}>{copy.titleB}</span>
