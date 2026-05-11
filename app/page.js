@@ -521,7 +521,7 @@ export default function HomePage() {
         .mm-page .mm-tabbar { background:rgba(242,237,224,.055) !important; border:1px solid rgba(242,237,224,.10); border-radius:4px !important; }
         .mm-page button, .mm-page a { transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
         .mm-page a:focus-visible, .mm-page button:focus-visible { outline:2px solid var(--mm-sun); outline-offset:3px; }
-        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-headline { font-size:72px !important; } .mm-count-row { flex-wrap:wrap !important; gap:12px !important; } .mm-count-n { font-size:40px !important; } }
+        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; overflow:hidden !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-hero-bottom { width:100% !important; } .mm-hero-bottom > div, .mm-hero-bottom aside { width:100% !important; min-width:0 !important; max-width:100% !important; } .mm-headline { font-size:clamp(50px, 15vw, 60px) !important; max-width:100% !important; overflow-wrap:normal !important; } .mm-hero-bottom p { max-width:100% !important; font-size:16px !important; } .mm-hero-bottom .mm-btn { max-width:100% !important; } .mm-count-row { width:100% !important; flex-wrap:wrap !important; gap:14px 18px !important; } .mm-count-n { font-size:40px !important; } .mm-eyebrow-mobile-wrap { flex-wrap:wrap !important; } }
       `}</style>
 
       {/* Hero Section */}
@@ -585,7 +585,7 @@ export default function HomePage() {
 
           <div className="mm-hero-bottom" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '64px', paddingTop: '80px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+              <div className="mm-eyebrow-mobile-wrap" style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
                 <span style={{ width: '64px', height: '1px', background: 'var(--mm-sun)' }} />
                 <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-sun)' }}>{copy.eyebrow}</span>
               </div>
