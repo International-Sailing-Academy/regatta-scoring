@@ -448,7 +448,7 @@ export default function HomePage() {
     }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ color: 'var(--mm-sun)', marginBottom: '20px' }}>
-          <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+          <img src="/logo-icon-padded.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
         </div>
         <p>Loading regatta data...</p>
       </div>
@@ -572,7 +572,7 @@ export default function HomePage() {
         <div className="mm-hero-inner" style={{ position: 'relative', zIndex: 3, minHeight: '100vh', padding: '24px 48px 48px', display: 'flex', flexDirection: 'column' }}>
           <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '32px' }}>
             <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', color: 'var(--mm-cream)', textDecoration: 'none' }}>
-              <img src="/logo-icon.png" alt="ISA" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+              <img src="/logo-icon-padded.png" alt="ISA" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
               <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
                 <span className="mm-hero-brand">Mexican Midwinters</span>
                 <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '5px' }}>{copy.brandSub}</span>
@@ -1015,7 +1015,7 @@ export default function HomePage() {
               {/* Classes & Awards */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle', filter: 'brightness(0) invert(1)' }} />
+                  <img src="/logo-icon-padded.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle', filter: 'brightness(0) invert(1)' }} />
                   Classes & Awards
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -1088,7 +1088,7 @@ export default function HomePage() {
               {event.sailors.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '80px 20px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }}>
                   <div style={{ color: 'var(--mm-sun)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-                    <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+                    <img src="/logo-icon-padded.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                   </div>
                   <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Open</h2>
                   <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '25px' }}>Sailors will appear here as paid registrations come in.</p>
