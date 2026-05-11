@@ -171,7 +171,7 @@ export default function AdminPage() {
   }
 
   const exportRegistrationsCsv = () => {
-    const header = ['Name', 'Email', 'WhatsApp', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt', 'Status', 'Refund Status', 'Amount', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit', 'Boat Insurance', 'Medical Conditions', 'Emergency Contact', 'Emergency Phone', 'Stripe Session', 'Payment Intent', 'Refund ID', 'Admin Notes', 'Paid At', 'Refunded At', 'Canceled At']
+    const header = ['Name', 'Email', 'WhatsApp', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt', 'Status', 'Refund Status', 'Amount', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit', 'Boat Insurance', 'Medical Conditions', 'Emergency Contact', 'Emergency Phone', 'Stripe Session', 'Payment Intent', 'Refund ID', 'Admin Notes', 'Confirmation Email Sent', 'Confirmation Email Error', 'Paid At', 'Refunded At', 'Canceled At']
     const rows = registrations.map(reg => [
       reg.full_name,
       reg.email,
@@ -196,6 +196,8 @@ export default function AdminPage() {
       reg.stripe_payment_intent_id || '',
       reg.stripe_refund_id || '',
       reg.admin_notes || '',
+      reg.confirmation_email_sent_at || '',
+      reg.confirmation_email_error || '',
       reg.paid_at || '',
       reg.refunded_at || '',
       reg.canceled_at || '',
@@ -1213,6 +1215,7 @@ export default function AdminPage() {
                         <th>Total</th>
                         <th>Stripe</th>
                         <th>Admin Notes</th>
+                        <th>Email</th>
                         <th>Paid</th>
                         <th>Created</th>
                         <th>Actions</th>
@@ -1243,6 +1246,7 @@ export default function AdminPage() {
                             {reg.stripe_refund_id ? <><br /><small>Refund: {reg.stripe_refund_id}</small></> : null}
                           </td>
                           <td>{reg.admin_notes || '—'}</td>
+                          <td>{reg.confirmation_email_sent_at ? `Sent ${new Date(reg.confirmation_email_sent_at).toLocaleString()}` : reg.confirmation_email_error ? `Error: ${reg.confirmation_email_error}` : '—'}</td>
                           <td>{reg.paid_at ? new Date(reg.paid_at).toLocaleString() : '—'}</td>
                           <td>{reg.created_at ? new Date(reg.created_at).toLocaleString() : '—'}</td>
                           <td>

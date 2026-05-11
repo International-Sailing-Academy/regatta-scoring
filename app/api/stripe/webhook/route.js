@@ -2,6 +2,7 @@ import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
 import { getServerSupabase } from '../../../lib/server-supabase'
 import { registrationToSailor } from '../../../lib/registration'
+import { registrationConfirmationEmail, sendEmail } from '../../../lib/email'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,6 +54,19 @@ async function markRegistrationPaid(session) {
     const { error: updateError } = await supabase.from('events').update({ sailors: [...sailors, ...additions], lastupdated: new Date().toISOString() }).eq('id', eventId)
     if (updateError) throw updateError
   }
+
+  try {
+    const sentAt = new Date().toISOString()
+    const email = registrationConfirmationEmail({ registrations, checkoutSessionId: session.id })
+    await sendEmail(email)
+    const ids = registrations.map(reg => reg.id)
+    await supabase.from('regatta_registrations').update({ confirmation_email_sent_at: sentAt, confirmation_email_error: null }).in('id', ids)
+  } catch (emailError) {
+    console.error('confirmation email error', emailError)
+    const ids = registrations.map(reg => reg.id)
+    await supabase.from('regatta_registrations').update({ confirmation_email_error: emailError.message || 'Email failed' }).in('id', ids)
+  }
+
   return registrations
 }
 
