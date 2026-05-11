@@ -26,7 +26,7 @@ const LANGUAGE_COPY = {
   en: {
     switchLabel: 'EN / ES',
     brandSub: 'An ISA Regatta · Est. 2009',
-    nav: { info: 'Regatta', sailors: 'Sailors', schedule: 'Schedule', winners: 'Past Winners', results: 'Results', docs: 'Docs' },
+    nav: { info: 'Regatta', registration: 'Registration', training: 'Pre-Regatta Training', sailors: 'Sailors', schedule: 'Schedule', winners: 'Past Winners', results: 'Results', docs: 'Docs' },
     race: 'Race 2027',
     open: 'Registration Open',
     eyebrow: 'ILCA · Open Fleet · Mar 11–13, 2027',
@@ -43,7 +43,7 @@ const LANGUAGE_COPY = {
   es: {
     switchLabel: 'ES / EN',
     brandSub: 'Una regata ISA · Desde 2009',
-    nav: { info: 'Regata', sailors: 'Veleristas', schedule: 'Programa', winners: 'Ganadores', results: 'Resultados', docs: 'Docs' },
+    nav: { info: 'Regata', registration: 'Inscripción', training: 'Entrenamiento pre-regata', sailors: 'Veleristas', schedule: 'Programa', winners: 'Ganadores', results: 'Resultados', docs: 'Docs' },
     race: 'Regata 2027',
     open: 'Inscripción abierta',
     eyebrow: 'ILCA · Flota abierta · 11–13 marzo, 2027',
@@ -549,6 +549,8 @@ export default function HomePage() {
             <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
               {[
                 [copy.nav.info, 'info', 'regatta-content'],
+                [copy.nav.registration, 'info', 'registration-section'],
+                [copy.nav.training, 'info', 'pre-regatta-training'],
                 [copy.nav.sailors, 'sailors', 'regatta-content'],
                 [copy.nav.schedule, 'schedule', 'regatta-content'],
                 [copy.nav.winners, 'info', 'past-winners'],
@@ -694,16 +696,28 @@ export default function HomePage() {
           margin: '0 auto 40px',
           flexWrap: 'wrap',
         }}>
-          {['info', 'sailors', 'schedule', 'results', 'docs', 'archive'].map(tab => (
+          {[
+            ['info', 'info', 'regatta-content'],
+            ['registration', 'info', 'registration-section'],
+            ['training', 'info', 'pre-regatta-training'],
+            ['sailors', 'sailors', 'regatta-content'],
+            ['schedule', 'schedule', 'regatta-content'],
+            ['winners', 'info', 'past-winners'],
+            ['results', 'results', 'regatta-content'],
+            ['docs', 'docs', 'regatta-content'],
+            ['archive', 'archive', 'regatta-content'],
+          ].map(([label, tab, targetId]) => {
+            const isPrimaryActive = activeTab === tab && targetId === 'regatta-content'
+            return (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+              key={label}
+              onClick={() => selectTab(tab, targetId)}
               style={{
                 flex: '1 1 auto',
                 minWidth: '70px',
                 padding: '12px 16px',
-                background: activeTab === tab ? 'var(--mm-sun)' : 'transparent',
-                color: activeTab === tab ? 'white' : 'white',
+                background: isPrimaryActive ? 'var(--mm-sun)' : 'transparent',
+                color: 'white',
                 border: 'none',
                 borderRadius: '3px',
                 cursor: 'pointer',
@@ -714,13 +728,13 @@ export default function HomePage() {
                 textTransform: 'uppercase',
                 transition: 'all 0.3s ease',
                 whiteSpace: 'nowrap',
-                boxShadow: activeTab === tab ? '0 4px 6px rgba(244, 168, 42, 0.3)' : 'none',
-                transform: activeTab === tab ? 'translateY(-2px)' : 'none',
+                boxShadow: isPrimaryActive ? '0 4px 6px rgba(244, 168, 42, 0.3)' : 'none',
+                transform: isPrimaryActive ? 'translateY(-2px)' : 'none',
               }}
             >
-              {tab}
+              {label}
             </button>
-          ))}
+          )})}
         </div>
 
         {viewingArchivedEvent && (
@@ -819,7 +833,7 @@ export default function HomePage() {
 
 
               {/* Registration */}
-              <section style={{ marginBottom: '60px' }}>
+              <section id="registration-section" style={{ scrollMarginTop: '24px', marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
                   <span style={{ color: 'var(--mm-sun)' }}><Icons.Trophy /></span>
                   Registration
@@ -871,8 +885,8 @@ export default function HomePage() {
 
 
 
-              {/* Pre / Post Clinic Options */}
-              <section style={{ marginBottom: '60px' }}>
+              {/* Pre-Regatta Training */}
+              <section id="pre-regatta-training" style={{ scrollMarginTop: '24px', marginBottom: '60px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '18px', flexWrap: 'wrap', marginBottom: '24px' }}>
                   <div>
                     <div className="mm-hero-mono" style={{ color: 'var(--mm-sun)', fontSize: '11px', letterSpacing: '0.22em', marginBottom: '10px' }}>TRAIN AROUND THE REGATTA</div>
