@@ -962,25 +962,6 @@ export default function HomePage() {
                 </div>
               </section>
 
-              {/* Safety */}
-              <section style={{ marginBottom: '60px' }}>
-                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: 'var(--mm-sun)' }}><Icons.CheckeredFlag /></span>
-                  Safety & Requirements
-                </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-                    <div>
-                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Safety Equipment</h4>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
-                        <li>• Whistle required</li>
-                        <li>• Flotation device required</li>
-                        <li>• Safety boat coverage provided</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </section>
 
               {/* Contact */}
               <section>
