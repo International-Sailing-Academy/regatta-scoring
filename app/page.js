@@ -806,63 +806,27 @@ export default function HomePage() {
 
 
               {/* Reigning Champions */}
-              <section style={{ marginBottom: '60px' }}>
-                <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#f6ad55' }}><Icons.Trophy /></span>
-                  Reigning Champions
-                </h2>
+              <section style={{ marginBottom: '45px' }}>
                 <div style={{
-                  background: 'linear-gradient(135deg, rgba(246, 173, 85, 0.16), rgba(99, 179, 237, 0.08))',
-                  borderRadius: '18px',
-                  padding: '30px',
-                  border: '1px solid rgba(246, 173, 85, 0.28)',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '18px',
+                  flexWrap: 'wrap',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '14px',
+                  padding: '18px 22px',
+                  border: '1px solid rgba(246, 173, 85, 0.22)',
                 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '24px', alignItems: 'stretch' }}>
-                    <div style={{
-                      background: 'rgba(10, 25, 47, 0.55)',
-                      borderRadius: '16px',
-                      padding: '26px',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                    }}>
-                      <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '2px', color: '#f6ad55', fontWeight: 'bold', marginBottom: '10px' }}>
-                        2026 Overall Champion
-                      </div>
-                      <h3 style={{ fontSize: '34px', marginBottom: '10px', lineHeight: 1.1 }}>Elena Oetling Ramirez</h3>
-                      <p style={{ fontSize: '18px', opacity: 0.88, marginBottom: '18px' }}>Mexico • ILCA 6 • Sail #220644</p>
-                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        <span style={{ background: 'rgba(246,173,85,0.18)', color: '#fbd38d', padding: '8px 12px', borderRadius: '999px', fontSize: '13px', fontWeight: 'bold' }}>Whale Perpetual Trophy</span>
-                        <span style={{ background: 'rgba(99,179,237,0.16)', color: '#90cdf4', padding: '8px 12px', borderRadius: '999px', fontSize: '13px', fontWeight: 'bold' }}>2026 Net: 50</span>
-                      </div>
-                    </div>
-
-                    <div style={{
-                      background: 'rgba(255,255,255,0.06)',
-                      borderRadius: '16px',
-                      padding: '22px',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                    }}>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '16px', fontSize: '18px' }}>2026 Podium</h4>
-                      {[
-                        { place: '1', name: 'Elena Oetling Ramirez', country: 'Mexico', points: '50' },
-                        { place: '2', name: 'Namkhai Bourquin', country: 'Mexico', points: '55' },
-                        { place: '3', name: 'Sanka Bourquin', country: 'Mexico', points: '59' },
-                      ].map(champion => (
-                        <div key={champion.place} style={{ display: 'grid', gridTemplateColumns: '42px 1fr auto', gap: '12px', alignItems: 'center', padding: '12px 0', borderTop: champion.place === '1' ? 'none' : '1px solid rgba(255,255,255,0.1)' }}>
-                          <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: champion.place === '1' ? '#f6ad55' : 'rgba(255,255,255,0.12)', color: champion.place === '1' ? '#0a192f' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900' }}>{champion.place}</div>
-                          <div>
-                            <div style={{ fontWeight: 'bold' }}>{champion.name}</div>
-                            <div style={{ fontSize: '13px', opacity: 0.65 }}>{champion.country}</div>
-                          </div>
-                          <div style={{ fontSize: '13px', color: '#90cdf4', fontWeight: 'bold' }}>{champion.points}</div>
-                        </div>
-                      ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: '260px' }}>
+                    <div style={{ color: '#f6ad55', display: 'flex', alignItems: 'center' }}><Icons.Trophy /></div>
+                    <div>
+                      <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.6px', color: '#f6ad55', fontWeight: 'bold', marginBottom: '3px' }}>Reigning Champion</div>
+                      <div style={{ fontSize: '20px', fontWeight: '800' }}>Elena Oetling Ramirez</div>
+                      <div style={{ fontSize: '13px', opacity: 0.68 }}>2026 Overall • Mexico • ILCA 6</div>
                     </div>
                   </div>
-                  <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <p style={{ margin: 0, opacity: 0.72, fontSize: '14px' }}>Who gets their name on the trophy next?</p>
-                    <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: '#63b3ed', fontWeight: 'bold', textDecoration: 'none' }}>View 2026 results →</a>
-                  </div>
+                  <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: '#63b3ed', fontWeight: 'bold', textDecoration: 'none', fontSize: '14px' }}>2026 results →</a>
                 </div>
               </section>
 
