@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import { clinicOptions } from './clinic-options.js'
 
 const RESEND_API_URL = 'https://api.resend.com/emails'
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mexicanmidwinters.com'
@@ -32,40 +33,74 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
   const sailingInstructionsUrl = documentLink(registrations, ['sailing instruction', 'instructions']) || `${SITE_URL}/?tab=docs`
   const sailorRows = registrations.map(reg => `
     <tr>
-      <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${escapeHtml(reg.full_name)}</td>
-      <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${escapeHtml(reg.boat_class)}</td>
-      <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${escapeHtml(reg.sail_number || '—')}</td>
-      <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${escapeHtml(reg.scoring_category || '—')}</td>
-      <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:right;">${money(reg.amount_total, currency)}</td>
+      <td style="padding:12px;border-bottom:1px solid rgba(10,25,41,0.12);">${escapeHtml(reg.full_name)}</td>
+      <td style="padding:12px;border-bottom:1px solid rgba(10,25,41,0.12);">${escapeHtml(reg.boat_class)}</td>
+      <td style="padding:12px;border-bottom:1px solid rgba(10,25,41,0.12);">${escapeHtml(reg.sail_number || '—')}</td>
+      <td style="padding:12px;border-bottom:1px solid rgba(10,25,41,0.12);">${escapeHtml(reg.scoring_category || '—')}</td>
+      <td style="padding:12px;border-bottom:1px solid rgba(10,25,41,0.12);text-align:right;">${money(reg.amount_total, currency)}</td>
     </tr>
   `).join('')
 
   const subject = 'Mexican Midwinters registration confirmed'
-  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\nNotice of Race: ${norUrl}\nSailing Instructions: ${sailingInstructionsUrl}\n\nInternational Sailing Academy`
+  const clinicText = clinicOptions.map(clinic => `${clinic.timing}: ${clinic.title} with ${clinic.coach} (${clinic.dates}) — ${clinic.href}`).join('\n')
+  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\nNotice of Race: ${norUrl}\nSailing Instructions: ${sailingInstructionsUrl}\n\nOptional ISA clinics around the regatta:\n${clinicText}\n\nInternational Sailing Academy`
+  const clinicCards = clinicOptions.map(clinic => `
+    <tr>
+      <td style="padding:0 0 14px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#FAF6EC;border:1px solid rgba(10,25,41,0.12);">
+          <tr>
+            <td style="padding:18px 18px 8px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#4F6276;">${escapeHtml(clinic.timing)} · ${escapeHtml(clinic.dates)}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 18px 8px;font-family:Arial,sans-serif;font-size:22px;line-height:1.12;font-weight:900;text-transform:uppercase;color:#0A1929;">${escapeHtml(clinic.title)}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 18px 14px;color:#4F6276;font-size:14px;line-height:1.55;">${escapeHtml(clinic.description)}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 18px 18px;color:#0A1929;font-size:13px;line-height:1.5;"><strong>${escapeHtml(clinic.coach)}</strong> · ${escapeHtml(clinic.duration)} · ${escapeHtml(clinic.price)} starting from</td>
+          </tr>
+          <tr>
+            <td style="padding:0 18px 20px;"><a href="${clinic.href}" style="display:inline-block;background:#F4A82A;color:#0A1929;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;padding:12px 16px;border-radius:4px;">Learn more →</a></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  `).join('')
+
   const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111827;max-width:680px;margin:0 auto;">
-      <h1 style="color:#0a192f;">Mexican Midwinters registration confirmed</h1>
-      <p>Hi ${escapeHtml(purchaserName)},</p>
-      <p>Your registration is confirmed for <strong>${registrations.length} sailor${registrations.length === 1 ? '' : 's'}</strong>.</p>
-      <table style="width:100%;border-collapse:collapse;margin:18px 0;border:1px solid #e5e7eb;">
-        <thead><tr style="background:#f3f4f6;"><th style="padding:10px;text-align:left;">Sailor</th><th style="padding:10px;text-align:left;">Class</th><th style="padding:10px;text-align:left;">Sail #</th><th style="padding:10px;text-align:left;">Division</th><th style="padding:10px;text-align:right;">Paid</th></tr></thead>
-        <tbody>${sailorRows}</tbody>
-      </table>
-      <p style="font-size:18px;"><strong>Total paid:</strong> ${money(total, currency)}</p>
-      <div style="background:#e8f7ef;border:1px solid #25D366;border-radius:10px;padding:18px;margin:22px 0;">
-        <h2 style="margin:0 0 8px;color:#075e2a;">Join the regatta WhatsApp group</h2>
-        <p style="margin:0 0 14px;">We’ll use this group for race-office updates, logistics, and sailor notices.</p>
-        <a href="${REGATTA_WHATSAPP_GROUP_URL}" style="display:inline-block;background:#25D366;color:#062414;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:8px;">Join WhatsApp group</a>
+    <div style="margin:0;padding:0;background:#F2EDE0;">
+      <div style="font-family:Manrope,Arial,sans-serif;line-height:1.5;color:#0A1929;max-width:720px;margin:0 auto;padding:28px 18px;">
+        <div style="background:#0A1929;color:#F2EDE0;padding:28px;border-radius:4px 4px 0 0;border-bottom:4px solid #F4A82A;">
+          <div style="font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:#F4A82A;margin-bottom:12px;">Mexican Midwinters · 2027</div>
+          <h1 style="font-family:Arial Black,Arial,sans-serif;font-size:34px;line-height:0.98;text-transform:uppercase;margin:0;color:#F2EDE0;">Registration confirmed</h1>
+        </div>
+        <div style="background:#FAF6EC;border:1px solid rgba(10,25,41,0.12);border-top:0;padding:26px;">
+          <p style="margin-top:0;">Hi ${escapeHtml(purchaserName)},</p>
+          <p>Your registration is confirmed for <strong>${registrations.length} sailor${registrations.length === 1 ? '' : 's'}</strong>.</p>
+          <table style="width:100%;border-collapse:collapse;margin:20px 0;border:1px solid rgba(10,25,41,0.12);font-size:13px;">
+            <thead><tr style="background:#F2EDE0;"><th style="padding:12px;text-align:left;">Sailor</th><th style="padding:12px;text-align:left;">Class</th><th style="padding:12px;text-align:left;">Sail #</th><th style="padding:12px;text-align:left;">Division</th><th style="padding:12px;text-align:right;">Paid</th></tr></thead>
+            <tbody>${sailorRows}</tbody>
+          </table>
+          <p style="font-size:22px;margin:18px 0;"><strong>Total paid:</strong> <span style="color:#F4A82A;">${money(total, currency)}</span></p>
+          <div style="background:#0A1929;color:#F2EDE0;border:1px solid #1B304A;border-radius:4px;padding:20px;margin:24px 0;">
+            <h2 style="margin:0 0 8px;color:#F4A82A;font-size:20px;text-transform:uppercase;">Join the regatta WhatsApp group</h2>
+            <p style="margin:0 0 14px;color:rgba(242,237,224,0.82);">We’ll use this group for race-office updates, logistics, and sailor notices.</p>
+            <a href="${REGATTA_WHATSAPP_GROUP_URL}" style="display:inline-block;background:#F4A82A;color:#0A1929;text-decoration:none;font-weight:900;padding:12px 18px;border-radius:4px;">Join WhatsApp group</a>
+          </div>
+          <div style="background:#F2EDE0;border:1px solid rgba(10,25,41,0.12);border-radius:4px;padding:18px;margin:22px 0;">
+            <h2 style="margin:0 0 10px;color:#0A1929;font-size:20px;text-transform:uppercase;">Regatta documents</h2>
+            <p style="margin:0 0 8px;"><a href="${norUrl}" style="color:#0A1929;font-weight:700;">Notice of Race</a></p>
+            <p style="margin:0;"><a href="${sailingInstructionsUrl}" style="color:#0A1929;font-weight:700;">Sailing Instructions</a></p>
+          </div>
+          <h2 style="margin:28px 0 12px;color:#0A1929;font-size:22px;text-transform:uppercase;">Train around the regatta</h2>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${clinicCards}</table>
+          <p><a href="${REGATTA_SAILORS_URL}" style="color:#0A1929;font-weight:700;">View the registered sailor list</a></p>
+          <p><a href="${SITE_URL}" style="color:#0A1929;font-weight:700;">Visit the regatta website</a></p>
+          <p style="color:#4F6276;font-size:12px;">Checkout session: ${escapeHtml(checkoutSessionId)}</p>
+          <p>International Sailing Academy</p>
+        </div>
       </div>
-      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin:22px 0;">
-        <h2 style="margin:0 0 10px;color:#0a192f;">Regatta documents</h2>
-        <p style="margin:0 0 8px;"><a href="${norUrl}">Notice of Race</a></p>
-        <p style="margin:0;"><a href="${sailingInstructionsUrl}">Sailing Instructions</a></p>
-      </div>
-      <p><a href="${REGATTA_SAILORS_URL}">View the registered sailor list</a></p>
-      <p><a href="${SITE_URL}">Visit the regatta website</a></p>
-      <p style="color:#6b7280;font-size:13px;">Checkout session: ${escapeHtml(checkoutSessionId)}</p>
-      <p>International Sailing Academy</p>
     </div>
   `
 

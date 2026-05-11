@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getAllEvents, getEventById, saveEvent, FLAGS, subscribeToEvents } from './lib/data'
+import { clinicOptions } from './lib/clinic-options'
 
 // Default empty event - no sailors until added via admin
 const DEFAULT_EVENT = {
@@ -826,6 +827,42 @@ export default function HomePage() {
                       </ul>
                     </div>
                   </div>
+                </div>
+              </section>
+
+
+
+              {/* Pre / Post Clinic Options */}
+              <section style={{ marginBottom: '60px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '18px', flexWrap: 'wrap', marginBottom: '24px' }}>
+                  <div>
+                    <div className="mm-hero-mono" style={{ color: 'var(--mm-sun)', fontSize: '11px', letterSpacing: '0.22em', marginBottom: '10px' }}>TRAIN AROUND THE REGATTA</div>
+                    <h2 style={{ fontSize: '32px', margin: 0 }}>Pre-Clinic & Post-Clinic Options</h2>
+                  </div>
+                  <a href="https://internationalsailingacademy.com/clinics" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--mm-sun)', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>View all ISA clinics →</a>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px' }}>
+                  {clinicOptions.map((clinic, index) => (
+                    <article key={clinic.id} style={{ overflow: 'hidden', background: index === 0 ? 'var(--mm-bay)' : 'var(--mm-ink-2)', border: '1px solid rgba(242,237,224,0.14)', borderRadius: '4px' }}>
+                      <div style={{ position: 'relative', height: '190px', overflow: 'hidden', background: 'var(--mm-ink-3)' }}>
+                        <img src={clinic.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'saturate(0.95) contrast(1.05)' }} />
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,25,41,0.05), rgba(10,25,41,0.64))' }} />
+                        <div className="mm-hero-mono" style={{ position: 'absolute', top: '14px', left: '14px', background: 'var(--mm-sun)', color: 'var(--mm-ink)', padding: '6px 9px', borderRadius: '2px', fontSize: '10px', letterSpacing: '0.16em' }}>{clinic.badge}</div>
+                      </div>
+                      <div style={{ padding: '22px' }}>
+                        <div className="mm-hero-mono" style={{ color: 'var(--mm-sun)', fontSize: '10px', letterSpacing: '0.2em', marginBottom: '8px' }}>{clinic.timing} · {clinic.fleet}</div>
+                        <h3 style={{ margin: '0 0 10px', color: 'var(--mm-cream)', fontSize: '26px', lineHeight: 1 }}>{clinic.title}</h3>
+                        <p style={{ margin: '0 0 18px', color: 'rgba(242,237,224,0.74)', lineHeight: 1.55 }}>{clinic.description}</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px 16px', color: 'rgba(242,237,224,0.72)', fontSize: '13px', marginBottom: '20px' }}>
+                          <div><strong style={{ color: 'var(--mm-cream)' }}>{clinic.coach}</strong><br />Coach</div>
+                          <div><strong style={{ color: 'var(--mm-cream)' }}>{clinic.dates}</strong><br />{clinic.duration}</div>
+                          <div><strong style={{ color: 'var(--mm-cream)' }}>{clinic.price}</strong><br />Starting from</div>
+                          <div><strong style={{ color: 'var(--mm-cream)' }}>Banderas Bay</strong><br />Mexico</div>
+                        </div>
+                        <a href={clinic.href} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--mm-sun)', color: 'var(--mm-ink)', padding: '11px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 900, fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Learn More →</a>
+                      </div>
+                    </article>
+                  ))}
                 </div>
               </section>
 
