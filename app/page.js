@@ -574,6 +574,25 @@ export default function HomePage() {
               Regatta Starts In
             </p>
             <CountdownTimer targetDate={eventStartDateTime} />
+            <a
+              href="/register"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginTop: '28px',
+                background: '#63b3ed',
+                color: '#0a192f',
+                padding: '15px 26px',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                fontWeight: '900',
+                fontSize: '16px',
+                boxShadow: '0 12px 30px rgba(99,179,237,0.28)',
+              }}
+            >
+              Register Now <Icons.ArrowRight />
+            </a>
           </div>
 
         </div>
