@@ -543,14 +543,25 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', color: 'var(--mm-cream)', background: 'var(--mm-ink)' }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'url(/midwinters-hero-race.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 42%',
-          transform: `translateY(${scrollY * 0.22}px) scale(1.02)`,
-          filter: 'brightness(0.88) saturate(1.16) contrast(1.04)',
-        }} />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/midwinters-hero-race.jpg"
+          aria-hidden="true"
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center 42%',
+            transform: `translateY(${scrollY * 0.22}px) scale(1.02)`,
+            filter: 'brightness(0.88) saturate(1.16) contrast(1.04)',
+          }}
+        >
+          <source src="/videos/regatta-hero.mp4" type="video/mp4" />
+        </video>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 50% at 22% 8%, rgba(255,210,140,0.18) 0%, rgba(255,210,140,0) 60%), linear-gradient(90deg, rgba(10,25,41,0.72) 0%, rgba(10,25,41,0.36) 42%, rgba(10,25,41,0.08) 78%), linear-gradient(180deg, rgba(10,25,41,0.55) 0%, rgba(10,25,41,0.05) 35%, rgba(10,25,41,0.86) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.06, mixBlendMode: 'overlay', pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>")` }} />
 
