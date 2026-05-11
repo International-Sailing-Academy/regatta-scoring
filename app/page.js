@@ -1434,7 +1434,7 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-            <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '320px', height: 'auto', filter: 'brightness(0) invert(1)' }} />
+            <img src="/logo-horizontal-padded.png" alt="International Sailing Academy" style={{ maxWidth: '320px', height: 'auto', filter: 'brightness(0) invert(1)' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
             <a href="https://internationalsailingacademy.com" style={{ color: 'var(--mm-sun)', textDecoration: 'none' }}>Website</a>
