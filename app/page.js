@@ -357,6 +357,13 @@ export default function HomePage() {
     }
   }, [event?.id])
 
+  const selectTab = (tab) => {
+    setActiveTab(tab)
+    setTimeout(() => {
+      document.getElementById('regatta-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 0)
+  }
+
   const handleAdminLogin = () => {
     if (adminPassword === 'isa2026') {
       window.location.href = '/admin'
@@ -544,7 +551,7 @@ export default function HomePage() {
                 [copy.nav.results, 'results'],
                 [copy.nav.docs, 'docs'],
               ].map(([label, tab]) => (
-                <button key={label} onClick={() => setActiveTab(tab)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
+                <button key={label} onClick={() => selectTab(tab)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
               ))}
             </nav>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -585,7 +592,7 @@ export default function HomePage() {
               </p>
               <div style={{ marginTop: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <a className="mm-btn mm-btn--hero" href="/register">{copy.register} <span style={{ fontStyle: 'normal' }}>→</span></a>
-                <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('archive')}>{copy.viewResults}</button>
+                <button className="mm-btn-ghost" type="button" onClick={() => selectTab('archive')}>{copy.viewResults}</button>
               </div>
               <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)' }}>{copy.scroll}</div>
             </div>
@@ -668,7 +675,7 @@ export default function HomePage() {
       )}
 
       {/* Main Content */}
-      <div className="mm-content" style={{ maxWidth: '1200px', margin: '0 auto', padding: '26px 15px 48px' }}>
+      <div id="regatta-content" className="mm-content" style={{ maxWidth: '1200px', margin: '0 auto', padding: '26px 15px 48px', scrollMarginTop: '24px' }}>
         
         {/* Tab Navigation */}
         <div className="mm-tabbar" style={{
