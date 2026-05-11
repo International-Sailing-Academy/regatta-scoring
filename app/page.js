@@ -864,7 +864,7 @@ export default function HomePage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '18px', flexWrap: 'wrap', marginBottom: '24px' }}>
                   <div>
                     <div className="mm-hero-mono" style={{ color: 'var(--mm-sun)', fontSize: '11px', letterSpacing: '0.22em', marginBottom: '10px' }}>TRAIN AROUND THE REGATTA</div>
-                    <h2 style={{ fontSize: '32px', margin: 0 }}>Pre-Clinic & Post-Clinic Options</h2>
+                    <h2 style={{ fontSize: '32px', margin: 0 }}>Pre-Regatta Clinic Options</h2>
                   </div>
                   <a href="https://internationalsailingacademy.com/clinics" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--mm-sun)', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>View all ISA clinics →</a>
                 </div>
