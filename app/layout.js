@@ -1,4 +1,5 @@
 export const metadata = {
+  metadataBase: new URL('https://www.mexicanmidwinters.com'),
   title: 'ILCA Mexican Midwinter Regatta 2027',
   description: 'International Sailing Academy - March 11-13, 2027',
   applicationName: 'Mexican Midwinters',
@@ -19,6 +20,22 @@ export const metadata = {
     other: [
       { rel: 'mask-icon', url: '/safari-pinned-tab.svg', color: '#F4A82A' },
     ],
+  },
+  openGraph: {
+    title: 'ILCA Mexican Midwinter Regatta 2027',
+    description: 'International Sailing Academy - March 11-13, 2027',
+    url: 'https://www.mexicanmidwinters.com',
+    siteName: 'Mexican Midwinters',
+    images: [
+      { url: '/og-midwinters-2027.jpg', width: 1200, height: 630, alt: 'ILCA Mexican Midwinter Regatta 2027' },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ILCA Mexican Midwinter Regatta 2027',
+    description: 'International Sailing Academy - March 11-13, 2027',
+    images: ['/og-midwinters-2027.jpg'],
   },
   other: {
     'msapplication-TileColor': '#0A1929',
