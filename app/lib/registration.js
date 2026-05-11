@@ -13,6 +13,7 @@ export const ADD_ONS = {
   charterExtended: { label: 'Charter Days (More than 5)', unitAmount: 13000, max: 100 },
   proKitRental: { label: 'Pro Kit Rental', unitAmount: 7500 },
   boatInsurance: { label: 'Boat Insurance', unitAmount: 8000 },
+  sailBattenRental: { label: 'Sail + Batten Rental', unitAmount: 15000 },
 }
 
 export function normalizeEmail(email = '') {
@@ -44,6 +45,7 @@ export function emptySailor() {
     charterDaysExtended: 0,
     proKitRental: false,
     boatInsurance: false,
+    sailBattenRental: false,
     notes: '',
   }
 }
@@ -63,6 +65,7 @@ export function cleanSailorPayload(input = {}) {
     charterDaysExtended: boundedInteger(input.charterDaysExtended, 0, ADD_ONS.charterExtended.max),
     proKitRental: Boolean(input.proKitRental),
     boatInsurance: Boolean(input.boatInsurance),
+    sailBattenRental: Boolean(input.sailBattenRental),
     notes: String(input.notes || '').trim(),
   }
 }
@@ -120,6 +123,7 @@ export function registrationAddOns(sailor) {
   if (sailor.charterDaysExtended > 0) items.push({ key: 'charterDaysExtended', label: ADD_ONS.charterExtended.label, quantity: sailor.charterDaysExtended, unitAmount: ADD_ONS.charterExtended.unitAmount })
   if (sailor.proKitRental) items.push({ key: 'proKitRental', label: ADD_ONS.proKitRental.label, quantity: 1, unitAmount: ADD_ONS.proKitRental.unitAmount })
   if (sailor.boatInsurance) items.push({ key: 'boatInsurance', label: ADD_ONS.boatInsurance.label, quantity: 1, unitAmount: ADD_ONS.boatInsurance.unitAmount })
+  if (sailor.sailBattenRental) items.push({ key: 'sailBattenRental', label: ADD_ONS.sailBattenRental.label, quantity: 1, unitAmount: ADD_ONS.sailBattenRental.unitAmount })
   return items
 }
 

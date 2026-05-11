@@ -228,6 +228,48 @@ export default function AdminPage() {
     URL.revokeObjectURL(url)
   }
 
+  const exportBoatYardManifestCsv = () => {
+    const rows = registrations.filter(reg => reg.payment_status === 'paid' && (
+      reg.charter_days_short || reg.charter_days_extended || reg.pro_kit_rental || reg.boat_insurance || reg.sail_batten_rental
+    ))
+    const header = ['Sailor', 'Country', 'Rig', 'Sail Number', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit Rental', 'Boat Insurance', 'Sail/Batten Rental', 'WhatsApp', 'Notes']
+    const csv = [header, ...rows.map(reg => [
+      reg.full_name,
+      reg.country || '',
+      reg.boat_class,
+      reg.sail_number || '',
+      reg.charter_dates || '',
+      reg.charter_days_short || 0,
+      reg.charter_days_extended || 0,
+      reg.pro_kit_rental ? 'Yes' : 'No',
+      reg.boat_insurance ? 'Yes' : 'No',
+      reg.sail_batten_rental ? 'Yes' : 'No',
+      reg.whatsapp || reg.phone || '',
+      reg.notes || '',
+    ])].map(row => row.map(value => `"${String(value || '').replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'mexican-midwinters-boat-yard-manifest.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const boatYardRows = registrations.filter(reg => reg.payment_status === 'paid' && (
+    reg.charter_days_short || reg.charter_days_extended || reg.pro_kit_rental || reg.boat_insurance || reg.sail_batten_rental
+  ))
+  const boatYardTotals = boatYardRows.reduce((totals, reg) => ({
+    boats: totals.boats + ((reg.charter_days_short || reg.charter_days_extended) ? 1 : 0),
+    ilca6: totals.ilca6 + (reg.boat_class === 'ILCA 6' ? 1 : 0),
+    ilca7: totals.ilca7 + (reg.boat_class === 'ILCA 7' ? 1 : 0),
+    proKits: totals.proKits + (reg.pro_kit_rental ? 1 : 0),
+    insurance: totals.insurance + (reg.boat_insurance ? 1 : 0),
+    sailsBattens: totals.sailsBattens + (reg.sail_batten_rental ? 1 : 0),
+    shortDays: totals.shortDays + Number(reg.charter_days_short || 0),
+    extendedDays: totals.extendedDays + Number(reg.charter_days_extended || 0),
+  }), { boats: 0, ilca6: 0, ilca7: 0, proKits: 0, insurance: 0, sailsBattens: 0, shortDays: 0, extendedDays: 0 })
+
   // Manual save function
   const handleSave = async () => {
     if (event) {
@@ -828,6 +870,7 @@ export default function AdminPage() {
               { id: 'event', label: 'Event Details' },
               { id: 'entries', label: `Entries (${event.sailors?.length || 0})` },
               { id: 'registrations', label: `Stripe Registrations (${registrations.length || 0})` },
+              { id: 'boat-yard', label: `Boat Yard (${boatYardRows.length || 0})` },
               { id: 'races', label: `Races (${event.races?.filter(r => r.raceClass).length || 0})` },
               { id: 'scores', label: 'Input Scores' },
               { id: 'results', label: 'Results' },
@@ -1252,6 +1295,7 @@ export default function AdminPage() {
                             reg.charter_days_extended ? `${reg.charter_days_extended} extended charter days` : null,
                             reg.pro_kit_rental ? 'Pro kit' : null,
                             reg.boat_insurance ? 'Insurance' : null,
+                            reg.sail_batten_rental ? 'Sail/Battens' : null,
                           ].filter(Boolean).join(', ') || '—'}
                           {reg.admin_notes ? <><br /><strong>Admin notes:</strong> {reg.admin_notes}</> : null}
                         </div>
@@ -1263,6 +1307,43 @@ export default function AdminPage() {
                       </div>
                     )
                   })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* BOAT YARD MANIFEST TAB */}
+          {activeTab === 'boat-yard' && (
+            <div style={styles.panel}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <h2>Boat Yard Manifest</h2>
+                <button onClick={exportBoatYardManifestCsv} style={styles.btnSecondary}>Export Boat Yard CSV</button>
+              </div>
+              <p style={styles.help}>Paid registrations requiring charter boats, pro kits, insurance, or sail/batten rental.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px', marginBottom: '18px' }}>
+                <div style={styles.statCard}><strong>{boatYardTotals.boats}</strong><span>Charter boats</span></div>
+                <div style={styles.statCard}><strong>{boatYardTotals.ilca6}</strong><span>ILCA 6 rigs</span></div>
+                <div style={styles.statCard}><strong>{boatYardTotals.ilca7}</strong><span>ILCA 7 rigs</span></div>
+                <div style={styles.statCard}><strong>{boatYardTotals.proKits}</strong><span>Pro kits</span></div>
+                <div style={styles.statCard}><strong>{boatYardTotals.insurance}</strong><span>Insurance</span></div>
+                <div style={styles.statCard}><strong>{boatYardTotals.sailsBattens}</strong><span>Sail/batten rentals</span></div>
+              </div>
+              {boatYardRows.length === 0 ? <div style={styles.emptyState}>No boat-yard items yet.</div> : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={styles.table}>
+                    <thead><tr><th>Sailor</th><th>Rig</th><th>Sail #</th><th>Charter Dates</th><th>Days</th><th>Pro Kit</th><th>Insurance</th><th>Sail/Battens</th><th>WhatsApp</th></tr></thead>
+                    <tbody>{boatYardRows.map(reg => <tr key={reg.id}>
+                      <td>{reg.full_name}</td>
+                      <td><strong>{reg.boat_class}</strong></td>
+                      <td>{reg.sail_number || '—'}</td>
+                      <td>{reg.charter_dates || '—'}</td>
+                      <td>{Number(reg.charter_days_short || 0) + Number(reg.charter_days_extended || 0)}</td>
+                      <td>{reg.pro_kit_rental ? 'Yes' : 'No'}</td>
+                      <td>{reg.boat_insurance ? 'Yes' : 'No'}</td>
+                      <td>{reg.sail_batten_rental ? 'Yes' : 'No'}</td>
+                      <td>{reg.whatsapp || reg.phone || '—'}</td>
+                    </tr>)}</tbody>
+                  </table>
                 </div>
               )}
             </div>
@@ -1784,7 +1865,18 @@ const styles = {
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textDecoration: 'none',
+    display: 'inline-block'
+  },
+  statCard: {
+    background: 'white',
+    border: '1px solid #e2e8f0',
+    borderRadius: '10px',
+    padding: '14px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px'
   },
   formGrid: {
     display: 'grid',

@@ -64,6 +64,7 @@ export async function POST(request) {
       charter_days_extended: sailor.charterDaysExtended,
       pro_kit_rental: sailor.proKitRental,
       boat_insurance: sailor.boatInsurance,
+      sail_batten_rental: sailor.sailBattenRental,
       notes: sailor.notes || null,
       waiver_accepted: payload.waiverAccepted,
     }))
