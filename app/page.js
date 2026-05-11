@@ -25,9 +25,9 @@ const DEFAULT_EVENT = {
 const LANGUAGE_COPY = {
   en: {
     switchLabel: 'EN / ES',
-    brandSub: 'An ISA Regatta · Est. 2009',
+    brandSub: 'An ISA Regatta · Est. 2015',
     nav: { info: 'Info', registration: 'Registration', training: 'Pre-Regatta Training', sailors: 'Sailors', schedule: 'Schedule', winners: 'Past Winners', results: 'Results', docs: 'Docs' },
-    race: 'Race 2027',
+    race: '2027 Regatta',
     open: 'Registration Open',
     eyebrow: 'ILCA · Open Fleet · Mar 11–13, 2027',
     titleA: 'Mexican',
@@ -42,7 +42,7 @@ const LANGUAGE_COPY = {
   },
   es: {
     switchLabel: 'ES / EN',
-    brandSub: 'Una regata ISA · Desde 2009',
+    brandSub: 'Una regata ISA · Desde 2015',
     nav: { info: 'Info', registration: 'Inscripción', training: 'Entrenamiento pre-regata', sailors: 'Veleristas', schedule: 'Programa', winners: 'Ganadores', results: 'Resultados', docs: 'Docs' },
     race: 'Regata 2027',
     open: 'Inscripción abierta',
