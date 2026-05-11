@@ -442,7 +442,7 @@ export default function HomePage() {
   const currentEventHref = currentEventId ? `/?event=${currentEventId}&tab=info` : '/'
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0E1116', color: '#F4EDDF', fontFamily: 'var(--mm-body)' }}>
+    <div className="mm-page" style={{ minHeight: '100vh', background: '#0E1116', color: '#F4EDDF', fontFamily: 'var(--mm-body)' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
         :root {
@@ -461,6 +461,17 @@ export default function HomePage() {
         .mm-cta { transition: transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
         .mm-cta:hover { transform: translateY(-1px) skewX(-2deg); background: var(--mm-rojo-2) !important; }
         .mm-card { background: rgba(244,237,223,0.045) !important; border-color: rgba(244,237,223,0.12) !important; }
+        .mm-page h2 { font-family: var(--mm-display) !important; font-style: italic !important; text-transform: uppercase !important; letter-spacing: -0.01em !important; line-height: 0.9 !important; font-size: clamp(38px, 5.4vw, 82px) !important; }
+        .mm-page h3, .mm-page h4 { font-family: var(--mm-display) !important; font-style: italic !important; text-transform: uppercase !important; letter-spacing: 0.01em !important; }
+        .mm-page p, .mm-page li { font-family: var(--mm-body); }
+        .mm-page button, .mm-page a { transition: transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
+        .mm-page a:focus-visible, .mm-page button:focus-visible { outline: 2px solid var(--mm-sun); outline-offset: 3px; }
+        .mm-panel { border-radius: 4px !important; border: 1px solid rgba(244,237,223,.14) !important; background: rgba(244,237,223,.045) !important; }
+        .mm-slashed { position: relative; overflow: hidden; }
+        .mm-slashed::after { content: ''; position: absolute; right: -80px; top: -70px; width: 220px; height: 420px; background: rgba(200,49,30,.12); transform: rotate(-6deg); pointer-events: none; }
+        .mm-race-chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; background: rgba(14,17,22,.76); color: var(--mm-cream); border: 1px solid rgba(244,237,223,.22); border-radius: 2px; font-family: var(--mm-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+        .mm-race-chip::before { content: ''; width: 8px; height: 8px; background: var(--mm-rojo); border-radius: 1px; }
+        @media (max-width: 720px) { .mm-hero-flags, .mm-coordinates { display: none !important; } .mm-page h2 { font-size: 40px !important; } }
       `}</style>
 
       {/* Navigation */}
@@ -482,7 +493,7 @@ export default function HomePage() {
       }}>
         <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--mm-display)', fontStyle: 'italic', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
           <img src="/logo-icon.png" alt="ISA" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
-          <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
+          <span style={{ whiteSpace: 'nowrap' }}>Mexican Midwinters</span>
         </div>
         {viewingArchivedEvent && (
           <a
@@ -534,6 +545,14 @@ export default function HomePage() {
           bottom: 0,
           background: 'linear-gradient(180deg, rgba(14,17,22,0.52) 0%, rgba(14,17,22,0.18) 38%, rgba(14,17,22,0.94) 100%)',
         }} />
+
+        <div className="mm-hero-flags" style={{ position: 'absolute', top: '96px', left: '48px', zIndex: 8, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <span className="mm-race-chip">Race 2027</span>
+          <span className="mm-race-chip" style={{ background: 'rgba(27,64,52,.82)' }}>La Cruz</span>
+        </div>
+        <div className="mm-coordinates mm-mono" style={{ position: 'absolute', top: '100px', right: '48px', zIndex: 8, fontSize: '10px', color: 'rgba(244,237,223,.68)', textAlign: 'right' }}>
+          20°45′04″N · 105°22′58″W
+        </div>
 
         <div style={{
           position: 'relative',
@@ -722,9 +741,11 @@ export default function HomePage() {
                 background: activeTab === tab ? 'var(--mm-rojo)' : 'transparent',
                 color: activeTab === tab ? 'white' : 'white',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: '3px',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontFamily: 'var(--mm-mono)',
+                fontSize: '11px',
+                letterSpacing: '0.16em',
                 fontWeight: '600',
                 textTransform: 'capitalize',
                 transition: 'all 0.3s ease',
@@ -787,7 +808,7 @@ export default function HomePage() {
                   <span style={{ color: '#63b3ed' }}><Icons.Flag /></span>
                   Event Overview
                 </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mm-panel mm-slashed" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Dates</h4>
@@ -864,17 +885,20 @@ export default function HomePage() {
                   <span style={{ color: '#63b3ed' }}><Icons.Trophy /></span>
                   Registration
                 </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mm-panel mm-slashed" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', marginBottom: '25px' }}>
                     <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#63b3ed' }}>$100</div>
                     <a 
                       href="/register"
                       style={{
-                        background: '#63b3ed',
-                        color: '#0a192f',
-                        padding: '12px 24px',
-                        borderRadius: '8px',
+                        background: 'var(--mm-rojo)',
+                        color: 'var(--mm-cream)',
+                        padding: '14px 26px',
+                        borderRadius: '4px',
                         textDecoration: 'none',
+                        fontFamily: 'var(--mm-display)',
+                        fontStyle: 'italic',
+                        textTransform: 'uppercase',
                         fontWeight: 'bold',
                         display: 'flex',
                         alignItems: 'center',
@@ -915,7 +939,7 @@ export default function HomePage() {
                   <span style={{ color: '#63b3ed' }}><Icons.Location /></span>
                   Venue & Travel
                 </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mm-panel mm-slashed" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Racing Venue</h4>
@@ -958,7 +982,7 @@ export default function HomePage() {
                   <img src="/logo-icon.png" alt="" style={{ height: '24px', width: 'auto', objectFit: 'contain', verticalAlign: 'middle' }} />
                   Classes & Awards
                 </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mm-panel mm-slashed" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Classes</h4>
@@ -985,7 +1009,7 @@ export default function HomePage() {
                   <span style={{ color: '#63b3ed' }}><Icons.CheckeredFlag /></span>
                   Safety & Requirements
                 </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mm-panel mm-slashed" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Safety Equipment</h4>
@@ -1005,7 +1029,7 @@ export default function HomePage() {
                   <span style={{ color: '#63b3ed' }}><Icons.Users /></span>
                   Contact & Support
                 </h2>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mm-panel mm-slashed" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
                       <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Email</h4>
