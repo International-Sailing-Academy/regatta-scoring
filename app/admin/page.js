@@ -1386,7 +1386,7 @@ export default function AdminPage() {
               </div>
               {boatYardRows.length === 0 ? <div style={styles.emptyState}>No boat-yard items yet.</div> : (
                 <div style={{ overflowX: 'auto' }}>
-                  <table style={{ ...styles.table, minWidth: '960px', tableLayout: 'fixed' }}>
+                  <table style={{ ...styles.table, minWidth: '960px', tableLayout: 'fixed', textAlign: 'left' }}>
                     <colgroup>
                       <col style={{ width: '17%' }} />
                       <col style={{ width: '9%' }} />
@@ -1399,28 +1399,28 @@ export default function AdminPage() {
                       <col style={{ width: '12%' }} />
                     </colgroup>
                     <thead><tr>
-                      <th style={styles.tableHeader}>Sailor</th>
-                      <th style={styles.tableHeader}>Rig</th>
-                      <th style={styles.tableHeader}>Sail #</th>
-                      <th style={styles.tableHeader}>Package Dates</th>
-                      <th style={styles.tableHeader}>Days</th>
-                      <th style={styles.tableHeader}>Pro Kit</th>
-                      <th style={styles.tableHeader}>Ins.</th>
-                      <th style={styles.tableHeader}>Sail + Battens</th>
-                      <th style={styles.tableHeader}>WhatsApp</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Sailor</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Rig</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Sail #</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Package Dates</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Days</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Pro Kit</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Ins.</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>Sail + Battens</th>
+                      <th style={{ ...styles.tableHeader, textAlign: 'left' }}>WhatsApp</th>
                     </tr></thead>
                     <tbody>{boatYardRows.map(reg => {
                       const charterDays = Number(reg.charter_days_short || 0) + Number(reg.charter_days_extended || 0)
                       return <tr key={reg.id}>
-                        <td style={styles.tableCell}>{reg.full_name}</td>
-                        <td style={styles.tableCell}><strong>{reg.boat_class}</strong></td>
-                        <td style={styles.tableCell}>{reg.sail_number || '—'}</td>
-                        <td style={styles.tableCell}><strong>{boatYardDateLabel(reg)}</strong></td>
-                        <td style={styles.tableCell}>{charterDays || '—'}</td>
-                        <td style={styles.tableCell}>{reg.pro_kit_rental ? 'Yes' : 'No'}</td>
-                        <td style={styles.tableCell}>{reg.boat_insurance ? 'Yes' : 'No'}</td>
-                        <td style={styles.tableCell}>{reg.sail_batten_rental ? 'Yes' : 'No'}</td>
-                        <td style={styles.tableCell}>{reg.whatsapp || reg.phone || '—'}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{reg.full_name}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}><strong>{reg.boat_class}</strong></td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{reg.sail_number || '—'}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}><strong>{boatYardDateLabel(reg)}</strong></td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{charterDays || '—'}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{reg.pro_kit_rental ? 'Yes' : 'No'}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{reg.boat_insurance ? 'Yes' : 'No'}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{reg.sail_batten_rental ? 'Yes' : 'No'}</td>
+                        <td style={{ ...styles.tableCell, textAlign: 'left' }}>{reg.whatsapp || reg.phone || '—'}</td>
                       </tr>
                     })}</tbody>
                   </table>
@@ -1754,7 +1754,7 @@ export default function AdminPage() {
                           <div style={styles.tableContainer}>
                             <table style={styles.table}>
                               <thead>
-                                <tr style={styles.tableHeader}>
+                                <tr style={{ ...styles.tableHeader, textAlign: 'left' }}>
                                   <th style={styles.th}>Rank</th>
                                   <th style={styles.th}>Sail</th>
                                   <th style={styles.th}>Helmsman / Crew</th>
