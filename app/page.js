@@ -534,6 +534,7 @@ export default function HomePage() {
         .mm-page h3, .mm-page h4 { font-family:var(--mm-display) !important; font-style:italic; text-transform:uppercase; letter-spacing:.01em; }
         .mm-page h4 { color:var(--mm-sun) !important; }
         .mm-page section > div, .mm-page .mm-soft-panel { border-radius:4px !important; border-color:rgba(242,237,224,.14) !important; background:rgba(242,237,224,.045) !important; }
+        .mm-page .mm-final-banner-card { background:var(--mm-sun) !important; border-color:transparent !important; }
         .mm-page .mm-tabbar { background:rgba(242,237,224,.055) !important; border:1px solid rgba(242,237,224,.10); border-radius:4px !important; }
         .mm-page button, .mm-page a { transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
         .mm-page a:focus-visible, .mm-page button:focus-visible { outline:2px solid var(--mm-sun); outline-offset:3px; }
@@ -1388,66 +1389,11 @@ export default function HomePage() {
             </div>
           )}
         </div>
-        
-        {/* Debug Panel - at bottom */}
-        <div style={{ 
-          background: 'rgba(255,255,255,0.03)', 
-          padding: '8px 12px', 
-          borderRadius: '6px',
-          marginTop: '40px',
-          fontSize: '11px',
-          fontFamily: 'monospace',
-          color: 'rgba(255,255,255,0.4)',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '12px',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <span>Source: {dataSource}</span>
-          <span>|</span>
-          <span>Sailors: {event?.sailors?.length || 0}</span>
-          <span>|</span>
-          <button 
-            onClick={async () => {
-              // Force refresh from Supabase by clearing and reloading
-              setLoading(true)
-              try {
-                const supabaseEvents = await getAllEvents()
-                console.log('Force refresh - Supabase events:', supabaseEvents)
-                if (supabaseEvents && supabaseEvents.length > 0) {
-                  // Find the event with the most sailors
-                  const bestEvent = supabaseEvents.reduce((best, e) => 
-                    (e.sailors?.length || 0) > (best?.sailors?.length || 0) ? e : best
-                  , supabaseEvents[0])
-                  console.log('Setting event with', bestEvent.sailors?.length, 'sailors')
-                  setEvent(bestEvent)
-                  setDataSource('supabase-force')
-                }
-              } catch (err) {
-                console.error('Force refresh error:', err)
-              } finally {
-                setLoading(false)
-              }
-            }}
-            style={{
-              padding: '2px 8px',
-              background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '4px',
-              color: 'rgba(255,255,255,0.5)',
-              cursor: 'pointer',
-              fontSize: '10px'
-            }}
-          >
-            Refresh
-          </button>
-        </div>
       </div>
 
       {/* Final CTA Banner */}
       <section className="mm-final-banner" style={{ maxWidth: '1200px', margin: '26px auto 0', padding: '0 clamp(20px, 4vw, 28px)' }}>
-        <div style={{ position: 'relative', overflow: 'hidden', background: 'var(--mm-sun)', color: 'var(--mm-ink)', borderRadius: '4px', minHeight: '250px', display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(260px, 0.75fr)', gap: '28px', alignItems: 'center', padding: 'clamp(28px, 5vw, 54px)' }}>
+        <div className="mm-final-banner-card" style={{ position: 'relative', overflow: 'hidden', background: 'var(--mm-sun)', color: 'var(--mm-ink)', borderRadius: '4px', minHeight: '250px', display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(260px, 0.75fr)', gap: '28px', alignItems: 'center', padding: 'clamp(28px, 5vw, 54px)' }}>
           <div style={{ position: 'absolute', right: '-60px', top: '-30px', width: '280px', height: '360px', background: 'rgba(10,25,41,0.10)', transform: 'skewX(-18deg)', pointerEvents: 'none' }} />
           <div style={{ position: 'relative' }}>
             <h2 className="mm-final-banner-title" style={{ margin: 0, fontFamily: 'var(--mm-display)', fontSize: 'clamp(58px, 8.5vw, 118px)', lineHeight: 0.86, letterSpacing: '-0.045em', color: 'var(--mm-ink)' }}>
@@ -1479,9 +1425,6 @@ export default function HomePage() {
             <a href="https://isa-virtual-coaching.circle.so/" style={{ color: 'var(--mm-sun)', textDecoration: 'none' }}>Virtual Coaching</a>
           </div>
           <p style={{ marginTop: '30px', opacity: 0.4, fontSize: '14px' }}>© 2027 International Sailing Academy</p>
-          <p style={{ marginTop: '10px', opacity: 0.3, fontSize: '11px', fontFamily: 'monospace' }}>
-            Source: {dataSource} | Sailors: {event?.sailors?.length || 0} | Event: {event?.eventName?.slice(0, 20)}...
-          </p>
         </div>
       </footer>
     </div>
