@@ -537,7 +537,7 @@ export default function HomePage() {
         .mm-page .mm-tabbar { background:rgba(242,237,224,.055) !important; border:1px solid rgba(242,237,224,.10); border-radius:4px !important; }
         .mm-page button, .mm-page a { transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
         .mm-page a:focus-visible, .mm-page button:focus-visible { outline:2px solid var(--mm-sun); outline-offset:3px; }
-        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; overflow:hidden !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-hero-bottom { width:100% !important; } .mm-hero-bottom > div, .mm-hero-bottom aside { width:100% !important; min-width:0 !important; max-width:100% !important; } .mm-headline { font-size:clamp(46px, 13.4vw, 52px) !important; max-width:100% !important; overflow-wrap:normal !important; letter-spacing:-0.04em !important; } .mm-hero-bottom p { max-width:100% !important; font-size:16px !important; } .mm-hero-bottom .mm-btn { max-width:100% !important; } .mm-count-row { width:100% !important; flex-wrap:wrap !important; gap:14px 18px !important; } .mm-count-n { font-size:40px !important; } .mm-eyebrow-mobile-wrap { flex-wrap:wrap !important; } .mm-training-title { font-size:clamp(46px, 14vw, 56px) !important; } .mm-training-label { width:100% !important; box-sizing:border-box !important; justify-content:flex-start !important; } .mm-past-winners-section { padding:30px 18px 32px !important; } .mm-past-winners-grid { grid-template-columns:1fr !important; gap:30px !important; } .mm-past-winners-title { font-size:clamp(44px, 13vw, 50px) !important; letter-spacing:-0.04em !important; } .mm-past-winners-stats { grid-template-columns:1fr !important; max-width:100% !important; } .mm-past-winner-row { grid-template-columns:54px minmax(0, 1fr) !important; gap:12px !important; } .mm-past-winner-points { grid-column:2 !important; text-align:left !important; margin-top:-6px !important; } }
+        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; overflow:hidden !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-hero-bottom { width:100% !important; } .mm-hero-bottom > div, .mm-hero-bottom aside { width:100% !important; min-width:0 !important; max-width:100% !important; } .mm-headline { font-size:clamp(46px, 13.4vw, 52px) !important; max-width:100% !important; overflow-wrap:normal !important; letter-spacing:-0.04em !important; } .mm-hero-bottom p { max-width:100% !important; font-size:16px !important; } .mm-hero-bottom .mm-btn { max-width:100% !important; } .mm-count-row { width:100% !important; flex-wrap:wrap !important; gap:14px 18px !important; } .mm-count-n { font-size:40px !important; } .mm-eyebrow-mobile-wrap { flex-wrap:wrap !important; } .mm-training-title { font-size:clamp(46px, 14vw, 56px) !important; } .mm-training-label { width:100% !important; box-sizing:border-box !important; justify-content:flex-start !important; } .mm-final-banner > div { grid-template-columns:1fr !important; } .mm-final-banner-title { font-size:clamp(54px, 15vw, 68px) !important; } .mm-past-winners-section { padding:30px 18px 32px !important; } .mm-past-winners-grid { grid-template-columns:1fr !important; gap:30px !important; } .mm-past-winners-title { font-size:clamp(44px, 13vw, 50px) !important; letter-spacing:-0.04em !important; } .mm-past-winners-stats { grid-template-columns:1fr !important; max-width:100% !important; } .mm-past-winner-row { grid-template-columns:54px minmax(0, 1fr) !important; gap:12px !important; } .mm-past-winner-points { grid-column:2 !important; text-align:left !important; margin-top:-6px !important; } }
       `}</style>
 
       {/* Hero Section */}
@@ -1467,6 +1467,24 @@ export default function HomePage() {
           </button>
         </div>
       </div>
+
+      {/* Final CTA Banner */}
+      <section className="mm-final-banner" style={{ maxWidth: '1200px', margin: '26px auto 0', padding: '0 clamp(20px, 4vw, 28px)' }}>
+        <div style={{ position: 'relative', overflow: 'hidden', background: 'var(--mm-sun)', color: 'var(--mm-ink)', borderRadius: '4px', minHeight: '250px', display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(260px, 0.75fr)', gap: '28px', alignItems: 'center', padding: 'clamp(28px, 5vw, 54px)' }}>
+          <div style={{ position: 'absolute', right: '-60px', top: '-30px', width: '280px', height: '360px', background: 'rgba(10,25,41,0.10)', transform: 'skewX(-18deg)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative' }}>
+            <h2 className="mm-final-banner-title" style={{ margin: 0, fontFamily: 'var(--mm-display)', fontSize: 'clamp(58px, 8.5vw, 118px)', lineHeight: 0.86, letterSpacing: '-0.045em', color: 'var(--mm-ink)' }}>
+              Race the<br />Midwinters.
+            </h2>
+          </div>
+          <div style={{ position: 'relative', maxWidth: '360px', justifySelf: 'end' }}>
+            <p style={{ margin: '0 0 22px', fontSize: '17px', lineHeight: 1.55, color: 'rgba(10,25,41,0.82)', fontWeight: 700 }}>
+              Registration is open for 2027. Charter boats are limited. Sign up now and make Banderas Bay your March racing block.
+            </p>
+            <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--mm-ink)', color: 'var(--mm-cream)', padding: '16px 20px', borderRadius: '3px', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none', fontWeight: 900 }}>Register for 2027 →</a>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer style={{ 
