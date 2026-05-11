@@ -14,12 +14,15 @@ import {
 
 const fieldStyle = {
   width: '100%',
+  minHeight: '48px',
   padding: '12px 14px',
   borderRadius: '8px',
   border: '1px solid rgba(255,255,255,0.18)',
   background: 'rgba(255,255,255,0.06)',
   color: 'white',
   fontSize: '16px',
+  lineHeight: '1.35',
+  boxSizing: 'border-box',
 }
 
 const labelStyle = {
@@ -27,7 +30,8 @@ const labelStyle = {
   fontSize: '13px',
   fontWeight: '700',
   color: '#63b3ed',
-  marginBottom: '7px',
+  marginBottom: '8px',
+  lineHeight: '1.3',
 }
 
 function Field({ label, help, children }) {
@@ -41,7 +45,22 @@ function Field({ label, help, children }) {
 }
 
 function Select({ value, onChange, children, required = false }) {
-  return <select style={fieldStyle} value={value} onChange={onChange} required={required}>{children}</select>
+  return (
+    <select
+      style={{
+        ...fieldStyle,
+        height: '52px',
+        paddingRight: '42px',
+        appearance: 'auto',
+        WebkitAppearance: 'menulist',
+      }}
+      value={value}
+      onChange={onChange}
+      required={required}
+    >
+      {children}
+    </select>
+  )
 }
 
 function money(cents) {
