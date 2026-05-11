@@ -10,9 +10,9 @@ export default function RegistrationSuccessPage() {
         <div style={{ marginTop: '24px', padding: '18px', borderRadius: '12px', background: 'rgba(99,179,237,0.1)', border: '1px solid rgba(99,179,237,0.28)' }}>
           <h2 style={{ margin: '0 0 8px', fontSize: '22px' }}>Join the regatta WhatsApp group</h2>
           <p style={{ margin: '0 0 14px', opacity: 0.78, lineHeight: 1.5 }}>We’ll use this group for race-office updates, logistics, and sailor notices.</p>
-          <a href={WHATSAPP_GROUP_URL} style={{ display: 'inline-block', background: '#25D366', color: '#062414', padding: '12px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: '900' }}>Join WhatsApp group</a>
+          <a href={WHATSAPP_GROUP_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', background: '#25D366', color: '#062414', padding: '12px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: '900' }}>Join WhatsApp group</a>
         </div>
-        <a href="/?tab=sailors" style={{ display: 'inline-block', marginTop: '22px', background: '#63b3ed', color: '#0a192f', padding: '12px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: '800' }}>View sailor list</a>
+        <a href="/?tab=sailors" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '22px', background: '#63b3ed', color: '#0a192f', padding: '12px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: '800' }}>View sailor list</a>
       </div>
     </main>
   )

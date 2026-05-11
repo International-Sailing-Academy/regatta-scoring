@@ -59,7 +59,7 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
 
 export async function sendEmail({ to, subject, text, html }) {
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured')
-  const from = process.env.CONFIRMATION_EMAIL_FROM || 'International Sailing Academy <info@internationalsailingacademy.com>'
+  const from = process.env.CONFIRMATION_EMAIL_FROM || 'Mexican Midwinters <registrations@fantasysailor.com>'
   const replyTo = process.env.CONFIRMATION_EMAIL_REPLY_TO || 'info@internationalsailingacademy.com'
   const response = await fetch(RESEND_API_URL, {
     method: 'POST',
