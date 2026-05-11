@@ -22,6 +22,39 @@ const DEFAULT_EVENT = {
   lastUpdated: new Date().toLocaleString()
 }
 
+const LANGUAGE_COPY = {
+  en: {
+    switchLabel: 'EN / ES',
+    brandSub: 'An ISA Regatta · Est. 2009',
+    nav: { info: 'Regatta', sailors: 'Sailors', archive: 'Past Winners', results: 'Results', docs: 'Docs' },
+    race: 'Race 2027',
+    open: 'Registration Open',
+    eyebrow: 'ILCA · Open Fleet · Mar 11–13, 2027',
+    titleA: 'Mexican',
+    titleB: 'Midwinters.',
+    lede: 'Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management.',
+    register: 'Register for 2027',
+    viewResults: 'View 2026 results',
+    scroll: 'Scroll ↓ the regatta',
+    countdown: 'Racing commences in',
+  },
+  es: {
+    switchLabel: 'ES / EN',
+    brandSub: 'Una regata ISA · Desde 2009',
+    nav: { info: 'Regata', sailors: 'Veleristas', archive: 'Ganadores', results: 'Resultados', docs: 'Docs' },
+    race: 'Regata 2027',
+    open: 'Inscripción abierta',
+    eyebrow: 'ILCA · Flota abierta · 11–13 marzo, 2027',
+    titleA: 'Mexican',
+    titleB: 'Midwinters.',
+    lede: 'Tres días de regata ILCA en Bahía de Banderas: brisa térmica constante, flotas competitivas y organización de primer nivel.',
+    register: 'Inscríbete para 2027',
+    viewResults: 'Ver resultados 2026',
+    scroll: 'Baja ↓ la regata',
+    countdown: 'La regata comienza en',
+  },
+}
+
 const getEventStartMs = (evt) => {
   if (!evt?.eventDate) return Number.POSITIVE_INFINITY
   const time = evt?.eventStartTime || '12:00'
@@ -227,6 +260,8 @@ export default function HomePage() {
   const [dataSource, setDataSource] = useState('loading')
   const [scrollY, setScrollY] = useState(0)
   const [sailorSort, setSailorSort] = useState({ field: 'boatClass', direction: 'asc' })
+  const [language, setLanguage] = useState('en')
+  const copy = LANGUAGE_COPY[language]
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -494,30 +529,36 @@ export default function HomePage() {
               <img src="/logo-icon.png" alt="ISA" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
               <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
                 <span className="mm-hero-brand">Mexican Midwinters</span>
-                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '5px' }}>An ISA Regatta · Est. 2009</span>
+                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '5px' }}>{copy.brandSub}</span>
               </span>
             </a>
             <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
               {[
-                ['Regatta', 'info'],
-                ['Sailors', 'sailors'],
-                ['Past Winners', 'archive'],
-                ['Results', 'results'],
-                ['Docs', 'docs'],
+                [copy.nav.info, 'info'],
+                [copy.nav.sailors, 'sailors'],
+                [copy.nav.archive, 'archive'],
+                [copy.nav.results, 'results'],
+                [copy.nav.docs, 'docs'],
               ].map(([label, tab]) => (
                 <button key={label} onClick={() => setActiveTab(tab)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
               ))}
             </nav>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <span className="mm-nav-lang mm-hero-mono" style={{ fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.6)' }}>EN / ES</span>
+              <button
+                type="button"
+                onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+                className="mm-nav-lang mm-hero-mono"
+                aria-label="Switch language"
+                style={{ background: 'transparent', border: '1px solid rgba(242,237,224,0.24)', borderRadius: '999px', padding: '7px 10px', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.72)' }}
+              >{copy.switchLabel}</button>
               <a className="mm-btn" href="/register">Register <span style={{ fontStyle: 'normal' }}>→</span></a>
             </div>
           </header>
 
           <div className="mm-chrome" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '56px', gap: '24px' }}>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <span className="mm-flag">Race 2027</span>
-              <span className="mm-flag mm-flag--live">Registration Open</span>
+              <span className="mm-flag">{copy.race}</span>
+              <span className="mm-flag mm-flag--live">{copy.open}</span>
             </div>
             <div className="mm-coords mm-hero-mono" style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.75)' }}>20°45'04&quot;N · 105°22'58&quot;W</div>
@@ -529,24 +570,24 @@ export default function HomePage() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
                 <span style={{ width: '64px', height: '1px', background: 'var(--mm-sun)' }} />
-                <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-sun)' }}>ILCA · Open Fleet · Mar 11–13, 2027</span>
+                <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-sun)' }}>{copy.eyebrow}</span>
               </div>
               <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(72px, 11vw, 180px)', lineHeight: 0.92, letterSpacing: '-0.025em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
-                Mexican<br />
-                <span style={{ color: 'var(--mm-sun)' }}>Midwinters.</span>
+                {copy.titleA}<br />
+                <span style={{ color: 'var(--mm-sun)' }}>{copy.titleB}</span>
               </h1>
               <p style={{ maxWidth: '540px', marginTop: '28px', fontSize: '17px', lineHeight: 1.55, color: 'rgba(242,237,224,0.82)', fontFamily: 'var(--mm-body)', fontWeight: 300 }}>
-                Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management.
+                {copy.lede}
               </p>
               <div style={{ marginTop: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <a className="mm-btn mm-btn--hero" href="/register">Register for 2027 <span style={{ fontStyle: 'normal' }}>→</span></a>
-                <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('archive')}>View 2026 results</button>
+                <a className="mm-btn mm-btn--hero" href="/register">{copy.register} <span style={{ fontStyle: 'normal' }}>→</span></a>
+                <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('archive')}>{copy.viewResults}</button>
               </div>
-              <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)' }}>Scroll ↓ the regatta</div>
+              <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)' }}>{copy.scroll}</div>
             </div>
 
             <aside style={{ minWidth: '380px' }} aria-label="Countdown">
-              <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.6)', marginBottom: '18px' }}>Racing commences in</div>
+              <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.6)', marginBottom: '18px' }}>{copy.countdown}</div>
               <CountdownTimer targetDate={eventStartDateTime} />
             </aside>
           </div>
