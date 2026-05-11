@@ -139,7 +139,7 @@ const Icons = {
       3: '#CD7F32', // Bronze
     }
     return (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors[place] || 'var(--mm-rojo)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors[place] || 'var(--mm-sun)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="8" r="7" />
         <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
       </svg>
@@ -389,7 +389,7 @@ export default function HomePage() {
       color: 'white'
     }}>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ color: 'var(--mm-rojo)', marginBottom: '20px' }}>
+        <div style={{ color: 'var(--mm-sun)', marginBottom: '20px' }}>
           <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
         </div>
         <p>Loading regatta data...</p>
@@ -448,25 +448,25 @@ export default function HomePage() {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@500;700&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-        :root { --mm-ink:#0E1116; --mm-ink-2:#181C24; --mm-ink-3:#232834; --mm-cream:#F4EDDF; --mm-rojo:#C8311E; --mm-rojo-2:#E04A38; --mm-verde:#1B4034; --mm-sun:#F4C724; --mm-display:'Antonio','Oswald','Impact',sans-serif; --mm-body:'Space Grotesk',system-ui,sans-serif; --mm-mono:'JetBrains Mono',ui-monospace,monospace; }
+        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        :root { --mm-ink:#0A1929; --mm-ink-2:#122337; --mm-ink-3:#1B304A; --mm-cream:#F2EDE0; --mm-cream-2:#E7E1D1; --mm-bone:#FAF6EC; --mm-tequila:#F4A82A; --mm-tequila-2:#FFC04A; --mm-sun:#F4A82A; --mm-sun-2:#FFC04A; --mm-rojo:#E76F51; --mm-bay:#1E4F6B; --mm-bay-2:#143A52; --mm-verde:#1E4F6B; --mm-sky:#4FB3D9; --mm-pink:#E76F51; --mm-lime:#B6E04A; --mm-display:'Archivo','Inter',system-ui,sans-serif; --mm-body:'Manrope',system-ui,sans-serif; --mm-mono:'JetBrains Mono',ui-monospace,monospace; }
         .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
-        .mm-btn { display:inline-flex; align-items:center; gap:12px; padding:12px 20px; background:var(--mm-rojo); color:var(--mm-ink); font-family:var(--mm-display); font-style:italic; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.02em; border:none; border-radius:4px; cursor:pointer; text-decoration:none; transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
-        .mm-btn:hover { background:var(--mm-rojo-2); transform:translateY(-1px) skewX(-2deg); }
+        .mm-btn { display:inline-flex; align-items:center; gap:12px; padding:12px 20px; background:var(--mm-sun); color:var(--mm-ink); font-family:var(--mm-display); font-weight:800; font-size:14px; text-transform:uppercase; letter-spacing:.08em; border:none; border-radius:4px; cursor:pointer; text-decoration:none; transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
+        .mm-btn:hover { background:var(--mm-sun-2); transform:translateY(-1px) skewX(-2deg); }
         .mm-btn--hero { font-size:24px; padding:18px 28px 18px 32px; }
-        .mm-btn-ghost { display:inline-flex; align-items:center; gap:10px; padding:14px 22px; background:transparent; color:var(--mm-cream); border:1px solid rgba(244,237,223,.35); font-family:var(--mm-mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; border-radius:4px; text-decoration:none; }
-        .mm-hero-brand { font-family:var(--mm-display); font-style:italic; font-weight:700; font-size:18px; letter-spacing:.02em; text-transform:uppercase; }
+        .mm-btn-ghost { display:inline-flex; align-items:center; gap:10px; padding:14px 22px; background:transparent; color:var(--mm-cream); border:1px solid rgba(242,237,224,.35); font-family:var(--mm-mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; border-radius:4px; text-decoration:none; }
+        .mm-hero-brand { font-family:var(--mm-display); font-weight:900; font-size:18px; letter-spacing:-.01em; text-transform:uppercase; }
         .mm-hero-mono { font-family:var(--mm-mono); text-transform:uppercase; }
         .mm-flag { display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 8px; background:var(--mm-ink); color:var(--mm-cream); font-family:var(--mm-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; border-radius:2px; }
-        .mm-flag::before { content:""; width:8px; height:8px; background:var(--mm-rojo); border-radius:1px; }
+        .mm-flag::before { content:""; width:8px; height:8px; background:var(--mm-sun); border-radius:1px; }
         .mm-flag--live { background:var(--mm-verde); }
         .mm-flag--live::before { background:var(--mm-sun); }
         @media (max-width: 900px) { .mm-nav-links, .mm-nav-lang { display:none !important; } .mm-hero-bottom { flex-direction:column !important; align-items:flex-start !important; gap:40px !important; } .mm-count-n { font-size:52px !important; } }
-        .mm-page h2 { font-family:var(--mm-display) !important; font-style:italic; font-weight:700; text-transform:uppercase; letter-spacing:-.01em; line-height:.9; color:var(--mm-cream); }
+        .mm-page h2 { font-family:var(--mm-display) !important; font-weight:900; text-transform:uppercase; letter-spacing:-.01em; line-height:.9; color:var(--mm-cream); }
         .mm-page h3, .mm-page h4 { font-family:var(--mm-display) !important; font-style:italic; text-transform:uppercase; letter-spacing:.01em; }
-        .mm-page h4 { color:var(--mm-rojo) !important; }
-        .mm-page section > div, .mm-page .mm-soft-panel { border-radius:4px !important; border-color:rgba(244,237,223,.14) !important; background:rgba(244,237,223,.045) !important; }
-        .mm-page .mm-tabbar { background:rgba(244,237,223,.055) !important; border:1px solid rgba(244,237,223,.10); border-radius:4px !important; }
+        .mm-page h4 { color:var(--mm-sun) !important; }
+        .mm-page section > div, .mm-page .mm-soft-panel { border-radius:4px !important; border-color:rgba(242,237,224,.14) !important; background:rgba(242,237,224,.045) !important; }
+        .mm-page .mm-tabbar { background:rgba(242,237,224,.055) !important; border:1px solid rgba(242,237,224,.10); border-radius:4px !important; }
         .mm-page button, .mm-page a { transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
         .mm-page a:focus-visible, .mm-page button:focus-visible { outline:2px solid var(--mm-sun); outline-offset:3px; }
         @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-headline { font-size:72px !important; } .mm-count-row { flex-wrap:wrap !important; gap:12px !important; } .mm-count-n { font-size:40px !important; } }
@@ -482,7 +482,7 @@ export default function HomePage() {
           transform: `translateY(${scrollY * 0.35}px)`,
           filter: 'brightness(0.62)',
         }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(14,17,22,0.55) 0%, rgba(14,17,22,0.10) 35%, rgba(14,17,22,0.85) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,25,41,0.55) 0%, rgba(10,25,41,0.10) 35%, rgba(10,25,41,0.85) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.06, mixBlendMode: 'overlay', pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>")` }} />
 
         <div className="mm-hero-inner" style={{ position: 'relative', zIndex: 3, minHeight: '100vh', padding: '24px 48px 48px', display: 'flex', flexDirection: 'column' }}>
@@ -491,7 +491,7 @@ export default function HomePage() {
               <img src="/logo-icon.png" alt="ISA" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
               <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
                 <span className="mm-hero-brand">Mexican Midwinters</span>
-                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(244,237,223,0.6)', marginTop: '4px' }}>EST. 2009 · Bahía de Banderas</span>
+                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '4px' }}>EST. 2009 · Bahía de Banderas</span>
               </span>
             </a>
             <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
@@ -500,7 +500,7 @@ export default function HomePage() {
               ))}
             </nav>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <span className="mm-nav-lang mm-hero-mono" style={{ fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(244,237,223,0.6)' }}>EN / ES</span>
+              <span className="mm-nav-lang mm-hero-mono" style={{ fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.6)' }}>EN / ES</span>
               <a className="mm-btn" href="/register">Register <span style={{ fontStyle: 'normal' }}>→</span></a>
             </div>
           </header>
@@ -511,33 +511,33 @@ export default function HomePage() {
               <span className="mm-flag mm-flag--live">Registration Open</span>
             </div>
             <div className="mm-coords mm-hero-mono" style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.75)' }}>20°45'04&quot;N · 105°22'58&quot;W</div>
-              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.5)', marginTop: '4px' }}>Bahía de Banderas, Nay.</div>
+              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.75)' }}>20°45'04&quot;N · 105°22'58&quot;W</div>
+              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)', marginTop: '4px' }}>Bahía de Banderas, Nay.</div>
             </div>
           </div>
 
           <div className="mm-hero-bottom" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '64px', paddingTop: '80px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-                <span style={{ width: '64px', height: '1px', background: 'var(--mm-rojo)' }} />
-                <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-rojo)' }}>ILCA · Open Fleet · Mar 11–13, 2027</span>
+                <span style={{ width: '64px', height: '1px', background: 'var(--mm-sun)' }} />
+                <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-sun)' }}>ILCA · Open Fleet · Mar 11–13, 2027</span>
               </div>
-              <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontStyle: 'italic', fontWeight: 700, fontSize: 'clamp(88px, 13vw, 220px)', lineHeight: 0.84, letterSpacing: '-0.01em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
+              <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(88px, 13vw, 220px)', lineHeight: 0.84, letterSpacing: '-0.01em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
                 Mexican<br />
                 <span style={{ color: 'var(--mm-rojo)' }}>Midwinters.</span>
               </h1>
-              <p style={{ maxWidth: '560px', marginTop: '28px', fontSize: '18px', lineHeight: 1.5, color: 'rgba(244,237,223,0.82)', fontFamily: 'var(--mm-body)', fontWeight: 300 }}>
+              <p style={{ maxWidth: '560px', marginTop: '28px', fontSize: '18px', lineHeight: 1.5, color: 'rgba(242,237,224,0.82)', fontFamily: 'var(--mm-body)', fontWeight: 300 }}>
                 {event.description || 'Join us for the premier ILCA regatta in Mexico! Open to all ILCA 7 and ILCA 6 sailors.'}
               </p>
               <div style={{ marginTop: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <a className="mm-btn mm-btn--hero" href="/register">Register for 2027 <span style={{ fontStyle: 'normal' }}>→</span></a>
                 <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('results')}>View 2026 results</button>
               </div>
-              <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.5)' }}>Scroll ↓ the regatta</div>
+              <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)' }}>Scroll ↓ the regatta</div>
             </div>
 
             <aside style={{ minWidth: '380px' }} aria-label="Countdown">
-              <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.6)', marginBottom: '18px' }}>Racing commences in</div>
+              <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.6)', marginBottom: '18px' }}>Racing commences in</div>
               <CountdownTimer targetDate={eventStartDateTime} />
             </aside>
           </div>
@@ -582,7 +582,7 @@ export default function HomePage() {
                 style={{ 
                   flex: 1,
                   padding: '15px', 
-                  background: 'var(--mm-rojo)', 
+                  background: 'var(--mm-sun)', 
                   color: 'var(--mm-cream)', 
                   border: 'none', 
                   borderRadius: '8px',
@@ -637,7 +637,7 @@ export default function HomePage() {
                 flex: '1 1 auto',
                 minWidth: '70px',
                 padding: '12px 16px',
-                background: activeTab === tab ? 'var(--mm-rojo)' : 'transparent',
+                background: activeTab === tab ? 'var(--mm-sun)' : 'transparent',
                 color: activeTab === tab ? 'white' : 'white',
                 border: 'none',
                 borderRadius: '3px',
@@ -649,7 +649,7 @@ export default function HomePage() {
                 textTransform: 'uppercase',
                 transition: 'all 0.3s ease',
                 whiteSpace: 'nowrap',
-                boxShadow: activeTab === tab ? '0 4px 6px rgba(200, 49, 30, 0.3)' : 'none',
+                boxShadow: activeTab === tab ? '0 4px 6px rgba(244, 168, 42, 0.3)' : 'none',
                 transform: activeTab === tab ? 'translateY(-2px)' : 'none',
               }}
             >
@@ -664,8 +664,8 @@ export default function HomePage() {
             margin: '0 auto 35px',
             padding: '18px 22px',
             borderRadius: '14px',
-            background: 'rgba(200, 49, 30, 0.12)',
-            border: '1px solid rgba(200, 49, 30, 0.35)',
+            background: 'rgba(244, 168, 42, 0.12)',
+            border: '1px solid rgba(244, 168, 42, 0.35)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -673,13 +673,13 @@ export default function HomePage() {
             flexWrap: 'wrap',
           }}>
             <div>
-              <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mm-rojo)', fontWeight: 'bold', marginBottom: '4px' }}>Archive mode</div>
+              <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mm-sun)', fontWeight: 'bold', marginBottom: '4px' }}>Archive mode</div>
               <div style={{ fontSize: '16px', opacity: 0.9 }}>You are viewing an archived regatta. Use the button to return to the current event.</div>
             </div>
             <a
               href={currentEventHref}
               style={{
-                background: 'var(--mm-rojo)',
+                background: 'var(--mm-sun)',
                 color: 'var(--mm-cream)',
                 padding: '12px 18px',
                 borderRadius: '8px',
@@ -704,48 +704,48 @@ export default function HomePage() {
               {/* Event Overview */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Flag /></span>
+                  <span style={{ color: 'var(--mm-sun)' }}><Icons.Flag /></span>
                   Event Overview
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Dates</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Dates</h4>
                       <p>{event.eventDate || 'Date TBA'}{event.eventEndDate ? ` – ${event.eventEndDate}` : ''}</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>
                         Start time: {event.eventStartTime || '12:00'}
                       </p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Location</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Location</h4>
                       <p>La Cruz de Huanacaxtle, Nayarit, Mexico</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>Bahía de Banderas</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Classes</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Classes</h4>
                       <p>ILCA 6, ILCA 7</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>All levels including Masters</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Host</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Host</h4>
                       <p>International Sailing Academy</p>
                     </div>
                   </div>
                   
                   <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Highlights</h4>
+                    <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Highlights</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> 3 days of racing (up to 9 races)
+                        <span style={{ color: 'var(--mm-sun)' }}>•</span> 3 days of racing (up to 9 races)
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> "Whale Perpetual Trophy"
+                        <span style={{ color: 'var(--mm-sun)' }}>•</span> "Whale Perpetual Trophy"
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> Warm water sailing
+                        <span style={{ color: 'var(--mm-sun)' }}>•</span> Warm water sailing
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> Friendly atmosphere
+                        <span style={{ color: 'var(--mm-sun)' }}>•</span> Friendly atmosphere
                       </li>
                     </ul>
                   </div>
@@ -774,23 +774,23 @@ export default function HomePage() {
                       <div style={{ fontSize: '13px', opacity: 0.68 }}>2026 Overall • Mexico • ILCA 6</div>
                     </div>
                   </div>
-                  <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: 'var(--mm-rojo)', fontWeight: 'bold', textDecoration: 'none', fontSize: '14px' }}>2026 results →</a>
+                  <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: 'var(--mm-sun)', fontWeight: 'bold', textDecoration: 'none', fontSize: '14px' }}>2026 results →</a>
                 </div>
               </section>
 
               {/* Registration */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Trophy /></span>
+                  <span style={{ color: 'var(--mm-sun)' }}><Icons.Trophy /></span>
                   Registration
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', marginBottom: '25px' }}>
-                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--mm-rojo)' }}>$100</div>
+                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--mm-sun)' }}>$100</div>
                     <a 
                       href="/register"
                       style={{
-                        background: 'var(--mm-rojo)',
+                        background: 'var(--mm-sun)',
                         color: 'var(--mm-cream)',
                         padding: '12px 24px',
                         borderRadius: '8px',
@@ -807,7 +807,7 @@ export default function HomePage() {
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>What's Included</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>What's Included</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• Entry to regatta (up to 9 races)</li>
                         <li>• Event t-shirt</li>
@@ -816,7 +816,7 @@ export default function HomePage() {
                       </ul>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Important Notes</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Important Notes</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• No registration deadline</li>
                         <li>• No late fees</li>
@@ -832,28 +832,28 @@ export default function HomePage() {
               {/* Venue & Travel */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Location /></span>
+                  <span style={{ color: 'var(--mm-sun)' }}><Icons.Location /></span>
                   Venue & Travel
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Racing Venue</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Racing Venue</h4>
                       <p style={{ marginBottom: '10px' }}>Bahía de Banderas, launching from Marina Riviera Nayarit and the International Sailing Academy</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>La Cruz de Huanacaxtle, Nayarit, Mexico</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Getting There</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Getting There</h4>
                       <p>Fly into <strong>Puerto Vallarta (PVR)</strong> airport</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Stay in Bucerías or La Cruz — hotels, Airbnbs, and restaurants nearby</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Weather</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Weather</h4>
                       <p>Warm water & stable thermal winds in March</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Average daily high ~28°C (82°F), reliable breeze, scenic mountain backdrop</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Boat Storage</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Boat Storage</h4>
                       <p>Available at ISA and Bourquin Sailing Yard</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Contact ISA to reserve boat park space</p>
                     </div>
@@ -864,7 +864,7 @@ export default function HomePage() {
                       href="https://maps.app.goo.gl/R3H3UwEeaY8MSpjw6" 
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: 'var(--mm-rojo)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                      style={{ color: 'var(--mm-sun)', display: 'flex', alignItems: 'center', gap: '8px' }}
                     >
                       <Icons.Location /> View on Google Maps →
                     </a>
@@ -881,17 +881,17 @@ export default function HomePage() {
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Classes</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Classes</h4>
                       <p>ILCA 6 • ILCA 7</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Open (all ages) and Masters categories (35+)</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Scoring</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Scoring</h4>
                       <p>Low Point Scoring</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>9 races scheduled • 1 discard after 4+ races</p>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Awards</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Awards</h4>
                       <p>Top 3 in each class • Masters recognition</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>The Whale Perpetual Trophy for overall champion</p>
                     </div>
@@ -902,13 +902,13 @@ export default function HomePage() {
               {/* Safety */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.CheckeredFlag /></span>
+                  <span style={{ color: 'var(--mm-sun)' }}><Icons.CheckeredFlag /></span>
                   Safety & Requirements
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Safety Equipment</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Safety Equipment</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• Whistle required</li>
                         <li>• Flotation device required</li>
@@ -922,25 +922,25 @@ export default function HomePage() {
               {/* Contact */}
               <section>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Users /></span>
+                  <span style={{ color: 'var(--mm-sun)' }}><Icons.Users /></span>
                   Contact & Support
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Email</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Email</h4>
                       <a href="mailto:info@internationalsailingacademy.com" style={{ color: 'white' }}>
                         info@internationalsailingacademy.com
                       </a>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>WhatsApp</h4>
-                      <a href="https://wa.me/523221177641" target="_blank" style={{ color: 'var(--mm-rojo)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>WhatsApp</h4>
+                      <a href="https://wa.me/523221177641" target="_blank" style={{ color: 'var(--mm-sun)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         +52 322 117 7641 →
                       </a>
                     </div>
                     <div>
-                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Race Office</h4>
+                      <h4 style={{ color: 'var(--mm-sun)', marginBottom: '8px' }}>Race Office</h4>
                       <p>ISA Office, Local 31 A Del Mar<br/>La Cruz de Huanacaxtle</p>
                     </div>
                   </div>
@@ -959,19 +959,19 @@ export default function HomePage() {
                   <p style={{ margin: 0, opacity: 0.72 }}>{paidSailorCount} paid registration{paidSailorCount === 1 ? '' : 's'} shown automatically from Stripe checkout.</p>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  <a href="/register" style={{ background: 'var(--mm-rojo)', color: 'var(--mm-cream)', padding: '11px 16px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now</a>
-                  {paidSailorCount > 0 && <button onClick={exportManifestCsv} style={{ background: 'transparent', color: 'var(--mm-rojo)', border: '1px solid rgba(200,49,30,0.45)', padding: '11px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Export Manifest CSV</button>}
+                  <a href="/register" style={{ background: 'var(--mm-sun)', color: 'var(--mm-cream)', padding: '11px 16px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now</a>
+                  {paidSailorCount > 0 && <button onClick={exportManifestCsv} style={{ background: 'transparent', color: 'var(--mm-sun)', border: '1px solid rgba(244,168,42,0.45)', padding: '11px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Export Manifest CSV</button>}
                 </div>
               </div>
 
               {event.sailors.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '80px 20px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--mm-rojo)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ color: 'var(--mm-sun)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
                     <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
                   </div>
                   <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Open</h2>
                   <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '25px' }}>Sailors will appear here as paid registrations come in.</p>
-                  <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--mm-rojo)', color: 'var(--mm-cream)', padding: '12px 22px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now <Icons.ArrowRight /></a>
+                  <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--mm-sun)', color: 'var(--mm-cream)', padding: '12px 22px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now <Icons.ArrowRight /></a>
                 </div>
               ) : (
                 <>
@@ -980,7 +980,7 @@ export default function HomePage() {
                       <thead>
                         <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.16)' }}>
                           {[[ 'boatClass', 'Class' ], [ 'name', 'Sailor' ], [ 'country', 'Country' ], [ 'sailNumber', 'Sail #' ], [ 'category', 'Division' ]].map(([field, label]) => (
-                            <th key={field} onClick={() => setSortField(field)} style={{ padding: '14px 12px', textAlign: field === 'sailNumber' ? 'center' : 'left', cursor: 'pointer', color: 'var(--mm-rojo)', whiteSpace: 'nowrap' }}>
+                            <th key={field} onClick={() => setSortField(field)} style={{ padding: '14px 12px', textAlign: field === 'sailNumber' ? 'center' : 'left', cursor: 'pointer', color: 'var(--mm-sun)', whiteSpace: 'nowrap' }}>
                               {label}{sailorSort.field === field ? (sailorSort.direction === 'asc' ? ' ↑' : ' ↓') : ''}
                             </th>
                           ))}
@@ -1001,7 +1001,7 @@ export default function HomePage() {
                   </div>
 
                   {ilca7Sailors.length > 0 && <SailorClassSection title="ILCA 7" color="#e53e3e" sailors={ilca7Sailors} getHandicap={getHandicap} />}
-                  {ilca6Sailors.length > 0 && <SailorClassSection title="ILCA 6" color="#38a169" sailors={ilca6Sailors} getHandicap={getHandicap} />}
+                  {ilca6Sailors.length > 0 && <SailorClassSection title="ILCA 6" color="var(--mm-bay)" sailors={ilca6Sailors} getHandicap={getHandicap} />}
                 </>
               )}
             </div>
@@ -1022,10 +1022,10 @@ export default function HomePage() {
                   { day: 'Saturday, March 13', races: [7, 8, 9], active: false },
                 ].map((day, idx) => (
                   <div key={idx} style={{
-                    background: day.active ? 'rgba(200, 49, 30, 0.15)' : 'rgba(255,255,255,0.05)',
+                    background: day.active ? 'rgba(244, 168, 42, 0.15)' : 'rgba(255,255,255,0.05)',
                     borderRadius: '16px',
                     padding: '30px',
-                    border: day.active ? '1px solid rgba(200, 49, 30, 0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    border: day.active ? '1px solid rgba(244, 168, 42, 0.4)' : '1px solid rgba(255,255,255,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -1089,7 +1089,7 @@ export default function HomePage() {
                 if (!showIlca7 && !showIlca6) {
                   return (
                     <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-                      <div style={{ color: 'var(--mm-rojo)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+                      <div style={{ color: 'var(--mm-sun)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
                         <Icons.CheckeredFlag />
                       </div>
                       <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Racing Hasn't Started Yet</h2>
@@ -1098,10 +1098,10 @@ export default function HomePage() {
                       </p>
                       <div style={{
                         display: 'inline-block',
-                        background: 'rgba(200, 49, 30, 0.1)',
+                        background: 'rgba(244, 168, 42, 0.1)',
                         padding: '20px 40px',
                         borderRadius: '12px',
-                        border: '1px solid rgba(200, 49, 30, 0.3)',
+                        border: '1px solid rgba(244, 168, 42, 0.3)',
                       }}>
                         <p style={{ margin: 0 }}>Check back on March 11, 2027</p>
                       </div>
@@ -1139,7 +1139,7 @@ export default function HomePage() {
               
               {(!event.documents || event.documents.length === 0) ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <div style={{ color: 'var(--mm-rojo)', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ color: 'var(--mm-sun)', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
                     <Icons.FileIcon />
                   </div>
                   <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>No Documents Yet</h3>
@@ -1167,7 +1167,7 @@ export default function HomePage() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-                        e.currentTarget.style.borderColor = 'rgba(200, 49, 30, 0.4)'
+                        e.currentTarget.style.borderColor = 'rgba(244, 168, 42, 0.4)'
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
@@ -1176,13 +1176,13 @@ export default function HomePage() {
                     >
                       <div style={{ 
                         fontSize: '32px', 
-                        color: 'var(--mm-rojo)',
+                        color: 'var(--mm-sun)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '50px',
                         height: '50px',
-                        background: 'rgba(200, 49, 30, 0.1)',
+                        background: 'rgba(244, 168, 42, 0.1)',
                         borderRadius: '8px',
                       }}>
                         📄
@@ -1212,10 +1212,10 @@ export default function HomePage() {
                   href={currentEventHref}
                   style={{
                     display: 'block',
-                    background: 'linear-gradient(135deg, rgba(200, 49, 30, 0.22), rgba(200, 49, 30, 0.14))',
+                    background: 'linear-gradient(135deg, rgba(244, 168, 42, 0.22), rgba(244, 168, 42, 0.14))',
                     padding: '22px',
                     borderRadius: '14px',
-                    border: '1px solid rgba(200, 49, 30, 0.45)',
+                    border: '1px solid rgba(244, 168, 42, 0.45)',
                     color: 'white',
                     textDecoration: 'none',
                     boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
@@ -1223,12 +1223,12 @@ export default function HomePage() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div>
-                      <div style={{ color: 'var(--mm-rojo)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 'bold', marginBottom: '6px' }}>Current event</div>
+                      <div style={{ color: 'var(--mm-sun)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 'bold', marginBottom: '6px' }}>Current event</div>
                       <h3 style={{ fontSize: '22px', margin: '0 0 8px 0' }}>{currentEvent?.eventName || 'Current Regatta'}</h3>
                       <p style={{ margin: 0, opacity: 0.75 }}>Return to the live/current regatta page</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 'bold', color: 'var(--mm-rojo)' }}>{currentEvent?.eventDate || 'Date TBA'}</div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--mm-sun)' }}>{currentEvent?.eventDate || 'Date TBA'}</div>
                       <div style={{ opacity: 0.85, fontSize: '14px', marginTop: '6px' }}>Back to current →</div>
                     </div>
                   </div>
@@ -1237,7 +1237,7 @@ export default function HomePage() {
 
               {archiveEvents.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <div style={{ color: 'var(--mm-rojo)', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ color: 'var(--mm-sun)', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
                     <Icons.Trophy />
                   </div>
                   <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>No Archived Regattas Yet</h3>
@@ -1265,7 +1265,7 @@ export default function HomePage() {
                           <p style={{ margin: 0, opacity: 0.7 }}>{archiveEvent.venue || 'Venue TBA'}</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontWeight: 'bold', color: 'var(--mm-rojo)' }}>{archiveEvent.eventDate || 'Date TBA'}</div>
+                          <div style={{ fontWeight: 'bold', color: 'var(--mm-sun)' }}>{archiveEvent.eventDate || 'Date TBA'}</div>
                           <div style={{ opacity: 0.7, fontSize: '14px' }}>{archiveEvent.sailors?.length || 0} sailors • {(archiveEvent.races || []).length || 0} races</div>
                         </div>
                       </div>
@@ -1345,8 +1345,8 @@ export default function HomePage() {
             <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '320px', height: 'auto' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
-            <a href="https://internationalsailingacademy.com" style={{ color: 'var(--mm-rojo)', textDecoration: 'none' }}>Website</a>
-            <a href="https://isa-virtual-coaching.circle.so/" style={{ color: 'var(--mm-rojo)', textDecoration: 'none' }}>Virtual Coaching</a>
+            <a href="https://internationalsailingacademy.com" style={{ color: 'var(--mm-sun)', textDecoration: 'none' }}>Website</a>
+            <a href="https://isa-virtual-coaching.circle.so/" style={{ color: 'var(--mm-sun)', textDecoration: 'none' }}>Virtual Coaching</a>
           </div>
           <p style={{ marginTop: '30px', opacity: 0.4, fontSize: '14px' }}>© 2027 International Sailing Academy</p>
           <p style={{ marginTop: '10px', opacity: 0.3, fontSize: '11px', fontFamily: 'monospace' }}>
@@ -1409,7 +1409,7 @@ function SailorRow({ sailor, index, getHandicap }) {
     }}
     onMouseEnter={(e) => {
       e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-      e.currentTarget.style.borderColor = 'rgba(200, 49, 30, 0.4)'
+      e.currentTarget.style.borderColor = 'rgba(244, 168, 42, 0.4)'
     }}
     onMouseLeave={(e) => {
       e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
@@ -1630,7 +1630,7 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
                   )}
                 </div>
               </td>
-              <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold', color: 'var(--mm-rojo)', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>{r.net}</td>
+              <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold', color: 'var(--mm-sun)', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>{r.net}</td>
               <td style={{ padding: '10px 8px', textAlign: 'center', opacity: 0.6 }}>{r.total}</td>
               {r.raceScores.map(rs => (
                 <td key={rs.race} style={{ padding: '10px 6px', textAlign: 'center' }}>

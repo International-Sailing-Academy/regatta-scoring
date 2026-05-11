@@ -15,12 +15,12 @@ import {
   sailorTotalCents,
 } from '../lib/registration'
 
-const fieldStyle = { width: '100%', minHeight: '48px', padding: '12px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.06)', color: 'white', fontSize: '16px', lineHeight: '1.35', boxSizing: 'border-box' }
-const labelStyle = { display: 'block', fontSize: '13px', fontWeight: '700', color: '#63b3ed', marginBottom: '8px', lineHeight: '1.3' }
+const fieldStyle = { width: '100%', minHeight: '50px', padding: '12px 14px', borderRadius: '4px', border: '1px solid rgba(10,25,41,0.18)', background: '#FAF6EC', color: '#0A1929', fontSize: '16px', lineHeight: '1.35', boxSizing: 'border-box', fontFamily: 'Manrope, system-ui, sans-serif' }
+const labelStyle = { display: 'block', fontFamily: 'JetBrains Mono, ui-monospace, monospace', fontSize: '11px', fontWeight: '700', color: '#4F6276', marginBottom: '8px', lineHeight: '1.3', letterSpacing: '0.18em', textTransform: 'uppercase' }
 const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '18px' }
 
 function Field({ label, help, children }) {
-  return <label style={{ display: 'block' }}><span style={labelStyle}>{label}</span>{children}{help ? <span style={{ display: 'block', marginTop: '6px', color: 'rgba(255,255,255,0.55)', fontSize: '12px', lineHeight: 1.35 }}>{help}</span> : null}</label>
+  return <label style={{ display: 'block' }}><span style={labelStyle}>{label}</span>{children}{help ? <span style={{ display: 'block', marginTop: '6px', color: 'rgba(10,25,41,0.55)', fontSize: '12px', lineHeight: 1.35 }}>{help}</span> : null}</label>
 }
 
 function Select({ value, onChange, children, required = false }) {
@@ -65,17 +65,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0a192f', color: 'white', fontFamily: 'system-ui, -apple-system, sans-serif', padding: '32px 18px 60px' }}>
+    <main style={{ minHeight: '100vh', background: '#F2EDE0', color: '#0A1929', fontFamily: 'Manrope, system-ui, sans-serif', padding: '32px 18px 60px' }}>
       <datalist id="countries">{COMMON_COUNTRIES.map(country => <option key={country} value={country} />)}</datalist>
       <div style={{ maxWidth: '1040px', margin: '0 auto' }}>
-        <a href="/" style={{ color: '#63b3ed', textDecoration: 'none', fontWeight: '700' }}>← Back to regatta site</a>
+        <a href="/" style={{ color: '#F4A82A', textDecoration: 'none', fontWeight: '700' }}>← Back to regatta site</a>
         <div style={{ marginTop: '28px', marginBottom: '28px' }}>
-          <div style={{ color: '#63b3ed', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '13px', fontWeight: '800' }}>Registration open</div>
-          <h1 style={{ fontSize: 'clamp(34px, 7vw, 62px)', lineHeight: 1, margin: '12px 0' }}>ILCA Mexican Midwinter Regatta 2027</h1>
+          <div style={{ color: '#F4A82A', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '13px', fontWeight: '800' }}>Registration open</div>
+          <h1 style={{ fontFamily: 'Archivo, system-ui, sans-serif', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.025em', fontSize: 'clamp(48px, 9vw, 104px)', lineHeight: 0.92, margin: '12px 0' }}>ILCA Mexican Midwinter Regatta 2027</h1>
           <p style={{ fontSize: '18px', opacity: 0.78, maxWidth: '760px' }}>Register one or multiple sailors in a single secure checkout. Entry is <strong>$100 USD per sailor</strong>; charter/facility-use add-ons are selected per sailor.</p>
         </div>
 
-        <form onSubmit={submit} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '16px', padding: '24px', boxShadow: '0 18px 50px rgba(0,0,0,0.22)' }}>
+        <form onSubmit={submit} style={{ background: '#FAF6EC', border: '1px solid rgba(10,25,41,0.12)', borderRadius: '4px', padding: '24px', boxShadow: '0 18px 50px rgba(0,0,0,0.22)' }}>
           <h2 style={{ marginTop: 0, marginBottom: '16px' }}>Purchaser / primary contact</h2>
           <div style={gridStyle}>
             <Field label="Purchaser name *"><input style={fieldStyle} value={purchaser.fullName} onChange={e => updatePurchaser('fullName', e.target.value)} required /></Field>
@@ -88,19 +88,19 @@ export default function RegisterPage() {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginTop: '32px', marginBottom: '16px', flexWrap: 'wrap' }}>
             <h2 style={{ margin: 0 }}>Sailors</h2>
-            <button type="button" onClick={addSailor} style={{ background: '#63b3ed', color: '#0a192f', border: 'none', borderRadius: '8px', padding: '11px 16px', fontWeight: 900, cursor: 'pointer' }}>+ Add another sailor</button>
+            <button type="button" onClick={addSailor} style={{ background: '#F4A82A', color: '#0A1929', border: 'none', borderRadius: '4px', padding: '11px 16px', fontWeight: 900, cursor: 'pointer' }}>+ Add another sailor</button>
           </div>
 
           {sailors.map((sailor, index) => (
-            <section key={index} style={{ marginTop: index ? '22px' : 0, padding: '18px', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '14px', background: 'rgba(255,255,255,0.035)' }}>
+            <section key={index} style={{ marginTop: index ? '22px' : 0, padding: '18px', border: '1px solid rgba(10,25,41,0.14)', borderRadius: '4px', background: '#F2EDE0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '22px' }}>Sailor {index + 1}</h3>
                   <AddOnSummary sailor={sailor} />
                 </div>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button type="button" onClick={() => duplicateSailor(index)} style={{ background: 'transparent', color: '#63b3ed', border: '1px solid rgba(99,179,237,0.45)', borderRadius: '8px', padding: '9px 12px', fontWeight: 800 }}>Duplicate</button>
-                  {sailors.length > 1 && <button type="button" onClick={() => removeSailor(index)} style={{ background: 'transparent', color: '#feb2b2', border: '1px solid rgba(254,178,178,0.35)', borderRadius: '8px', padding: '9px 12px', fontWeight: 800 }}>Remove</button>}
+                  <button type="button" onClick={() => duplicateSailor(index)} style={{ background: 'transparent', color: '#F4A82A', border: '1px solid rgba(244,168,42,0.45)', borderRadius: '4px', padding: '9px 12px', fontWeight: 800 }}>Duplicate</button>
+                  {sailors.length > 1 && <button type="button" onClick={() => removeSailor(index)} style={{ background: 'transparent', color: '#7F1D1D', border: '1px solid rgba(254,178,178,0.35)', borderRadius: '4px', padding: '9px 12px', fontWeight: 800 }}>Remove</button>}
                 </div>
               </div>
 
@@ -118,9 +118,9 @@ export default function RegisterPage() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginTop: '18px' }}>
-                <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', background: 'rgba(255,255,255,0.04)' }}><input type="checkbox" checked={sailor.proKitRental} onChange={e => updateSailor(index, 'proKitRental', e.target.checked)} style={{ marginTop: '4px' }} /><span><strong>Pro Kit Rental — $75</strong><br /><small style={{ opacity: 0.7 }}>Full rigging & carbon tiller/extension. Does not include sail or battens.</small></span></label>
-                <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', background: 'rgba(255,255,255,0.04)' }}><input type="checkbox" checked={sailor.boatInsurance} onChange={e => updateSailor(index, 'boatInsurance', e.target.checked)} style={{ marginTop: '4px' }} /><span><strong>Boat Insurance — $80</strong><br /><small style={{ opacity: 0.7 }}>Damage protection for charter equipment.</small></span></label>
-                <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', background: 'rgba(255,255,255,0.04)' }}><input type="checkbox" checked={sailor.sailBattenRental} onChange={e => updateSailor(index, 'sailBattenRental', e.target.checked)} style={{ marginTop: '4px' }} /><span><strong>Sail + Batten Rental — $150</strong><br /><small style={{ opacity: 0.7 }}>Rental sail and battens for the selected rig.</small></span></label>
+                <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', border: '1px solid rgba(10,25,41,0.12)', borderRadius: '4px', background: 'rgba(10,25,41,0.035)' }}><input type="checkbox" checked={sailor.proKitRental} onChange={e => updateSailor(index, 'proKitRental', e.target.checked)} style={{ marginTop: '4px' }} /><span><strong>Pro Kit Rental — $75</strong><br /><small style={{ opacity: 0.7 }}>Full rigging & carbon tiller/extension. Does not include sail or battens.</small></span></label>
+                <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', border: '1px solid rgba(10,25,41,0.12)', borderRadius: '4px', background: 'rgba(10,25,41,0.035)' }}><input type="checkbox" checked={sailor.boatInsurance} onChange={e => updateSailor(index, 'boatInsurance', e.target.checked)} style={{ marginTop: '4px' }} /><span><strong>Boat Insurance — $80</strong><br /><small style={{ opacity: 0.7 }}>Damage protection for charter equipment.</small></span></label>
+                <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px', border: '1px solid rgba(10,25,41,0.12)', borderRadius: '4px', background: 'rgba(10,25,41,0.035)' }}><input type="checkbox" checked={sailor.sailBattenRental} onChange={e => updateSailor(index, 'sailBattenRental', e.target.checked)} style={{ marginTop: '4px' }} /><span><strong>Sail + Batten Rental — $150</strong><br /><small style={{ opacity: 0.7 }}>Rental sail and battens for the selected rig.</small></span></label>
               </div>
 
               <div style={{ ...gridStyle, marginTop: '18px' }}>
@@ -128,22 +128,22 @@ export default function RegisterPage() {
                 <Field label="Notes"><textarea style={{ ...fieldStyle, minHeight: '90px' }} value={sailor.notes} onChange={e => updateSailor(index, 'notes', e.target.value)} placeholder="Anything race office should know..." /></Field>
               </div>
 
-              <div style={{ marginTop: '14px', textAlign: 'right', color: '#63b3ed', fontWeight: 900 }}>Sailor subtotal: {money(sailorTotalCents(sailor))}</div>
+              <div style={{ marginTop: '14px', textAlign: 'right', color: '#F4A82A', fontWeight: 900 }}>Sailor subtotal: {money(sailorTotalCents(sailor))}</div>
             </section>
           ))}
 
-          <div style={{ marginTop: '24px', padding: '18px', borderRadius: '12px', background: 'rgba(99,179,237,0.1)', border: '1px solid rgba(99,179,237,0.25)' }}>
+          <div style={{ marginTop: '24px', padding: '18px', borderRadius: '4px', background: '#0A1929', border: '1px solid #1B304A' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div><strong>Checkout summary</strong><div style={{ opacity: 0.72, marginTop: '4px' }}>{sailors.length} sailor{sailors.length === 1 ? '' : 's'} • one Stripe payment</div></div>
-              <div style={{ fontSize: '30px', fontWeight: 900, color: '#63b3ed' }}>{money(total)}</div>
+              <div style={{ color: '#F2EDE0' }}><strong>Checkout summary</strong><div style={{ opacity: 0.72, marginTop: '4px' }}>{sailors.length} sailor{sailors.length === 1 ? '' : 's'} • one Stripe payment</div></div>
+              <div style={{ fontSize: '30px', fontWeight: 900, color: '#F4A82A' }}>{money(total)}</div>
             </div>
           </div>
 
-          <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginTop: '18px', color: 'rgba(255,255,255,0.82)', lineHeight: 1.5 }}><input type="checkbox" checked={waiverAccepted} onChange={e => setWaiverAccepted(e.target.checked)} required style={{ marginTop: '5px' }} /><span>I understand this registration is for all listed sailors and selected add-ons. We’ll follow event rules, safety requirements, and race-office instructions.</span></label>
+          <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginTop: '18px', color: 'rgba(10,25,41,0.82)', lineHeight: 1.5 }}><input type="checkbox" checked={waiverAccepted} onChange={e => setWaiverAccepted(e.target.checked)} required style={{ marginTop: '5px' }} /><span>I understand this registration is for all listed sailors and selected add-ons. We’ll follow event rules, safety requirements, and race-office instructions.</span></label>
 
-          {error && <div style={{ marginTop: '18px', padding: '14px', borderRadius: '8px', background: 'rgba(229,62,62,0.16)', border: '1px solid rgba(229,62,62,0.35)', color: '#feb2b2' }}>{error}{error.includes('Stripe is not configured') && <div style={{ marginTop: '8px' }}><a href={REGATTA_REGISTER_FALLBACK_URL} style={{ color: '#63b3ed' }}>Use FareHarbor fallback for now →</a></div>}</div>}
+          {error && <div style={{ marginTop: '18px', padding: '14px', borderRadius: '4px', background: 'rgba(231,111,81,0.16)', border: '1px solid rgba(231,111,81,0.35)', color: '#7F1D1D' }}>{error}{error.includes('Stripe is not configured') && <div style={{ marginTop: '8px' }}><a href={REGATTA_REGISTER_FALLBACK_URL} style={{ color: '#F4A82A' }}>Use FareHarbor fallback for now →</a></div>}</div>}
 
-          <button type="submit" disabled={loading} style={{ marginTop: '24px', width: '100%', padding: '16px 22px', borderRadius: '10px', border: 'none', background: loading ? '#718096' : '#63b3ed', color: '#0a192f', fontWeight: '900', fontSize: '16px', cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? 'Opening secure checkout…' : `Continue to payment — ${money(total)}`}</button>
+          <button type="submit" disabled={loading} style={{ marginTop: '24px', width: '100%', padding: '16px 22px', borderRadius: '4px', border: 'none', background: loading ? '#7A8FA5' : '#F4A82A', color: '#0A1929', fontWeight: '900', fontSize: '16px', cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? 'Opening secure checkout…' : `Continue to payment — ${money(total)}`}</button>
         </form>
       </div>
     </main>
