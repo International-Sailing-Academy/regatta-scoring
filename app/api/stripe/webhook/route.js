@@ -9,52 +9,58 @@ function normalizeName(value = '') {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
 }
 
+function sailorDuplicate(sailors, sailor) {
+  return sailors.some(existing =>
+    normalizeName(existing.name) === normalizeName(sailor.name) &&
+    String(existing.boatClass || '').toLowerCase() === String(sailor.boatClass || '').toLowerCase()
+  )
+}
+
 async function markRegistrationPaid(session) {
   const supabase = getServerSupabase()
   if (!supabase) throw new Error('Supabase not configured')
 
-  const registrationId = session.metadata?.registrationId || session.client_reference_id
-  if (!registrationId) throw new Error('Missing registration id')
+  const groupId = session.metadata?.registrationGroupId || session.client_reference_id
+  const legacyRegistrationId = session.metadata?.registrationId
+  if (!groupId && !legacyRegistrationId) throw new Error('Missing registration id')
 
-  const { data: registration, error: regError } = await supabase
+  let query = supabase
     .from('regatta_registrations')
     .update({
       payment_status: 'paid',
       stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id || null,
       paid_at: new Date().toISOString(),
     })
-    .eq('id', registrationId)
-    .select('*')
-    .single()
 
+  query = legacyRegistrationId ? query.eq('id', legacyRegistrationId) : query.eq('registration_group_id', groupId)
+
+  const { data: registrations, error: regError } = await query.select('*')
   if (regError) throw regError
+  if (!registrations?.length) throw new Error('No registrations found for checkout session')
 
+  const eventId = registrations[0].event_id
   const { data: event, error: eventError } = await supabase
     .from('events')
     .select('*')
-    .eq('id', registration.event_id)
+    .eq('id', eventId)
     .single()
 
   if (eventError) throw eventError
 
   const sailors = Array.isArray(event.sailors) ? event.sailors : []
-  const sailor = registrationToSailor(registration)
-  const duplicate = sailors.some(existing =>
-    normalizeName(existing.name) === normalizeName(sailor.name) &&
-    String(existing.boatClass || '').toLowerCase() === String(sailor.boatClass || '').toLowerCase()
-  )
+  const additions = registrations.map(registrationToSailor).filter(sailor => !sailorDuplicate(sailors, sailor))
 
-  if (!duplicate) {
-    const updatedSailors = [...sailors, sailor]
+  if (additions.length) {
+    const updatedSailors = [...sailors, ...additions]
     const { error: updateError } = await supabase
       .from('events')
       .update({ sailors: updatedSailors, lastupdated: new Date().toISOString() })
-      .eq('id', registration.event_id)
+      .eq('id', eventId)
 
     if (updateError) throw updateError
   }
 
-  return registration
+  return registrations
 }
 
 export async function POST(request) {
@@ -68,15 +74,16 @@ export async function POST(request) {
     const signature = request.headers.get('stripe-signature')
     const event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET)
 
-    if (event.type === 'checkout.session.completed') {
-      await markRegistrationPaid(event.data.object)
-    }
+    if (event.type === 'checkout.session.completed') await markRegistrationPaid(event.data.object)
 
     if (event.type === 'checkout.session.expired') {
       const supabase = getServerSupabase()
-      const registrationId = event.data.object.metadata?.registrationId || event.data.object.client_reference_id
-      if (supabase && registrationId) {
-        await supabase.from('regatta_registrations').update({ payment_status: 'canceled' }).eq('id', registrationId)
+      const groupId = event.data.object.metadata?.registrationGroupId || event.data.object.client_reference_id
+      const legacyRegistrationId = event.data.object.metadata?.registrationId
+      if (supabase && (groupId || legacyRegistrationId)) {
+        let query = supabase.from('regatta_registrations').update({ payment_status: 'canceled' })
+        query = legacyRegistrationId ? query.eq('id', legacyRegistrationId) : query.eq('registration_group_id', groupId)
+        await query
       }
     }
 
