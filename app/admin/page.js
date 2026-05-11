@@ -142,7 +142,7 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    if (activeTab === 'registrations' && selectedEventId) loadRegistrations(selectedEventId)
+    if ((activeTab === 'registrations' || activeTab === 'boat-yard') && selectedEventId) loadRegistrations(selectedEventId)
   }, [activeTab, selectedEventId])
 
   const stripePaymentUrl = (id) => id ? `https://dashboard.stripe.com/payments/${id}` : null
