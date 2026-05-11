@@ -1,3 +1,5 @@
+import nodemailer from 'nodemailer'
+
 const RESEND_API_URL = 'https://api.resend.com/emails'
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mexicanmidwinters.com'
 export const REGATTA_WHATSAPP_GROUP_URL = `${SITE_URL}/join-whatsapp`
@@ -58,9 +60,23 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
 }
 
 export async function sendEmail({ to, subject, text, html }) {
-  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured')
-  const from = process.env.CONFIRMATION_EMAIL_FROM || 'Mexican Midwinters <registrations@fantasysailor.com>'
+  const from = process.env.CONFIRMATION_EMAIL_FROM || 'Mexican Midwinters <info@internationalsailingacademy.com>'
   const replyTo = process.env.CONFIRMATION_EMAIL_REPLY_TO || 'info@internationalsailingacademy.com'
+
+  if (process.env.FASTMAIL_SMTP_USER && process.env.FASTMAIL_SMTP_PASSWORD) {
+    const transporter = nodemailer.createTransport({
+      host: process.env.FASTMAIL_SMTP_HOST || 'smtp.fastmail.com',
+      port: Number(process.env.FASTMAIL_SMTP_PORT || 465),
+      secure: String(process.env.FASTMAIL_SMTP_PORT || '465') === '465',
+      auth: {
+        user: process.env.FASTMAIL_SMTP_USER,
+        pass: process.env.FASTMAIL_SMTP_PASSWORD,
+      },
+    })
+    return transporter.sendMail({ from, to, replyTo, subject, text, html })
+  }
+
+  if (!process.env.RESEND_API_KEY) throw new Error('No email provider configured')
   const response = await fetch(RESEND_API_URL, {
     method: 'POST',
     headers: {
