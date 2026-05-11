@@ -448,155 +448,94 @@ export default function HomePage() {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeInUp {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@500;700&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        :root { --mm-ink:#0E1116; --mm-ink-2:#181C24; --mm-ink-3:#232834; --mm-cream:#F4EDDF; --mm-rojo:#C8311E; --mm-rojo-2:#E04A38; --mm-verde:#1B4034; --mm-sun:#F4C724; --mm-display:'Antonio','Oswald','Impact',sans-serif; --mm-body:'Space Grotesk',system-ui,sans-serif; --mm-mono:'JetBrains Mono',ui-monospace,monospace; }
+        .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
+        .mm-btn { display:inline-flex; align-items:center; gap:12px; padding:12px 20px; background:var(--mm-rojo); color:var(--mm-ink); font-family:var(--mm-display); font-style:italic; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.02em; border:none; border-radius:4px; cursor:pointer; text-decoration:none; transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
+        .mm-btn:hover { background:var(--mm-rojo-2); transform:translateY(-1px) skewX(-2deg); }
+        .mm-btn--hero { font-size:24px; padding:18px 28px 18px 32px; }
+        .mm-btn-ghost { display:inline-flex; align-items:center; gap:10px; padding:14px 22px; background:transparent; color:var(--mm-cream); border:1px solid rgba(244,237,223,.35); font-family:var(--mm-mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; border-radius:4px; text-decoration:none; }
+        .mm-hero-brand { font-family:var(--mm-display); font-style:italic; font-weight:700; font-size:18px; letter-spacing:.02em; text-transform:uppercase; }
+        .mm-hero-mono { font-family:var(--mm-mono); text-transform:uppercase; }
+        .mm-flag { display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 8px; background:var(--mm-ink); color:var(--mm-cream); font-family:var(--mm-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; border-radius:2px; }
+        .mm-flag::before { content:""; width:8px; height:8px; background:var(--mm-rojo); border-radius:1px; }
+        .mm-flag--live { background:var(--mm-verde); }
+        .mm-flag--live::before { background:var(--mm-sun); }
+        @media (max-width: 900px) { .mm-nav-links, .mm-nav-lang { display:none !important; } .mm-hero-bottom { flex-direction:column !important; align-items:flex-start !important; gap:40px !important; } .mm-count-n { font-size:52px !important; } }
+        @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-headline { font-size:72px !important; } .mm-count-row { flex-wrap:wrap !important; gap:12px !important; } .mm-count-n { font-size:40px !important; } }
       `}</style>
 
-      {/* Navigation */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: scrollY > 100 ? 'rgba(10, 25, 47, 0.95)' : 'transparent',
-        backdropFilter: scrollY > 100 ? 'blur(20px)' : 'none',
-        transition: 'all 0.3s ease',
-        padding: '15px 20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '10px',
-      }}>
-        <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo-icon.png" alt="ISA" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
-          <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
-        </div>
-        {viewingArchivedEvent && (
-          <a
-            href={currentEventHref}
-            style={{
-              background: '#63b3ed',
-              color: '#0a192f',
-              padding: '10px 16px',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            Current Event
-          </a>
-        )}
-      </nav>
-
       {/* Hero Section */}
-      <div style={{ 
-        position: 'relative',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}>
+      <section style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', color: 'var(--mm-cream)', background: 'var(--mm-ink)' }}>
         <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+          position: 'absolute', inset: 0,
           backgroundImage: 'url(/banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          transform: `translateY(${scrollY * 0.5}px)`,
-          filter: 'brightness(0.4)',
+          transform: `translateY(${scrollY * 0.35}px)`,
+          filter: 'brightness(0.62)',
         }} />
-        
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(to bottom, rgba(10,25,47,0.3) 0%, rgba(10,25,47,0.8) 70%, #0a192f 100%)',
-        }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(14,17,22,0.55) 0%, rgba(14,17,22,0.10) 35%, rgba(14,17,22,0.85) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.06, mixBlendMode: 'overlay', pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>")` }} />
 
-        <div style={{
-          position: 'relative',
-          zIndex: 10,
-          textAlign: 'center',
-          padding: '40px',
-          maxWidth: '900px',
-        }}>
-          <div className="animate-fadeInUp">
-            <div style={{ 
-              display: 'inline-block',
-              background: 'rgba(99, 179, 237, 0.2)',
-              border: '1px solid rgba(99, 179, 237, 0.4)',
-              padding: '10px 24px',
-              borderRadius: '50px',
-              fontSize: '14px',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-              marginBottom: '30px',
-            }}>
-              {eventDateRange} • La Cruz, Mexico
+        <div className="mm-hero-inner" style={{ position: 'relative', zIndex: 3, minHeight: '100vh', padding: '24px 48px 48px', display: 'flex', flexDirection: 'column' }}>
+          <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '32px' }}>
+            <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', color: 'var(--mm-cream)', textDecoration: 'none' }}>
+              <img src="/logo-icon.png" alt="ISA" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
+              <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+                <span className="mm-hero-brand">Mexican Midwinters</span>
+                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(244,237,223,0.6)', marginTop: '4px' }}>EST. 2009 · Bahía de Banderas</span>
+              </span>
+            </a>
+            <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
+              {['Regatta', 'Sailors', 'Schedule', 'Results', 'Docs', 'Archive'].map((label) => (
+                <button key={label} onClick={() => setActiveTab(label.toLowerCase())} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', color: 'var(--mm-cream)', opacity: activeTab === label.toLowerCase() ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
+              ))}
+            </nav>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span className="mm-nav-lang mm-hero-mono" style={{ fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(244,237,223,0.6)' }}>EN / ES</span>
+              <a className="mm-btn" href="/register">Register <span style={{ fontStyle: 'normal' }}>→</span></a>
+            </div>
+          </header>
+
+          <div className="mm-chrome" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '56px', gap: '24px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <span className="mm-flag">Race 2027</span>
+              <span className="mm-flag mm-flag--live">Registration Open</span>
+            </div>
+            <div className="mm-coords mm-hero-mono" style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.75)' }}>20°45'04&quot;N · 105°22'58&quot;W</div>
+              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.5)', marginTop: '4px' }}>Bahía de Banderas, Nay.</div>
             </div>
           </div>
 
-          <h1 className="animate-fadeInUp" style={{
-            fontSize: 'clamp(40px, 8vw, 72px)',
-            fontWeight: 'bold',
-            margin: '0 0 20px 0',
-            lineHeight: 1.1,
-            textShadow: '0 4px 20px rgba(0,0,0,0.5)',
-          }}>
-            {event.eventName}
-          </h1>
+          <div className="mm-hero-bottom" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '64px', paddingTop: '80px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+                <span style={{ width: '64px', height: '1px', background: 'var(--mm-rojo)' }} />
+                <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-rojo)' }}>ILCA · Open Fleet · Mar 11–13, 2027</span>
+              </div>
+              <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontStyle: 'italic', fontWeight: 700, fontSize: 'clamp(88px, 13vw, 220px)', lineHeight: 0.84, letterSpacing: '-0.01em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
+                Mexican<br />
+                <span style={{ color: 'var(--mm-rojo)' }}>Midwinters.</span>
+              </h1>
+              <p style={{ maxWidth: '560px', marginTop: '28px', fontSize: '18px', lineHeight: 1.5, color: 'rgba(244,237,223,0.82)', fontFamily: 'var(--mm-body)', fontWeight: 300 }}>
+                {event.description || 'Join us for the premier ILCA regatta in Mexico! Open to all ILCA 7 and ILCA 6 sailors.'}
+              </p>
+              <div style={{ marginTop: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <a className="mm-btn mm-btn--hero" href="/register">Register for 2027 <span style={{ fontStyle: 'normal' }}>→</span></a>
+                <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('results')}>View 2026 results</button>
+              </div>
+              <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.5)' }}>Scroll ↓ the regatta</div>
+            </div>
 
-          <p className="animate-fadeInUp" style={{
-            fontSize: '20px',
-            opacity: 0.9,
-            marginBottom: '40px',
-            maxWidth: '600px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}>
-            {event.venue}
-          </p>
-
-          <div className="animate-fadeInUp" style={{ marginBottom: '50px' }}>
-            <p style={{ fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '20px', opacity: 0.8 }}>
-              Regatta Starts In
-            </p>
-            <CountdownTimer targetDate={eventStartDateTime} />
-            <a
-              href="/register"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                marginTop: '28px',
-                background: '#63b3ed',
-                color: '#0a192f',
-                padding: '15px 26px',
-                borderRadius: '10px',
-                textDecoration: 'none',
-                fontWeight: '900',
-                fontSize: '16px',
-                boxShadow: '0 12px 30px rgba(99,179,237,0.28)',
-              }}
-            >
-              Register Now <Icons.ArrowRight />
-            </a>
+            <aside style={{ minWidth: '380px' }} aria-label="Countdown">
+              <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(244,237,223,0.6)', marginBottom: '18px' }}>Racing commences in</div>
+              <CountdownTimer targetDate={eventStartDateTime} />
+            </aside>
           </div>
-
         </div>
-      </div>
+      </section>
 
       {/* Admin Login Modal */}
       {showAdminLogin && (
