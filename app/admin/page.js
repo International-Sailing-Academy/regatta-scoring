@@ -241,13 +241,11 @@ export default function AdminPage() {
     return 'Dates TBD'
   }
 
-  const boatYardItemLabel = (reg, enabled) => enabled ? boatYardDateLabel(reg) : 'No'
-
   const exportBoatYardManifestCsv = () => {
     const rows = registrations.filter(reg => reg.payment_status === 'paid' && (
       reg.charter_days_short || reg.charter_days_extended || reg.pro_kit_rental || reg.boat_insurance || reg.sail_batten_rental
     ))
-    const header = ['Sailor', 'Country', 'Rig', 'Sail Number', 'Charter / Facility Dates', 'Charter Days', 'Pro Kit Rental Dates', 'Boat Insurance Dates', 'Sail/Batten Rental Dates', 'WhatsApp', 'Notes']
+    const header = ['Sailor', 'Country', 'Rig', 'Sail Number', 'Charter Package Dates', 'Charter Days', 'Pro Kit Rental', 'Boat Insurance', 'Sail/Batten Rental', 'WhatsApp', 'Notes']
     const csv = [header, ...rows.map(reg => {
       const charterDays = Number(reg.charter_days_short || 0) + Number(reg.charter_days_extended || 0)
       return [
@@ -257,9 +255,9 @@ export default function AdminPage() {
         reg.sail_number || '',
         boatYardDateLabel(reg),
         charterDays || '',
-        boatYardItemLabel(reg, reg.pro_kit_rental),
-        boatYardItemLabel(reg, reg.boat_insurance),
-        boatYardItemLabel(reg, reg.sail_batten_rental),
+        reg.pro_kit_rental ? 'Yes' : 'No',
+        reg.boat_insurance ? 'Yes' : 'No',
+        reg.sail_batten_rental ? 'Yes' : 'No',
         reg.whatsapp || reg.phone || '',
         reg.notes || '',
       ]
@@ -1389,7 +1387,7 @@ export default function AdminPage() {
               {boatYardRows.length === 0 ? <div style={styles.emptyState}>No boat-yard items yet.</div> : (
                 <div style={{ overflowX: 'auto' }}>
                   <table style={styles.table}>
-                    <thead><tr><th>Sailor</th><th>Rig</th><th>Sail #</th><th>Charter / Facility Dates</th><th>Charter Days</th><th>Pro Kit Dates</th><th>Insurance Dates</th><th>Sail/Battens Dates</th><th>WhatsApp</th></tr></thead>
+                    <thead><tr><th>Sailor</th><th>Rig</th><th>Sail #</th><th>Charter Package Dates</th><th>Charter Days</th><th>Pro Kit</th><th>Insurance</th><th>Sail/Battens</th><th>WhatsApp</th></tr></thead>
                     <tbody>{boatYardRows.map(reg => {
                       const charterDays = Number(reg.charter_days_short || 0) + Number(reg.charter_days_extended || 0)
                       return <tr key={reg.id}>
@@ -1398,9 +1396,9 @@ export default function AdminPage() {
                         <td>{reg.sail_number || '—'}</td>
                         <td><strong>{boatYardDateLabel(reg)}</strong></td>
                         <td>{charterDays || '—'}</td>
-                        <td>{boatYardItemLabel(reg, reg.pro_kit_rental)}</td>
-                        <td>{boatYardItemLabel(reg, reg.boat_insurance)}</td>
-                        <td>{boatYardItemLabel(reg, reg.sail_batten_rental)}</td>
+                        <td>{reg.pro_kit_rental ? 'Yes' : 'No'}</td>
+                        <td>{reg.boat_insurance ? 'Yes' : 'No'}</td>
+                        <td>{reg.sail_batten_rental ? 'Yes' : 'No'}</td>
                         <td>{reg.whatsapp || reg.phone || '—'}</td>
                       </tr>
                     })}</tbody>
