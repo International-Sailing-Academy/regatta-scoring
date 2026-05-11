@@ -32,7 +32,7 @@ const LANGUAGE_COPY = {
     eyebrow: 'ILCA · Open Fleet · Mar 11–13, 2027',
     titleA: 'Mexican',
     titleB: 'Midwinters.',
-    lede: 'Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management.',
+    lede: 'Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management. Sign up for the regatta experience of the year today.',
     registerShort: 'Register',
     register: 'Register for 2027',
     viewResults: 'View 2026 results',
