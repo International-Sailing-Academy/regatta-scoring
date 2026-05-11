@@ -563,18 +563,8 @@ export default function HomePage() {
               </span>
             </a>
             <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
-              {[
-                [copy.nav.info, 'info', 'regatta-content'],
-                [copy.nav.registration, 'info', 'registration-section'],
-                [copy.nav.training, 'info', 'pre-regatta-training'],
-                [copy.nav.sailors, 'sailors', 'regatta-content'],
-                [copy.nav.schedule, 'schedule', 'regatta-content'],
-                [copy.nav.winners, 'info', 'past-winners'],
-                [copy.nav.results, 'results', 'regatta-content'],
-                [copy.nav.docs, 'docs', 'regatta-content'],
-              ].map(([label, tab, targetId]) => (
-                <button key={label} onClick={() => selectTab(tab, targetId)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: (activeTab === tab && targetId !== 'past-winners') ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
-              ))}
+              <button onClick={() => selectTab('info', 'pre-regatta-training')} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: 0.78, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{copy.nav.training}</button>
+              <a href="/register" className="mm-hero-mono" style={{ color: 'var(--mm-cream)', opacity: 0.9, fontSize: '11px', letterSpacing: '0.18em', textDecoration: 'none', borderBottom: '1px solid var(--mm-sun)', paddingBottom: '4px' }}>{copy.registerShort}</a>
             </nav>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <button
