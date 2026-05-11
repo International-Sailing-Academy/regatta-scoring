@@ -562,32 +562,9 @@ export default function HomePage() {
                 <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '5px' }}>{copy.brandSub}</span>
               </span>
             </a>
-            <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
-              <button onClick={() => selectTab('info', 'pre-regatta-training')} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: 0.78, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{copy.nav.training}</button>
-              <a href="/register" className="mm-hero-mono" style={{ color: 'var(--mm-cream)', opacity: 0.9, fontSize: '11px', letterSpacing: '0.18em', textDecoration: 'none', borderBottom: '1px solid var(--mm-sun)', paddingBottom: '4px' }}>{copy.registerShort}</a>
-            </nav>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button
-                type="button"
-                onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-                className="mm-nav-lang mm-hero-mono"
-                aria-label="Switch language"
-                style={{ background: 'transparent', border: '1px solid rgba(242,237,224,0.24)', borderRadius: '999px', padding: '7px 10px', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.72)' }}
-              >{copy.switchLabel}</button>
-              <a className="mm-btn" href="/register">{copy.registerShort} <span style={{ fontStyle: 'normal' }}>→</span></a>
-            </div>
+            <a className="mm-btn" href="/register">{copy.registerShort} <span style={{ fontStyle: 'normal' }}>→</span></a>
           </header>
 
-          <div className="mm-chrome" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '56px', gap: '24px' }}>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <span className="mm-flag">{copy.race}</span>
-              <span className="mm-flag mm-flag--live">{copy.open}</span>
-            </div>
-            <div className="mm-coords mm-hero-mono" style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.75)' }}>20°45'04&quot;N · 105°22'58&quot;W</div>
-              <div style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)', marginTop: '4px' }}>Bahía de Banderas, Nay.</div>
-            </div>
-          </div>
 
           <div className="mm-hero-bottom" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '64px', paddingTop: '80px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -604,7 +581,7 @@ export default function HomePage() {
               </p>
               <div style={{ marginTop: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <a className="mm-btn mm-btn--hero" href="/register">{copy.register} <span style={{ fontStyle: 'normal' }}>→</span></a>
-                <button className="mm-btn-ghost" type="button" onClick={() => selectTab('archive')}>{copy.viewResults}</button>
+
               </div>
               <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)' }}>{copy.scroll}</div>
             </div>
