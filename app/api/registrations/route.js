@@ -86,26 +86,36 @@ export async function POST(request) {
     if (action === 'refund') {
       if (registration.payment_status !== 'paid') return NextResponse.json({ error: 'Only paid registrations can be refunded.' }, { status: 400 })
       if (!registration.stripe_payment_intent_id) return NextResponse.json({ error: 'Missing Stripe payment intent for this registration.' }, { status: 400 })
-      if (registration.refund_status === 'refunded' || registration.payment_status === 'refunded') return NextResponse.json({ error: 'This registration is already refunded.' }, { status: 400 })
+      if (registration.refund_status === 'refunded' || registration.payment_status === 'refunded') return NextResponse.json({ error: 'This registration is already fully refunded.' }, { status: 400 })
       if (!process.env.STRIPE_SECRET_KEY) return NextResponse.json({ error: 'Stripe is not configured.' }, { status: 503 })
+
+      const alreadyRefunded = Number(registration.refunded_amount || 0)
+      const remaining = Math.max(0, Number(registration.amount_total || 0) - alreadyRefunded)
+      const requestedAmount = body.amountCents ? Math.round(Number(body.amountCents)) : remaining
+      if (!requestedAmount || requestedAmount <= 0) return NextResponse.json({ error: 'Refund amount must be greater than zero.' }, { status: 400 })
+      if (requestedAmount > remaining) return NextResponse.json({ error: `Refund amount exceeds remaining refundable balance of $${(remaining / 100).toFixed(2)}.` }, { status: 400 })
 
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
       const refund = await stripe.refunds.create({
         payment_intent: registration.stripe_payment_intent_id,
-        amount: registration.amount_total,
+        amount: requestedAmount,
         metadata: {
           registrationId: registration.id,
           eventId: registration.event_id,
           sailorName: registration.full_name || '',
+          refundType: requestedAmount === remaining ? 'full' : 'partial',
         },
       })
 
       const now = new Date().toISOString()
+      const refundedAmount = alreadyRefunded + requestedAmount
+      const fullRefund = refundedAmount >= Number(registration.amount_total || 0)
       const { data: updated, error: updateError } = await supabase
         .from('regatta_registrations')
         .update({
-          payment_status: 'refunded',
-          refund_status: 'refunded',
+          payment_status: fullRefund ? 'refunded' : 'paid',
+          refund_status: fullRefund ? 'refunded' : 'partial',
+          refunded_amount: refundedAmount,
           stripe_refund_id: refund.id,
           refunded_at: now,
           admin_notes: adminNotes || registration.admin_notes || null,
@@ -114,7 +124,7 @@ export async function POST(request) {
         .select('*')
         .single()
       if (updateError) throw updateError
-      await removeRegistrationFromManifest(supabase, updated)
+      if (fullRefund) await removeRegistrationFromManifest(supabase, updated)
       return NextResponse.json({ registration: updated, refund })
     }
 

@@ -144,15 +144,31 @@ export default function AdminPage() {
     if (activeTab === 'registrations' && selectedEventId) loadRegistrations(selectedEventId)
   }, [activeTab, selectedEventId])
 
+  const stripePaymentUrl = (id) => id ? `https://dashboard.stripe.com/payments/${id}` : null
+  const stripeSessionUrl = (id) => id ? `https://dashboard.stripe.com/checkout/sessions/${id}` : null
+  const stripeRefundUrl = (id) => id ? `https://dashboard.stripe.com/refunds/${id}` : null
+  const formatMoney = (cents = 0, currency = 'usd') => `$${((cents || 0) / 100).toFixed(2)} ${String(currency || 'usd').toUpperCase()}`
+
   const handleRegistrationAction = async (registration, action) => {
-    const label = action === 'refund' ? 'refund this sailor and remove them from the public manifest' : 'cancel this sailor and remove them from the public manifest'
-    if (!confirm(`Are you sure you want to ${label}?`)) return
+    let amountCents = null
+    const remainingCents = Math.max(0, Number(registration.amount_total || 0) - Number(registration.refunded_amount || 0))
+    if (action === 'refund') {
+      const choice = prompt(`Refund amount for ${registration.full_name}. Enter FULL for ${formatMoney(remainingCents, registration.currency)}, or enter a dollar amount for partial refund:`, 'FULL')
+      if (choice === null) return
+      if (choice.trim().toUpperCase() !== 'FULL') {
+        const dollars = Number(choice.replace(/[^0-9.]/g, ''))
+        if (!dollars || dollars <= 0) return alert('Enter a valid refund amount.')
+        amountCents = Math.round(dollars * 100)
+      }
+    } else {
+      if (!confirm('Cancel this registration and remove this sailor from the public manifest?')) return
+    }
     const adminNotes = prompt('Optional admin note:', registration.admin_notes || '') || ''
     try {
       const response = await fetch('/api/registrations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': ADMIN_PASSWORD },
-        body: JSON.stringify({ action, registrationId: registration.id, adminNotes })
+        body: JSON.stringify({ action, registrationId: registration.id, adminNotes, amountCents })
       })
       const payload = await response.json()
       if (!response.ok) throw new Error(payload.error || 'Action failed')
@@ -164,7 +180,7 @@ export default function AdminPage() {
         setEvent(refreshed)
         setSavedEvent(refreshed)
       }
-      alert(action === 'refund' ? 'Refund issued and sailor removed from manifest.' : 'Registration canceled and sailor removed from manifest.')
+      alert(action === 'refund' ? 'Refund processed. Full refunds remove the sailor from the manifest; partial refunds keep them listed.' : 'Registration canceled and sailor removed from manifest.')
     } catch (err) {
       alert(err.message)
     }
@@ -1198,67 +1214,55 @@ export default function AdminPage() {
               {registrations.length === 0 ? (
                 <div style={styles.emptyState}>No Stripe registrations found for this event yet.</div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={styles.table}>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Class</th>
-                        <th>Sail #</th>
-                        <th>Country</th>
-                        <th>Category</th>
-                        <th>T-Shirt</th>
-                        <th>Add-ons</th>
-                        <th>Status</th>
-                        <th>Refund</th>
-                        <th>Total</th>
-                        <th>Stripe</th>
-                        <th>Admin Notes</th>
-                        <th>Email</th>
-                        <th>Paid</th>
-                        <th>Created</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {registrations.map(reg => (
-                        <tr key={reg.id}>
-                          <td>{reg.full_name}</td>
-                          <td>{reg.email}</td>
-                          <td>{reg.boat_class}</td>
-                          <td>{reg.sail_number || '—'}</td>
-                          <td>{reg.country || '—'}</td>
-                          <td>{reg.scoring_category}</td>
-                          <td>{reg.tshirt_size || '—'}</td>
-                          <td>{[
+                <div style={{ display: 'grid', gap: '14px' }}>
+                  {registrations.map(reg => {
+                    const remainingCents = Math.max(0, Number(reg.amount_total || 0) - Number(reg.refunded_amount || 0))
+                    return (
+                      <div key={reg.id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', background: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                          <div>
+                            <h3 style={{ margin: '0 0 4px', fontSize: '18px' }}>{reg.full_name}</h3>
+                            <div style={{ color: '#4a5568', fontSize: '13px' }}>{reg.email} • {reg.country || '—'}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontWeight: 800, color: reg.payment_status === 'paid' ? '#2f855a' : reg.payment_status === 'refunded' || reg.payment_status === 'canceled' ? '#c53030' : '#6b46c1' }}>{reg.payment_status.toUpperCase()}</div>
+                            <div style={{ color: '#4a5568', fontSize: '13px' }}>{formatMoney(reg.amount_total, reg.currency)}</div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '12px' }}>
+                          <div><small style={{ color: '#718096' }}>Class</small><br /><strong>{reg.boat_class}</strong></div>
+                          <div><small style={{ color: '#718096' }}>Sail #</small><br /><strong>{reg.sail_number || '—'}</strong></div>
+                          <div><small style={{ color: '#718096' }}>Division</small><br /><strong>{reg.scoring_category}</strong></div>
+                          <div><small style={{ color: '#718096' }}>T-Shirt</small><br /><strong>{reg.tshirt_size || '—'}</strong></div>
+                          <div><small style={{ color: '#718096' }}>Refunded</small><br /><strong>{formatMoney(reg.refunded_amount || 0, reg.currency)}</strong></div>
+                          <div><small style={{ color: '#718096' }}>Refund status</small><br /><strong>{reg.refund_status || 'none'}</strong></div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                          {reg.stripe_checkout_session_id && <a href={stripeSessionUrl(reg.stripe_checkout_session_id)} target="_blank" rel="noopener noreferrer" style={styles.btnSecondary}>Stripe Session</a>}
+                          {reg.stripe_payment_intent_id && <a href={stripePaymentUrl(reg.stripe_payment_intent_id)} target="_blank" rel="noopener noreferrer" style={styles.btnSecondary}>Payment</a>}
+                          {reg.stripe_refund_id && <a href={stripeRefundUrl(reg.stripe_refund_id)} target="_blank" rel="noopener noreferrer" style={styles.btnSecondary}>Refund</a>}
+                          {reg.confirmation_email_sent_at ? <span style={{ padding: '8px 10px', borderRadius: '8px', background: '#f0fff4', color: '#2f855a', fontSize: '13px' }}>Email sent</span> : reg.confirmation_email_error ? <span style={{ padding: '8px 10px', borderRadius: '8px', background: '#fff5f5', color: '#c53030', fontSize: '13px' }}>Email error</span> : <span style={{ padding: '8px 10px', borderRadius: '8px', background: '#edf2f7', color: '#4a5568', fontSize: '13px' }}>Email pending</span>}
+                        </div>
+
+                        <div style={{ color: '#4a5568', fontSize: '13px', marginBottom: '12px' }}>
+                          <strong>Add-ons:</strong> {[
                             reg.charter_days_short ? `${reg.charter_days_short} short charter days` : null,
                             reg.charter_days_extended ? `${reg.charter_days_extended} extended charter days` : null,
                             reg.pro_kit_rental ? 'Pro kit' : null,
                             reg.boat_insurance ? 'Insurance' : null,
-                          ].filter(Boolean).join(', ') || '—'}</td>
-                          <td><strong style={{ color: reg.payment_status === 'paid' ? '#38a169' : reg.payment_status === 'refunded' || reg.payment_status === 'canceled' ? '#e53e3e' : '#805ad5' }}>{reg.payment_status}</strong></td>
-                          <td>{reg.refund_status || 'none'}{reg.refunded_at ? <><br /><small>{new Date(reg.refunded_at).toLocaleString()}</small></> : null}</td>
-                          <td>{reg.amount_total ? `$${(reg.amount_total / 100).toFixed(2)}` : '—'}</td>
-                          <td>
-                            {reg.stripe_checkout_session_id ? <small>Session: {reg.stripe_checkout_session_id}</small> : '—'}
-                            {reg.stripe_payment_intent_id ? <><br /><small>PI: {reg.stripe_payment_intent_id}</small></> : null}
-                            {reg.stripe_refund_id ? <><br /><small>Refund: {reg.stripe_refund_id}</small></> : null}
-                          </td>
-                          <td>{reg.admin_notes || '—'}</td>
-                          <td>{reg.confirmation_email_sent_at ? `Sent ${new Date(reg.confirmation_email_sent_at).toLocaleString()}` : reg.confirmation_email_error ? `Error: ${reg.confirmation_email_error}` : '—'}</td>
-                          <td>{reg.paid_at ? new Date(reg.paid_at).toLocaleString() : '—'}</td>
-                          <td>{reg.created_at ? new Date(reg.created_at).toLocaleString() : '—'}</td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                              {reg.payment_status === 'paid' && <button onClick={() => handleRegistrationAction(reg, 'refund')} style={{ ...styles.btnDanger, padding: '6px 10px', fontSize: '12px' }}>Refund</button>}
-                              {reg.payment_status !== 'canceled' && reg.payment_status !== 'refunded' && <button onClick={() => handleRegistrationAction(reg, 'cancel')} style={{ ...styles.btnSecondary, padding: '6px 10px', fontSize: '12px' }}>Cancel</button>}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          ].filter(Boolean).join(', ') || '—'}
+                          {reg.admin_notes ? <><br /><strong>Admin notes:</strong> {reg.admin_notes}</> : null}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {reg.payment_status === 'paid' && remainingCents > 0 && <button onClick={() => handleRegistrationAction(reg, 'refund')} style={{ ...styles.btnDanger, padding: '9px 12px' }}>Refund full/partial</button>}
+                          {reg.payment_status !== 'canceled' && reg.payment_status !== 'refunded' && <button onClick={() => handleRegistrationAction(reg, 'cancel')} style={{ ...styles.btnSecondary, padding: '9px 12px' }}>Cancel / remove sailor</button>}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>
