@@ -553,7 +553,7 @@ export default function HomePage() {
           loop
           playsInline
           preload="metadata"
-          poster="/midwinters-hero-race.jpg"
+          poster="/midwinters-hero-video-poster.jpg"
           aria-hidden="true"
           style={{
             position: 'absolute', inset: 0,
