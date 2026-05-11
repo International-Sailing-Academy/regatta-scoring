@@ -681,7 +681,7 @@ export default function HomePage() {
       )}
 
       {/* Main Content */}
-      <div id="regatta-content" className="mm-content" style={{ maxWidth: '1200px', margin: '0 auto', padding: '26px 15px 48px', scrollMarginTop: '24px' }}>
+      <div id="regatta-content" className="mm-content" style={{ maxWidth: '1200px', margin: '0 auto', padding: '26px clamp(20px, 4vw, 28px) 48px', scrollMarginTop: '24px' }}>
         
         {/* Tab Navigation */}
         <div className="mm-tabbar" style={{
