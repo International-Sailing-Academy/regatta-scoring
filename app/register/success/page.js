@@ -1,4 +1,4 @@
-const WHATSAPP_GROUP_URL = process.env.NEXT_PUBLIC_REGATTA_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/GJnmwjNCylf6BtRlyTtyaw'
+const WHATSAPP_GROUP_URL = '/join-whatsapp'
 
 export default function RegistrationSuccessPage() {
   return (

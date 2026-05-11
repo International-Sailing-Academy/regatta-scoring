@@ -1,5 +1,7 @@
 const RESEND_API_URL = 'https://api.resend.com/emails'
-export const REGATTA_WHATSAPP_GROUP_URL = process.env.NEXT_PUBLIC_REGATTA_WHATSAPP_GROUP_URL || 'https://chat.whatsapp.com/GJnmwjNCylf6BtRlyTtyaw'
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mexicanmidwinters.com'
+export const REGATTA_WHATSAPP_GROUP_URL = `${SITE_URL}/join-whatsapp`
+export const REGATTA_SAILORS_URL = `${SITE_URL}/sailors`
 
 function money(cents = 0, currency = 'usd') {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency.toUpperCase() }).format((cents || 0) / 100)
@@ -30,7 +32,7 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
   `).join('')
 
   const subject = 'Mexican Midwinters registration confirmed'
-  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: https://www.mexicanmidwinters.com/?tab=sailors\n\nInternational Sailing Academy`
+  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\n\nInternational Sailing Academy`
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111827;max-width:680px;margin:0 auto;">
       <h1 style="color:#0a192f;">Mexican Midwinters registration confirmed</h1>
@@ -46,7 +48,7 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
         <p style="margin:0 0 14px;">We’ll use this group for race-office updates, logistics, and sailor notices.</p>
         <a href="${REGATTA_WHATSAPP_GROUP_URL}" style="display:inline-block;background:#25D366;color:#062414;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:8px;">Join WhatsApp group</a>
       </div>
-      <p><a href="https://www.mexicanmidwinters.com/?tab=sailors">View the registered sailor list</a></p>
+      <p><a href="${REGATTA_SAILORS_URL}">View the registered sailor list</a></p>
       <p style="color:#6b7280;font-size:13px;">Checkout session: ${escapeHtml(checkoutSessionId)}</p>
       <p>International Sailing Academy</p>
     </div>
