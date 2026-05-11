@@ -75,6 +75,7 @@ export default function AdminPage() {
   const [fareHarborDebug, setFareHarborDebug] = useState(null)
   const [registrations, setRegistrations] = useState([])
   const [registrationsLoading, setRegistrationsLoading] = useState(false)
+  const [showArchivedRegistrations, setShowArchivedRegistrations] = useState(false)
   const supabaseEnabled = isSupabaseEnabled()
   
   // Password protection
@@ -148,6 +149,9 @@ export default function AdminPage() {
   const stripeSessionUrl = (id) => id ? `https://dashboard.stripe.com/checkout/sessions/${id}` : null
   const stripeRefundUrl = (id) => id ? `https://dashboard.stripe.com/refunds/${id}` : null
   const formatMoney = (cents = 0, currency = 'usd') => `$${((cents || 0) / 100).toFixed(2)} ${String(currency || 'usd').toUpperCase()}`
+  const isArchivedRegistration = (reg) => ['refunded', 'canceled'].includes(String(reg.payment_status || '').toLowerCase()) || ['full', 'canceled'].includes(String(reg.refund_status || '').toLowerCase())
+  const activeRegistrations = registrations.filter(reg => !isArchivedRegistration(reg))
+  const archivedRegistrations = registrations.filter(isArchivedRegistration)
 
   const handleRegistrationAction = async (registration, action) => {
     let amountCents = null
@@ -186,9 +190,9 @@ export default function AdminPage() {
     }
   }
 
-  const exportRegistrationsCsv = () => {
+  const exportRegistrationsCsv = (rowsToExport = activeRegistrations, filename = 'mexican-midwinters-active-stripe-registrations.csv') => {
     const header = ['Name', 'Email', 'WhatsApp', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt', 'Status', 'Refund Status', 'Amount', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit', 'Boat Insurance', 'Medical Conditions', 'Emergency Contact', 'Emergency Phone', 'Stripe Session', 'Payment Intent', 'Refund ID', 'Admin Notes', 'Confirmation Email Sent', 'Confirmation Email Error', 'Paid At', 'Refunded At', 'Canceled At']
-    const rows = registrations.map(reg => [
+    const rows = rowsToExport.map(reg => [
       reg.full_name,
       reg.email,
       reg.whatsapp || reg.phone || '',
@@ -223,7 +227,7 @@ export default function AdminPage() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = 'mexican-midwinters-stripe-registrations.csv'
+    link.download = filename
     link.click()
     URL.revokeObjectURL(url)
   }
@@ -1249,16 +1253,24 @@ export default function AdminPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <h2>Stripe Registrations</h2>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  {registrations.length > 0 && <button onClick={exportRegistrationsCsv} style={styles.btnSecondary}>Export CSV</button>}
+                  {activeRegistrations.length > 0 && <button onClick={() => exportRegistrationsCsv(activeRegistrations, 'mexican-midwinters-active-stripe-registrations.csv')} style={styles.btnSecondary}>Export Active CSV</button>}
+                  {archivedRegistrations.length > 0 && <button onClick={() => exportRegistrationsCsv(archivedRegistrations, 'mexican-midwinters-archived-stripe-registrations.csv')} style={styles.btnSecondary}>Export Archive CSV</button>}
                   <button onClick={() => loadRegistrations()} style={styles.btnSecondary}>{registrationsLoading ? 'Loading…' : 'Refresh'}</button>
                 </div>
               </div>
-              <p style={styles.help}>Paid Stripe registrations are automatically added to the public sailor list by the webhook.</p>
+              <p style={styles.help}>Paid Stripe registrations are automatically added to the public sailor list by the webhook. Fully refunded/canceled entries are kept in the archive below and hidden from the active working list.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '18px' }}>
+                <div style={styles.statCard}><strong>{activeRegistrations.length}</strong><span>Active</span></div>
+                <div style={styles.statCard}><strong>{archivedRegistrations.length}</strong><span>Archived</span></div>
+                <div style={styles.statCard}><strong>{registrations.length}</strong><span>Total records</span></div>
+              </div>
               {registrations.length === 0 ? (
                 <div style={styles.emptyState}>No Stripe registrations found for this event yet.</div>
+              ) : activeRegistrations.length === 0 ? (
+                <div style={styles.emptyState}>No active Stripe registrations. Refunded/canceled records are in the archive.</div>
               ) : (
                 <div style={{ display: 'grid', gap: '14px' }}>
-                  {registrations.map(reg => {
+                  {activeRegistrations.map(reg => {
                     const remainingCents = Math.max(0, Number(reg.amount_total || 0) - Number(reg.refunded_amount || 0))
                     return (
                       <div key={reg.id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', background: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
@@ -1307,6 +1319,39 @@ export default function AdminPage() {
                       </div>
                     )
                   })}
+                </div>
+              )}
+
+              {archivedRegistrations.length > 0 && (
+                <div style={{ marginTop: '26px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
+                  <button onClick={() => setShowArchivedRegistrations(prev => !prev)} style={styles.btnSecondary}>
+                    {showArchivedRegistrations ? 'Hide' : 'Show'} Archived / Refunded ({archivedRegistrations.length})
+                  </button>
+                  {showArchivedRegistrations && (
+                    <div style={{ display: 'grid', gap: '12px', marginTop: '14px' }}>
+                      {archivedRegistrations.map(reg => (
+                        <div key={reg.id} style={{ border: '1px solid #fed7d7', borderRadius: '12px', padding: '14px', background: '#fffafa' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                            <div>
+                              <h3 style={{ margin: '0 0 4px', fontSize: '16px' }}>{reg.full_name}</h3>
+                              <div style={{ color: '#4a5568', fontSize: '13px' }}>{reg.email} • {reg.boat_class} • Sail #{reg.sail_number || '—'}</div>
+                              {reg.admin_notes ? <div style={{ color: '#4a5568', fontSize: '13px', marginTop: '6px' }}><strong>Admin notes:</strong> {reg.admin_notes}</div> : null}
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontWeight: 800, color: '#c53030' }}>{reg.payment_status.toUpperCase()}</div>
+                              <div style={{ color: '#4a5568', fontSize: '13px' }}>Refunded {formatMoney(reg.refunded_amount || 0, reg.currency)}</div>
+                              <div style={{ color: '#718096', fontSize: '12px' }}>{reg.refunded_at || reg.canceled_at || ''}</div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                            {reg.stripe_checkout_session_id && <a href={stripeSessionUrl(reg.stripe_checkout_session_id)} target="_blank" rel="noopener noreferrer" style={styles.btnSecondary}>Stripe Session</a>}
+                            {reg.stripe_payment_intent_id && <a href={stripePaymentUrl(reg.stripe_payment_intent_id)} target="_blank" rel="noopener noreferrer" style={styles.btnSecondary}>Payment</a>}
+                            {reg.stripe_refund_id && <a href={stripeRefundUrl(reg.stripe_refund_id)} target="_blank" rel="noopener noreferrer" style={styles.btnSecondary}>Refund</a>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
