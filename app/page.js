@@ -885,7 +885,6 @@ export default function HomePage() {
               <section id="pre-regatta-training" style={{ scrollMarginTop: '24px', marginBottom: '60px' }}>
                 <div style={{ marginBottom: '28px' }}>
                   <div className="mm-hero-mono" style={{ display: 'flex', alignItems: 'center', gap: '14px', color: 'var(--mm-sun)', fontSize: '11px', letterSpacing: '0.32em', marginBottom: '14px' }}>
-                    <span style={{ width: '48px', height: '1px', background: 'var(--mm-sun)', display: 'inline-block' }} />
                     <span>03 · RUN-UP TO THE REGATTA</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '18px', flexWrap: 'wrap' }}>
