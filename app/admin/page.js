@@ -1754,7 +1754,7 @@ export default function AdminPage() {
                           <div style={styles.tableContainer}>
                             <table style={styles.table}>
                               <thead>
-                                <tr style={{ ...styles.tableHeader, textAlign: 'left' }}>
+                                <tr style={styles.tableHeader}>
                                   <th style={styles.th}>Rank</th>
                                   <th style={styles.th}>Sail</th>
                                   <th style={styles.th}>Helmsman / Crew</th>
