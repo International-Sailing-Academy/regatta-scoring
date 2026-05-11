@@ -33,10 +33,12 @@ const LANGUAGE_COPY = {
     titleA: 'Mexican',
     titleB: 'Midwinters.',
     lede: 'Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management.',
+    registerShort: 'Register',
     register: 'Register for 2027',
     viewResults: 'View 2026 results',
     scroll: 'Scroll ↓ the regatta',
     countdown: 'Racing commences in',
+    units: { days: 'days', hours: 'hours', minutes: 'minutes', seconds: 'seconds' },
   },
   es: {
     switchLabel: 'ES / EN',
@@ -48,10 +50,12 @@ const LANGUAGE_COPY = {
     titleA: 'Mexican',
     titleB: 'Midwinters.',
     lede: 'Tres días de regata ILCA en Bahía de Banderas: brisa térmica constante, flotas competitivas y organización de primer nivel.',
+    registerShort: 'Inscríbete',
     register: 'Inscríbete para 2027',
     viewResults: 'Ver resultados 2026',
     scroll: 'Baja ↓ la regata',
     countdown: 'La regata comienza en',
+    units: { days: 'días', hours: 'horas', minutes: 'minutos', seconds: 'segundos' },
   },
 }
 
@@ -214,7 +218,7 @@ function formatEventDateRange(event) {
   return end ? `${start} – ${end}` : start
 }
 
-function CountdownTimer({ targetDate }) {
+function CountdownTimer({ targetDate, labels }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
   useEffect(() => {
@@ -241,7 +245,7 @@ function CountdownTimer({ targetDate }) {
       {Object.entries(timeLeft).map(([unit, value], index) => (
         <div key={unit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <div className="mm-count-n" style={{ fontFamily: 'var(--mm-display)', fontSize: unit === 'days' ? '72px' : '64px', fontWeight: 900, lineHeight: 0.9, letterSpacing: '-0.03em', color: index === 0 ? 'var(--mm-sun)' : 'var(--mm-cream)', fontVariantNumeric: 'tabular-nums' }}>{unit === 'days' ? String(value) : String(value).padStart(2, '0')}</div>
-          <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.55)', marginTop: '8px' }}>{unit}</div>
+          <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.55)', marginTop: '8px' }}>{labels?.[unit] || unit}</div>
         </div>
       ))}
     </div>
@@ -551,7 +555,7 @@ export default function HomePage() {
                 aria-label="Switch language"
                 style={{ background: 'transparent', border: '1px solid rgba(242,237,224,0.24)', borderRadius: '999px', padding: '7px 10px', cursor: 'pointer', fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.72)' }}
               >{copy.switchLabel}</button>
-              <a className="mm-btn" href="/register">Register <span style={{ fontStyle: 'normal' }}>→</span></a>
+              <a className="mm-btn" href="/register">{copy.registerShort} <span style={{ fontStyle: 'normal' }}>→</span></a>
             </div>
           </header>
 
@@ -588,7 +592,7 @@ export default function HomePage() {
 
             <aside style={{ minWidth: '380px' }} aria-label="Countdown">
               <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.6)', marginBottom: '18px' }}>{copy.countdown}</div>
-              <CountdownTimer targetDate={eventStartDateTime} />
+              <CountdownTimer targetDate={eventStartDateTime} labels={copy.units} />
             </aside>
           </div>
         </div>
