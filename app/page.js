@@ -438,6 +438,15 @@ export default function HomePage() {
   
   const ilca7Races = dedupeRaces(event.races?.filter(r => r.raceClass === 'ILCA 7') || [])
   const ilca6Races = dedupeRaces(event.races?.filter(r => r.raceClass === 'ILCA 6' || r.raceClass === 'Radial') || [])
+  const archived2026Event = allEvents.find(evt => evt.id === 'mmcm1ps9woa49fdzxl')
+  const archived2026Sailors = archived2026Event?.sailors?.filter(s => s.boatClass === 'ILCA 6') || []
+  const archived2026Races = dedupeRaces(archived2026Event?.races?.filter(r => r.raceClass === 'ILCA 6' || r.raceClass === 'Radial') || [])
+  const archived2026Results = archived2026Sailors.length && archived2026Races.length ? calculateResults(archived2026Sailors, archived2026Races).slice(0, 3) : [
+    { name: 'Elena Oetling Ramirez', country: 'Mexico', boatClass: 'ILCA 6', sailNumber: '220644', net: 13 },
+    { name: 'Namkhai Bourquin', country: 'Mexico', boatClass: 'ILCA 6', sailNumber: '212594', net: 15 },
+    { name: 'Sanka Bourquin', country: 'Mexico', boatClass: 'ILCA 6', sailNumber: '194611', net: 18 },
+  ]
+  const archived2026Countries = archived2026Sailors.length ? new Set(archived2026Sailors.map(s => s.country).filter(Boolean)).size : 6
   const viewingArchivedEvent = currentEventId && event.id !== currentEventId
   const currentEvent = allEvents.find(evt => evt.id === currentEventId) || event
   const currentEventHref = currentEventId ? `/?event=${currentEventId}&tab=info` : '/'
@@ -754,29 +763,47 @@ export default function HomePage() {
               </section>
 
 
-              {/* Reigning Champions */}
-              <section style={{ marginBottom: '45px' }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '18px',
-                  flexWrap: 'wrap',
-                  background: 'rgba(255,255,255,0.05)',
-                  borderRadius: '14px',
-                  padding: '18px 22px',
-                  border: '1px solid rgba(246, 173, 85, 0.22)',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: '260px' }}>
-                    <div style={{ color: '#f6ad55', display: 'flex', alignItems: 'center' }}><Icons.Trophy /></div>
-                    <div>
-                      <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.6px', color: '#f6ad55', fontWeight: 'bold', marginBottom: '3px' }}>Reigning Champion</div>
-                      <div style={{ fontSize: '20px', fontWeight: '800' }}>Elena Oetling Ramirez</div>
-                      <div style={{ fontSize: '13px', opacity: 0.68 }}>2026 Overall • Mexico • ILCA 6</div>
+              {/* Past Winners / Record */}
+              <section style={{ marginBottom: '60px', position: 'relative', overflow: 'hidden', background: 'var(--mm-ink-2)', border: '1px solid rgba(244,168,42,0.26)', borderRadius: '4px', padding: '34px clamp(22px, 4vw, 44px)' }}>
+                <div style={{ position: 'absolute', top: '-110px', left: '-80px', width: '260px', height: '260px', borderRadius: '999px', background: 'rgba(244,168,42,0.20)', filter: 'blur(52px)', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', left: '24px', top: '24px', bottom: '24px', width: '38%', border: '1px solid rgba(244,168,42,0.34)', borderRight: 'none', transform: 'skewX(-6deg)', pointerEvents: 'none' }} />
+                <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }}>
+                  <div>
+                    <div className="mm-hero-mono" style={{ color: 'rgba(242,237,224,0.56)', fontSize: '11px', letterSpacing: '0.24em', marginBottom: '16px' }}>2026 · THE RECORD</div>
+                    <h2 style={{ fontSize: 'clamp(54px, 8vw, 112px)', lineHeight: 0.88, margin: 0, color: 'var(--mm-cream)' }}>
+                      Past<br /><span style={{ color: 'var(--mm-sun)' }}>winners.</span>
+                    </h2>
+                    <p style={{ maxWidth: '390px', margin: '24px 0 0', color: 'rgba(242,237,224,0.62)', fontSize: '15px', lineHeight: 1.65 }}>
+                      The real 2026 Mexican Midwinters record: {archived2026Sailors.length || 20} sailors, {archived2026Countries} countries, {archived2026Races.length || 9} completed races in Banderas Bay.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px', marginTop: '24px', maxWidth: '420px' }}>
+                      {[['Entries', archived2026Sailors.length || 20], ['Countries', archived2026Countries], ['Races', archived2026Races.length || 9]].map(([label, value]) => (
+                        <div key={label} style={{ borderTop: '1px solid rgba(244,168,42,0.42)', paddingTop: '10px' }}>
+                          <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: '30px', color: 'var(--mm-cream)', lineHeight: 1 }}>{value}</div>
+                          <div className="mm-hero-mono" style={{ fontSize: '9px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.46)', marginTop: '4px' }}>{label}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: 'var(--mm-sun)', fontWeight: 'bold', textDecoration: 'none', fontSize: '14px' }}>2026 results →</a>
+
+                  <div>
+                    {archived2026Results.map((sailor, index) => (
+                      <div key={`${sailor.name}-${index}`} style={{ display: 'grid', gridTemplateColumns: '74px 1fr auto', gap: '18px', alignItems: 'center', padding: '18px 0', borderTop: index === 0 ? '1px solid rgba(244,168,42,0.38)' : '1px solid rgba(242,237,224,0.14)' }}>
+                        <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: '42px', color: index === 0 ? 'var(--mm-sun)' : 'rgba(242,237,224,0.76)', lineHeight: 1 }}>{index + 1}{index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'}</div>
+                        <div>
+                          <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(24px, 3.2vw, 42px)', lineHeight: 0.98, textTransform: 'uppercase', color: index === 0 ? 'var(--mm-sun)' : 'var(--mm-cream)' }}>{sailor.name}</div>
+                          <div className="mm-hero-mono" style={{ marginTop: '8px', fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.48)' }}>{sailor.country || '—'} · {sailor.boatClass || 'ILCA 6'} · Sail #{sailor.sailNumber || '—'}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: '34px', color: 'var(--mm-cream)', lineHeight: 1 }}>{sailor.net}</div>
+                          <div className="mm-hero-mono" style={{ fontSize: '9px', letterSpacing: '0.18em', color: 'rgba(242,237,224,0.48)' }}>NET PTS</div>
+                        </div>
+                      </div>
+                    ))}
+                    <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ display: 'inline-flex', marginTop: '18px', color: 'var(--mm-sun)', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>View full 2026 results →</a>
+                  </div>
                 </div>
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '2px', background: 'var(--mm-sun)' }} />
               </section>
 
               {/* Registration */}
