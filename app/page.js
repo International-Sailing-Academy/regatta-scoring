@@ -139,7 +139,7 @@ const Icons = {
       3: '#CD7F32', // Bronze
     }
     return (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors[place] || '#63b3ed'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors[place] || 'var(--mm-rojo)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="8" r="7" />
         <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
       </svg>
@@ -382,14 +382,14 @@ export default function HomePage() {
   if (loading || !event) return (
     <div style={{ 
       minHeight: '100vh', 
-      background: '#0a192f',
+      background: 'var(--mm-ink)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       color: 'white'
     }}>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ color: '#63b3ed', marginBottom: '20px' }}>
+        <div style={{ color: 'var(--mm-rojo)', marginBottom: '20px' }}>
           <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
         </div>
         <p>Loading regatta data...</p>
@@ -442,7 +442,7 @@ export default function HomePage() {
   const currentEventHref = currentEventId ? `/?event=${currentEventId}&tab=info` : '/'
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a192f', color: 'white', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="mm-page" style={{ minHeight: '100vh', background: 'var(--mm-ink)', color: 'var(--mm-cream)', fontFamily: 'var(--mm-body)' }}>
       <style>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
@@ -462,6 +462,13 @@ export default function HomePage() {
         .mm-flag--live { background:var(--mm-verde); }
         .mm-flag--live::before { background:var(--mm-sun); }
         @media (max-width: 900px) { .mm-nav-links, .mm-nav-lang { display:none !important; } .mm-hero-bottom { flex-direction:column !important; align-items:flex-start !important; gap:40px !important; } .mm-count-n { font-size:52px !important; } }
+        .mm-page h2 { font-family:var(--mm-display) !important; font-style:italic; font-weight:700; text-transform:uppercase; letter-spacing:-.01em; line-height:.9; color:var(--mm-cream); }
+        .mm-page h3, .mm-page h4 { font-family:var(--mm-display) !important; font-style:italic; text-transform:uppercase; letter-spacing:.01em; }
+        .mm-page h4 { color:var(--mm-rojo) !important; }
+        .mm-page section > div, .mm-page .mm-soft-panel { border-radius:4px !important; border-color:rgba(244,237,223,.14) !important; background:rgba(244,237,223,.045) !important; }
+        .mm-page .mm-tabbar { background:rgba(244,237,223,.055) !important; border:1px solid rgba(244,237,223,.10); border-radius:4px !important; }
+        .mm-page button, .mm-page a { transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms, border-color 180ms; }
+        .mm-page a:focus-visible, .mm-page button:focus-visible { outline:2px solid var(--mm-sun); outline-offset:3px; }
         @media (max-width: 600px) { .mm-hero-inner { padding:20px 24px 32px !important; } .mm-chrome { flex-direction:column !important; } .mm-coords { text-align:left !important; } .mm-headline { font-size:72px !important; } .mm-count-row { flex-wrap:wrap !important; gap:12px !important; } .mm-count-n { font-size:40px !important; } }
       `}</style>
 
@@ -575,8 +582,8 @@ export default function HomePage() {
                 style={{ 
                   flex: 1,
                   padding: '15px', 
-                  background: '#63b3ed', 
-                  color: '#0a192f', 
+                  background: 'var(--mm-rojo)', 
+                  color: 'var(--mm-cream)', 
                   border: 'none', 
                   borderRadius: '8px',
                   fontSize: '16px',
@@ -607,10 +614,10 @@ export default function HomePage() {
       )}
 
       {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '10px 15px 40px' }}>
+      <div className="mm-content" style={{ maxWidth: '1200px', margin: '0 auto', padding: '26px 15px 48px' }}>
         
         {/* Tab Navigation */}
-        <div style={{
+        <div className="mm-tabbar" style={{
           display: 'flex',
           justifyContent: 'center',
           gap: '6px',
@@ -630,17 +637,19 @@ export default function HomePage() {
                 flex: '1 1 auto',
                 minWidth: '70px',
                 padding: '12px 16px',
-                background: activeTab === tab ? '#38a169' : 'transparent',
+                background: activeTab === tab ? 'var(--mm-rojo)' : 'transparent',
                 color: activeTab === tab ? 'white' : 'white',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: '3px',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontFamily: 'var(--mm-mono)',
+                fontSize: '11px',
+                letterSpacing: '0.16em',
                 fontWeight: '600',
-                textTransform: 'capitalize',
+                textTransform: 'uppercase',
                 transition: 'all 0.3s ease',
                 whiteSpace: 'nowrap',
-                boxShadow: activeTab === tab ? '0 4px 6px rgba(56, 161, 105, 0.3)' : 'none',
+                boxShadow: activeTab === tab ? '0 4px 6px rgba(200, 49, 30, 0.3)' : 'none',
                 transform: activeTab === tab ? 'translateY(-2px)' : 'none',
               }}
             >
@@ -655,8 +664,8 @@ export default function HomePage() {
             margin: '0 auto 35px',
             padding: '18px 22px',
             borderRadius: '14px',
-            background: 'rgba(99, 179, 237, 0.12)',
-            border: '1px solid rgba(99, 179, 237, 0.35)',
+            background: 'rgba(200, 49, 30, 0.12)',
+            border: '1px solid rgba(200, 49, 30, 0.35)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -664,14 +673,14 @@ export default function HomePage() {
             flexWrap: 'wrap',
           }}>
             <div>
-              <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#63b3ed', fontWeight: 'bold', marginBottom: '4px' }}>Archive mode</div>
+              <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mm-rojo)', fontWeight: 'bold', marginBottom: '4px' }}>Archive mode</div>
               <div style={{ fontSize: '16px', opacity: 0.9 }}>You are viewing an archived regatta. Use the button to return to the current event.</div>
             </div>
             <a
               href={currentEventHref}
               style={{
-                background: '#63b3ed',
-                color: '#0a192f',
+                background: 'var(--mm-rojo)',
+                color: 'var(--mm-cream)',
                 padding: '12px 18px',
                 borderRadius: '8px',
                 textDecoration: 'none',
@@ -695,48 +704,48 @@ export default function HomePage() {
               {/* Event Overview */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#63b3ed' }}><Icons.Flag /></span>
+                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Flag /></span>
                   Event Overview
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Dates</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Dates</h4>
                       <p>{event.eventDate || 'Date TBA'}{event.eventEndDate ? ` – ${event.eventEndDate}` : ''}</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>
                         Start time: {event.eventStartTime || '12:00'}
                       </p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Location</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Location</h4>
                       <p>La Cruz de Huanacaxtle, Nayarit, Mexico</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>Bahía de Banderas</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Classes</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Classes</h4>
                       <p>ILCA 6, ILCA 7</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>All levels including Masters</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Host</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Host</h4>
                       <p>International Sailing Academy</p>
                     </div>
                   </div>
                   
                   <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Highlights</h4>
+                    <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Highlights</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: '#63b3ed' }}>•</span> 3 days of racing (up to 9 races)
+                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> 3 days of racing (up to 9 races)
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: '#63b3ed' }}>•</span> "Whale Perpetual Trophy"
+                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> "Whale Perpetual Trophy"
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: '#63b3ed' }}>•</span> Warm water sailing
+                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> Warm water sailing
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: '#63b3ed' }}>•</span> Friendly atmosphere
+                        <span style={{ color: 'var(--mm-rojo)' }}>•</span> Friendly atmosphere
                       </li>
                     </ul>
                   </div>
@@ -765,24 +774,24 @@ export default function HomePage() {
                       <div style={{ fontSize: '13px', opacity: 0.68 }}>2026 Overall • Mexico • ILCA 6</div>
                     </div>
                   </div>
-                  <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: '#63b3ed', fontWeight: 'bold', textDecoration: 'none', fontSize: '14px' }}>2026 results →</a>
+                  <a href="/?event=mmcm1ps9woa49fdzxl&tab=results" style={{ color: 'var(--mm-rojo)', fontWeight: 'bold', textDecoration: 'none', fontSize: '14px' }}>2026 results →</a>
                 </div>
               </section>
 
               {/* Registration */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#63b3ed' }}><Icons.Trophy /></span>
+                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Trophy /></span>
                   Registration
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', marginBottom: '25px' }}>
-                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#63b3ed' }}>$100</div>
+                    <div style={{ fontSize: '36px', fontWeight: 'bold', color: 'var(--mm-rojo)' }}>$100</div>
                     <a 
                       href="/register"
                       style={{
-                        background: '#63b3ed',
-                        color: '#0a192f',
+                        background: 'var(--mm-rojo)',
+                        color: 'var(--mm-cream)',
                         padding: '12px 24px',
                         borderRadius: '8px',
                         textDecoration: 'none',
@@ -798,7 +807,7 @@ export default function HomePage() {
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>What's Included</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>What's Included</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• Entry to regatta (up to 9 races)</li>
                         <li>• Event t-shirt</li>
@@ -807,7 +816,7 @@ export default function HomePage() {
                       </ul>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Important Notes</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Important Notes</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• No registration deadline</li>
                         <li>• No late fees</li>
@@ -823,28 +832,28 @@ export default function HomePage() {
               {/* Venue & Travel */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#63b3ed' }}><Icons.Location /></span>
+                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Location /></span>
                   Venue & Travel
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Racing Venue</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Racing Venue</h4>
                       <p style={{ marginBottom: '10px' }}>Bahía de Banderas, launching from Marina Riviera Nayarit and the International Sailing Academy</p>
                       <p style={{ fontSize: '14px', opacity: 0.7 }}>La Cruz de Huanacaxtle, Nayarit, Mexico</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Getting There</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Getting There</h4>
                       <p>Fly into <strong>Puerto Vallarta (PVR)</strong> airport</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Stay in Bucerías or La Cruz — hotels, Airbnbs, and restaurants nearby</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Weather</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Weather</h4>
                       <p>Warm water & stable thermal winds in March</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Average daily high ~28°C (82°F), reliable breeze, scenic mountain backdrop</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Boat Storage</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Boat Storage</h4>
                       <p>Available at ISA and Bourquin Sailing Yard</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Contact ISA to reserve boat park space</p>
                     </div>
@@ -855,7 +864,7 @@ export default function HomePage() {
                       href="https://maps.app.goo.gl/R3H3UwEeaY8MSpjw6" 
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: '#63b3ed', display: 'flex', alignItems: 'center', gap: '8px' }}
+                      style={{ color: 'var(--mm-rojo)', display: 'flex', alignItems: 'center', gap: '8px' }}
                     >
                       <Icons.Location /> View on Google Maps →
                     </a>
@@ -872,17 +881,17 @@ export default function HomePage() {
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Classes</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Classes</h4>
                       <p>ILCA 6 • ILCA 7</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Open (all ages) and Masters categories (35+)</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Scoring</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Scoring</h4>
                       <p>Low Point Scoring</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>9 races scheduled • 1 discard after 4+ races</p>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '10px' }}>Awards</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '10px' }}>Awards</h4>
                       <p>Top 3 in each class • Masters recognition</p>
                       <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>The Whale Perpetual Trophy for overall champion</p>
                     </div>
@@ -893,13 +902,13 @@ export default function HomePage() {
               {/* Safety */}
               <section style={{ marginBottom: '60px' }}>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#63b3ed' }}><Icons.CheckeredFlag /></span>
+                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.CheckeredFlag /></span>
                   Safety & Requirements
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Safety Equipment</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Safety Equipment</h4>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, opacity: 0.8 }}>
                         <li>• Whistle required</li>
                         <li>• Flotation device required</li>
@@ -913,25 +922,25 @@ export default function HomePage() {
               {/* Contact */}
               <section>
                 <h2 style={{ fontSize: '32px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ color: '#63b3ed' }}><Icons.Users /></span>
+                  <span style={{ color: 'var(--mm-rojo)' }}><Icons.Users /></span>
                   Contact & Support
                 </h2>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '30px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Email</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Email</h4>
                       <a href="mailto:info@internationalsailingacademy.com" style={{ color: 'white' }}>
                         info@internationalsailingacademy.com
                       </a>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>WhatsApp</h4>
-                      <a href="https://wa.me/523221177641" target="_blank" style={{ color: '#63b3ed', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>WhatsApp</h4>
+                      <a href="https://wa.me/523221177641" target="_blank" style={{ color: 'var(--mm-rojo)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         +52 322 117 7641 →
                       </a>
                     </div>
                     <div>
-                      <h4 style={{ color: '#63b3ed', marginBottom: '8px' }}>Race Office</h4>
+                      <h4 style={{ color: 'var(--mm-rojo)', marginBottom: '8px' }}>Race Office</h4>
                       <p>ISA Office, Local 31 A Del Mar<br/>La Cruz de Huanacaxtle</p>
                     </div>
                   </div>
@@ -950,19 +959,19 @@ export default function HomePage() {
                   <p style={{ margin: 0, opacity: 0.72 }}>{paidSailorCount} paid registration{paidSailorCount === 1 ? '' : 's'} shown automatically from Stripe checkout.</p>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  <a href="/register" style={{ background: '#63b3ed', color: '#0a192f', padding: '11px 16px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now</a>
-                  {paidSailorCount > 0 && <button onClick={exportManifestCsv} style={{ background: 'transparent', color: '#63b3ed', border: '1px solid rgba(99,179,237,0.45)', padding: '11px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Export Manifest CSV</button>}
+                  <a href="/register" style={{ background: 'var(--mm-rojo)', color: 'var(--mm-cream)', padding: '11px 16px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now</a>
+                  {paidSailorCount > 0 && <button onClick={exportManifestCsv} style={{ background: 'transparent', color: 'var(--mm-rojo)', border: '1px solid rgba(200,49,30,0.45)', padding: '11px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Export Manifest CSV</button>}
                 </div>
               </div>
 
               {event.sailors.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '80px 20px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }}>
-                  <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ color: 'var(--mm-rojo)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
                     <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
                   </div>
                   <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Open</h2>
                   <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '25px' }}>Sailors will appear here as paid registrations come in.</p>
-                  <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#63b3ed', color: '#0a192f', padding: '12px 22px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now <Icons.ArrowRight /></a>
+                  <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--mm-rojo)', color: 'var(--mm-cream)', padding: '12px 22px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now <Icons.ArrowRight /></a>
                 </div>
               ) : (
                 <>
@@ -971,7 +980,7 @@ export default function HomePage() {
                       <thead>
                         <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.16)' }}>
                           {[[ 'boatClass', 'Class' ], [ 'name', 'Sailor' ], [ 'country', 'Country' ], [ 'sailNumber', 'Sail #' ], [ 'category', 'Division' ]].map(([field, label]) => (
-                            <th key={field} onClick={() => setSortField(field)} style={{ padding: '14px 12px', textAlign: field === 'sailNumber' ? 'center' : 'left', cursor: 'pointer', color: '#63b3ed', whiteSpace: 'nowrap' }}>
+                            <th key={field} onClick={() => setSortField(field)} style={{ padding: '14px 12px', textAlign: field === 'sailNumber' ? 'center' : 'left', cursor: 'pointer', color: 'var(--mm-rojo)', whiteSpace: 'nowrap' }}>
                               {label}{sailorSort.field === field ? (sailorSort.direction === 'asc' ? ' ↑' : ' ↓') : ''}
                             </th>
                           ))}
@@ -1013,10 +1022,10 @@ export default function HomePage() {
                   { day: 'Saturday, March 13', races: [7, 8, 9], active: false },
                 ].map((day, idx) => (
                   <div key={idx} style={{
-                    background: day.active ? 'rgba(99, 179, 237, 0.15)' : 'rgba(255,255,255,0.05)',
+                    background: day.active ? 'rgba(200, 49, 30, 0.15)' : 'rgba(255,255,255,0.05)',
                     borderRadius: '16px',
                     padding: '30px',
-                    border: day.active ? '1px solid rgba(99, 179, 237, 0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    border: day.active ? '1px solid rgba(200, 49, 30, 0.4)' : '1px solid rgba(255,255,255,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -1080,7 +1089,7 @@ export default function HomePage() {
                 if (!showIlca7 && !showIlca6) {
                   return (
                     <div style={{ textAlign: 'center', padding: '100px 20px' }}>
-                      <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
+                      <div style={{ color: 'var(--mm-rojo)', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
                         <Icons.CheckeredFlag />
                       </div>
                       <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Racing Hasn't Started Yet</h2>
@@ -1089,10 +1098,10 @@ export default function HomePage() {
                       </p>
                       <div style={{
                         display: 'inline-block',
-                        background: 'rgba(99, 179, 237, 0.1)',
+                        background: 'rgba(200, 49, 30, 0.1)',
                         padding: '20px 40px',
                         borderRadius: '12px',
-                        border: '1px solid rgba(99, 179, 237, 0.3)',
+                        border: '1px solid rgba(200, 49, 30, 0.3)',
                       }}>
                         <p style={{ margin: 0 }}>Check back on March 11, 2027</p>
                       </div>
@@ -1130,7 +1139,7 @@ export default function HomePage() {
               
               {(!event.documents || event.documents.length === 0) ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <div style={{ color: '#63b3ed', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ color: 'var(--mm-rojo)', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
                     <Icons.FileIcon />
                   </div>
                   <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>No Documents Yet</h3>
@@ -1158,7 +1167,7 @@ export default function HomePage() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-                        e.currentTarget.style.borderColor = 'rgba(99, 179, 237, 0.4)'
+                        e.currentTarget.style.borderColor = 'rgba(200, 49, 30, 0.4)'
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
@@ -1167,13 +1176,13 @@ export default function HomePage() {
                     >
                       <div style={{ 
                         fontSize: '32px', 
-                        color: '#63b3ed',
+                        color: 'var(--mm-rojo)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         width: '50px',
                         height: '50px',
-                        background: 'rgba(99, 179, 237, 0.1)',
+                        background: 'rgba(200, 49, 30, 0.1)',
                         borderRadius: '8px',
                       }}>
                         📄
@@ -1203,10 +1212,10 @@ export default function HomePage() {
                   href={currentEventHref}
                   style={{
                     display: 'block',
-                    background: 'linear-gradient(135deg, rgba(99, 179, 237, 0.22), rgba(56, 161, 105, 0.14))',
+                    background: 'linear-gradient(135deg, rgba(200, 49, 30, 0.22), rgba(200, 49, 30, 0.14))',
                     padding: '22px',
                     borderRadius: '14px',
-                    border: '1px solid rgba(99, 179, 237, 0.45)',
+                    border: '1px solid rgba(200, 49, 30, 0.45)',
                     color: 'white',
                     textDecoration: 'none',
                     boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
@@ -1214,12 +1223,12 @@ export default function HomePage() {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div>
-                      <div style={{ color: '#63b3ed', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 'bold', marginBottom: '6px' }}>Current event</div>
+                      <div style={{ color: 'var(--mm-rojo)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 'bold', marginBottom: '6px' }}>Current event</div>
                       <h3 style={{ fontSize: '22px', margin: '0 0 8px 0' }}>{currentEvent?.eventName || 'Current Regatta'}</h3>
                       <p style={{ margin: 0, opacity: 0.75 }}>Return to the live/current regatta page</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 'bold', color: '#63b3ed' }}>{currentEvent?.eventDate || 'Date TBA'}</div>
+                      <div style={{ fontWeight: 'bold', color: 'var(--mm-rojo)' }}>{currentEvent?.eventDate || 'Date TBA'}</div>
                       <div style={{ opacity: 0.85, fontSize: '14px', marginTop: '6px' }}>Back to current →</div>
                     </div>
                   </div>
@@ -1228,7 +1237,7 @@ export default function HomePage() {
 
               {archiveEvents.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <div style={{ color: '#63b3ed', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ color: 'var(--mm-rojo)', marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
                     <Icons.Trophy />
                   </div>
                   <h3 style={{ fontSize: '24px', marginBottom: '10px' }}>No Archived Regattas Yet</h3>
@@ -1256,7 +1265,7 @@ export default function HomePage() {
                           <p style={{ margin: 0, opacity: 0.7 }}>{archiveEvent.venue || 'Venue TBA'}</p>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontWeight: 'bold', color: '#63b3ed' }}>{archiveEvent.eventDate || 'Date TBA'}</div>
+                          <div style={{ fontWeight: 'bold', color: 'var(--mm-rojo)' }}>{archiveEvent.eventDate || 'Date TBA'}</div>
                           <div style={{ opacity: 0.7, fontSize: '14px' }}>{archiveEvent.sailors?.length || 0} sailors • {(archiveEvent.races || []).length || 0} races</div>
                         </div>
                       </div>
@@ -1336,8 +1345,8 @@ export default function HomePage() {
             <img src="/logo-horizontal.png" alt="International Sailing Academy" style={{ maxWidth: '320px', height: 'auto' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
-            <a href="https://internationalsailingacademy.com" style={{ color: '#63b3ed', textDecoration: 'none' }}>Website</a>
-            <a href="https://isa-virtual-coaching.circle.so/" style={{ color: '#63b3ed', textDecoration: 'none' }}>Virtual Coaching</a>
+            <a href="https://internationalsailingacademy.com" style={{ color: 'var(--mm-rojo)', textDecoration: 'none' }}>Website</a>
+            <a href="https://isa-virtual-coaching.circle.so/" style={{ color: 'var(--mm-rojo)', textDecoration: 'none' }}>Virtual Coaching</a>
           </div>
           <p style={{ marginTop: '30px', opacity: 0.4, fontSize: '14px' }}>© 2027 International Sailing Academy</p>
           <p style={{ marginTop: '10px', opacity: 0.3, fontSize: '11px', fontFamily: 'monospace' }}>
@@ -1400,7 +1409,7 @@ function SailorRow({ sailor, index, getHandicap }) {
     }}
     onMouseEnter={(e) => {
       e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-      e.currentTarget.style.borderColor = 'rgba(99, 179, 237, 0.4)'
+      e.currentTarget.style.borderColor = 'rgba(200, 49, 30, 0.4)'
     }}
     onMouseLeave={(e) => {
       e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
@@ -1621,7 +1630,7 @@ function ResultsTable({ sailors, races, mastersScoringEnabled }) {
                   )}
                 </div>
               </td>
-              <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold', color: '#63b3ed', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>{r.net}</td>
+              <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 'bold', color: 'var(--mm-rojo)', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>{r.net}</td>
               <td style={{ padding: '10px 8px', textAlign: 'center', opacity: 0.6 }}>{r.total}</td>
               {r.raceScores.map(rs => (
                 <td key={rs.race} style={{ padding: '10px 6px', textAlign: 'center' }}>
