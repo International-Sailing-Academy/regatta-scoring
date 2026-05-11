@@ -233,6 +233,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [dataSource, setDataSource] = useState('loading')
   const [scrollY, setScrollY] = useState(0)
+  const [sailorSort, setSailorSort] = useState({ field: 'boatClass', direction: 'asc' })
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -398,8 +399,31 @@ export default function HomePage() {
 
   const eventStartDateTime = buildEventStartDateTime(event)
   const eventDateRange = formatEventDateRange(event)
-  const ilca7Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 7')
-  const ilca6Sailors = event.sailors.filter(s => s.boatClass === 'ILCA 6' || s.boatClass === 'Radial')
+  const publicSailors = [...(event.sailors || [])]
+  const sortValue = (sailor, field) => String(sailor?.[field] || '').toLowerCase()
+  const sortedSailors = [...publicSailors].sort((a, b) => {
+    const classOrder = { 'ILCA 7': 1, 'ILCA 6': 2, Radial: 2, 'ILCA 4': 3, '4.7': 3 }
+    let result = 0
+    if (sailorSort.field === 'boatClass') result = (classOrder[a.boatClass] || 99) - (classOrder[b.boatClass] || 99) || sortValue(a, 'name').localeCompare(sortValue(b, 'name'))
+    else result = sortValue(a, sailorSort.field).localeCompare(sortValue(b, sailorSort.field))
+    return sailorSort.direction === 'asc' ? result : -result
+  })
+  const ilca7Sailors = sortedSailors.filter(s => s.boatClass === 'ILCA 7')
+  const ilca6Sailors = sortedSailors.filter(s => s.boatClass === 'ILCA 6' || s.boatClass === 'Radial')
+  const paidSailorCount = publicSailors.length
+  const setSortField = (field) => setSailorSort(prev => ({ field, direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc' }))
+  const exportManifestCsv = () => {
+    const header = ['Name', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt Size']
+    const rows = sortedSailors.map(s => [s.name, s.country, s.boatClass, s.sailNumber, s.category, s.tshirtSize || ''])
+    const csv = [header, ...rows].map(row => row.map(value => `"${String(value || '').replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'mexican-midwinters-2027-sailor-manifest.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
   
   // Deduplicate races by race number to prevent duplicate columns
   const dedupeRaces = (races) => {
@@ -771,9 +795,7 @@ export default function HomePage() {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', marginBottom: '25px' }}>
                     <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#63b3ed' }}>$100</div>
                     <a 
-                      href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/2080738754/book/?full-items=yes" 
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href="/register"
                       style={{
                         background: '#63b3ed',
                         color: '#0a192f',
@@ -938,61 +960,55 @@ export default function HomePage() {
           {/* SAILORS TAB */}
           {activeTab === 'sailors' && (
             <div style={{ animation: 'fadeInUp 0.5s ease-out' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '28px' }}>
+                <div>
+                  <h2 style={{ fontSize: '32px', margin: '0 0 8px' }}>Registered Sailors</h2>
+                  <p style={{ margin: 0, opacity: 0.72 }}>{paidSailorCount} paid registration{paidSailorCount === 1 ? '' : 's'} shown automatically from Stripe checkout.</p>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  <a href="/register" style={{ background: '#63b3ed', color: '#0a192f', padding: '11px 16px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now</a>
+                  {paidSailorCount > 0 && <button onClick={exportManifestCsv} style={{ background: 'transparent', color: '#63b3ed', border: '1px solid rgba(99,179,237,0.45)', padding: '11px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Export Manifest CSV</button>}
+                </div>
+              </div>
+
               {event.sailors.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '100px 20px' }}>
+                <div style={{ textAlign: 'center', padding: '80px 20px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }}>
                   <div style={{ color: '#63b3ed', marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
                     <img src="/logo-icon.png" alt="" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
                   </div>
                   <h2 style={{ fontSize: '32px', marginBottom: '15px' }}>Registration Open</h2>
-                  <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '25px' }}>Sailors will appear here as registrations come in.</p>
-                  <a
-                    href="https://fareharbor.com/embeds/book/internationalsailingacademy/items/637672/availability/2080738754/book/?full-items=yes"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: '#63b3ed',
-                      color: '#0a192f',
-                      padding: '12px 22px',
-                      borderRadius: '8px',
-                      textDecoration: 'none',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Register Now <Icons.ArrowRight />
-                  </a>
+                  <p style={{ fontSize: '18px', opacity: 0.7, marginBottom: '25px' }}>Sailors will appear here as paid registrations come in.</p>
+                  <a href="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#63b3ed', color: '#0a192f', padding: '12px 22px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>Register Now <Icons.ArrowRight /></a>
                 </div>
               ) : (
                 <>
-                  {ilca7Sailors.length > 0 && (
-                    <div style={{ marginBottom: '50px' }}>
-                      <h2 style={{ fontSize: '28px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{ background: '#e53e3e', padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>ILCA 7</span>
-                        <span>{ilca7Sailors.length} Sailors</span>
-                      </h2>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', overflowX: 'hidden' }}>
-                        {ilca7Sailors.map((sailor, index) => (
-                          <SailorRow key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
+                  <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', marginBottom: '40px' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '760px' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.16)' }}>
+                          {[[ 'boatClass', 'Class' ], [ 'name', 'Sailor' ], [ 'country', 'Country' ], [ 'sailNumber', 'Sail #' ], [ 'category', 'Division' ]].map(([field, label]) => (
+                            <th key={field} onClick={() => setSortField(field)} style={{ padding: '14px 12px', textAlign: field === 'sailNumber' ? 'center' : 'left', cursor: 'pointer', color: '#63b3ed', whiteSpace: 'nowrap' }}>
+                              {label}{sailorSort.field === field ? (sailorSort.direction === 'asc' ? ' ↑' : ' ↓') : ''}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedSailors.map((sailor, index) => (
+                          <tr key={sailor.id || `${sailor.name}-${index}`} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                            <td style={{ padding: '12px', fontWeight: 800 }}>{sailor.boatClass}</td>
+                            <td style={{ padding: '12px' }}>{sailor.name}</td>
+                            <td style={{ padding: '12px' }}><span style={{ marginRight: '8px' }}>{FLAGS[sailor.country] || '○'}</span>{sailor.country || '—'}</td>
+                            <td style={{ padding: '12px', textAlign: 'center', fontWeight: 700 }}>{sailor.sailNumber || '—'}</td>
+                            <td style={{ padding: '12px' }}>{sailor.category || '—'}</td>
+                          </tr>
                         ))}
-                      </div>
-                    </div>
-                  )}
+                      </tbody>
+                    </table>
+                  </div>
 
-                  {ilca6Sailors.length > 0 && (
-                    <div>
-                      <h2 style={{ fontSize: '28px', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{ background: '#38a169', padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>ILCA 6</span>
-                        <span>{ilca6Sailors.length} Sailors</span>
-                      </h2>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', overflowX: 'hidden' }}>
-                        {ilca6Sailors.map((sailor, index) => (
-                          <SailorRow key={sailor.id} sailor={sailor} index={index} getHandicap={getHandicap} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {ilca7Sailors.length > 0 && <SailorClassSection title="ILCA 7" color="#e53e3e" sailors={ilca7Sailors} getHandicap={getHandicap} />}
+                  {ilca6Sailors.length > 0 && <SailorClassSection title="ILCA 6" color="#38a169" sailors={ilca6Sailors} getHandicap={getHandicap} />}
                 </>
               )}
             </div>
@@ -1361,6 +1377,22 @@ const CATEGORY_ABBR = {
   'Junior': 'J',
   'Open': 'O',
   '18-35': '18-35'
+}
+
+function SailorClassSection({ title, color, sailors, getHandicap }) {
+  return (
+    <div style={{ marginBottom: '46px' }}>
+      <h2 style={{ fontSize: '28px', marginBottom: '22px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <span style={{ background: color, padding: '8px 16px', borderRadius: '8px', fontSize: '14px' }}>{title}</span>
+        <span>{sailors.length} Sailor{sailors.length === 1 ? '' : 's'}</span>
+      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', overflowX: 'hidden' }}>
+        {sailors.map((sailor, index) => (
+          <SailorRow key={sailor.id || `${title}-${index}`} sailor={sailor} index={index} getHandicap={getHandicap} />
+        ))}
+      </div>
+    </div>
+  )
 }
 
 // Sailor Card Component

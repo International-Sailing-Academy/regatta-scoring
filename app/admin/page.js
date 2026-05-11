@@ -144,6 +144,39 @@ export default function AdminPage() {
     if (activeTab === 'registrations' && selectedEventId) loadRegistrations(selectedEventId)
   }, [activeTab, selectedEventId])
 
+  const exportRegistrationsCsv = () => {
+    const header = ['Name', 'Email', 'WhatsApp', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt', 'Status', 'Amount', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit', 'Boat Insurance', 'Medical Conditions', 'Emergency Contact', 'Emergency Phone', 'Paid At']
+    const rows = registrations.map(reg => [
+      reg.full_name,
+      reg.email,
+      reg.whatsapp || reg.phone || '',
+      reg.country || '',
+      reg.boat_class,
+      reg.sail_number || '',
+      reg.scoring_category,
+      reg.tshirt_size || '',
+      reg.payment_status,
+      `${((reg.amount_total || 0) / 100).toFixed(2)} ${String(reg.currency || 'usd').toUpperCase()}`,
+      reg.charter_dates || '',
+      reg.charter_days_short || 0,
+      reg.charter_days_extended || 0,
+      reg.pro_kit_rental ? 'Yes' : 'No',
+      reg.boat_insurance ? 'Yes' : 'No',
+      reg.medical_conditions || '',
+      reg.emergency_contact_name || '',
+      reg.emergency_contact_phone || '',
+      reg.paid_at || '',
+    ])
+    const csv = [header, ...rows].map(row => row.map(value => `"${String(value || '').replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'mexican-midwinters-stripe-registrations.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   // Manual save function
   const handleSave = async () => {
     if (event) {
@@ -1121,7 +1154,10 @@ export default function AdminPage() {
             <div style={styles.panel}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <h2>Stripe Registrations</h2>
-                <button onClick={() => loadRegistrations()} style={styles.btnSecondary}>{registrationsLoading ? 'Loading…' : 'Refresh'}</button>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  {registrations.length > 0 && <button onClick={exportRegistrationsCsv} style={styles.btnSecondary}>Export CSV</button>}
+                  <button onClick={() => loadRegistrations()} style={styles.btnSecondary}>{registrationsLoading ? 'Loading…' : 'Refresh'}</button>
+                </div>
               </div>
               <p style={styles.help}>Paid Stripe registrations are automatically added to the public sailor list by the webhook.</p>
               {registrations.length === 0 ? (
@@ -1134,8 +1170,13 @@ export default function AdminPage() {
                         <th>Name</th>
                         <th>Email</th>
                         <th>Class</th>
+                        <th>Sail #</th>
+                        <th>Country</th>
                         <th>Category</th>
+                        <th>T-Shirt</th>
+                        <th>Add-ons</th>
                         <th>Status</th>
+                        <th>Total</th>
                         <th>Paid</th>
                         <th>Created</th>
                       </tr>
@@ -1146,8 +1187,18 @@ export default function AdminPage() {
                           <td>{reg.full_name}</td>
                           <td>{reg.email}</td>
                           <td>{reg.boat_class}</td>
+                          <td>{reg.sail_number || '—'}</td>
+                          <td>{reg.country || '—'}</td>
                           <td>{reg.scoring_category}</td>
+                          <td>{reg.tshirt_size || '—'}</td>
+                          <td>{[
+                            reg.charter_days_short ? `${reg.charter_days_short} short charter days` : null,
+                            reg.charter_days_extended ? `${reg.charter_days_extended} extended charter days` : null,
+                            reg.pro_kit_rental ? 'Pro kit' : null,
+                            reg.boat_insurance ? 'Insurance' : null,
+                          ].filter(Boolean).join(', ') || '—'}</td>
                           <td><strong>{reg.payment_status}</strong></td>
+                          <td>{reg.amount_total ? `$${(reg.amount_total / 100).toFixed(2)}` : '—'}</td>
                           <td>{reg.paid_at ? new Date(reg.paid_at).toLocaleString() : '—'}</td>
                           <td>{reg.created_at ? new Date(reg.created_at).toLocaleString() : '—'}</td>
                         </tr>

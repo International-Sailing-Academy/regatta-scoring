@@ -1,7 +1,15 @@
 import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
 import { getServerSupabase } from '../../../lib/server-supabase'
-import { cleanRegistrationPayload, validateRegistration, REGATTA_CURRENCY, REGATTA_EVENT_ID, REGATTA_PRICE_CENTS } from '../../../lib/registration'
+import {
+  cleanRegistrationPayload,
+  validateRegistration,
+  registrationAddOns,
+  registrationTotalCents,
+  REGATTA_CURRENCY,
+  REGATTA_EVENT_ID,
+  REGATTA_PRICE_CENTS,
+} from '../../../lib/registration'
 
 export async function POST(request) {
   try {
@@ -33,23 +41,34 @@ export async function POST(request) {
       return NextResponse.json({ error: 'A paid registration already exists for this email.' }, { status: 409 })
     }
 
+    const totalCents = registrationTotalCents(payload)
+    const addOns = registrationAddOns(payload)
+
     const { data: registration, error: insertError } = await supabase
       .from('regatta_registrations')
       .insert({
         event_id: REGATTA_EVENT_ID,
         payment_status: 'pending',
-        amount_total: REGATTA_PRICE_CENTS,
+        amount_total: totalCents,
         currency: REGATTA_CURRENCY,
         full_name: payload.fullName,
         email: payload.email,
         phone: payload.phone || null,
+        whatsapp: payload.whatsapp || null,
         country: payload.country || null,
         sail_number: payload.sailNumber || null,
         boat_class: payload.boatClass,
         scoring_category: payload.scoringCategory,
+        tshirt_size: payload.tshirtSize,
         birth_year: payload.birthYear,
         emergency_contact_name: payload.emergencyContactName || null,
         emergency_contact_phone: payload.emergencyContactPhone || null,
+        medical_conditions: payload.medicalConditions || null,
+        charter_dates: payload.charterDates || null,
+        charter_days_short: payload.charterDaysShort,
+        charter_days_extended: payload.charterDaysExtended,
+        pro_kit_rental: payload.proKitRental,
+        boat_insurance: payload.boatInsurance,
         notes: payload.notes || null,
         waiver_accepted: payload.waiverAccepted,
       })
@@ -59,6 +78,31 @@ export async function POST(request) {
     if (insertError) throw insertError
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+    const lineItems = [
+      {
+        quantity: 1,
+        price_data: {
+          currency: REGATTA_CURRENCY,
+          unit_amount: REGATTA_PRICE_CENTS,
+          product_data: {
+            name: 'ILCA Mexican Midwinter Regatta 2027 Entry',
+            description: 'March 11–13, 2027 • La Cruz de Huanacaxtle, Mexico',
+          },
+        },
+      },
+      ...addOns.map((item) => ({
+        quantity: item.quantity,
+        price_data: {
+          currency: REGATTA_CURRENCY,
+          unit_amount: item.unitAmount,
+          product_data: {
+            name: item.label,
+            description: 'Mexican Midwinters registration add-on',
+          },
+        },
+      })),
+    ]
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer_email: payload.email,
@@ -70,20 +114,9 @@ export async function POST(request) {
         eventId: REGATTA_EVENT_ID,
         sailorName: payload.fullName,
         boatClass: payload.boatClass,
+        scoringCategory: payload.scoringCategory,
       },
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: REGATTA_CURRENCY,
-            unit_amount: REGATTA_PRICE_CENTS,
-            product_data: {
-              name: 'ILCA Mexican Midwinter Regatta 2027 Entry',
-              description: 'March 11–13, 2027 • La Cruz de Huanacaxtle, Mexico',
-            },
-          },
-        },
-      ],
+      line_items: lineItems,
     })
 
     await supabase
