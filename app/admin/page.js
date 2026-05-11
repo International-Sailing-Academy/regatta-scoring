@@ -144,8 +144,34 @@ export default function AdminPage() {
     if (activeTab === 'registrations' && selectedEventId) loadRegistrations(selectedEventId)
   }, [activeTab, selectedEventId])
 
+  const handleRegistrationAction = async (registration, action) => {
+    const label = action === 'refund' ? 'refund this sailor and remove them from the public manifest' : 'cancel this sailor and remove them from the public manifest'
+    if (!confirm(`Are you sure you want to ${label}?`)) return
+    const adminNotes = prompt('Optional admin note:', registration.admin_notes || '') || ''
+    try {
+      const response = await fetch('/api/registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': ADMIN_PASSWORD },
+        body: JSON.stringify({ action, registrationId: registration.id, adminNotes })
+      })
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.error || 'Action failed')
+      await loadRegistrations(selectedEventId)
+      const allEvents = await getAllEvents()
+      setEvents(allEvents)
+      const refreshed = allEvents.find(e => e.id === selectedEventId)
+      if (refreshed) {
+        setEvent(refreshed)
+        setSavedEvent(refreshed)
+      }
+      alert(action === 'refund' ? 'Refund issued and sailor removed from manifest.' : 'Registration canceled and sailor removed from manifest.')
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
   const exportRegistrationsCsv = () => {
-    const header = ['Name', 'Email', 'WhatsApp', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt', 'Status', 'Amount', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit', 'Boat Insurance', 'Medical Conditions', 'Emergency Contact', 'Emergency Phone', 'Paid At']
+    const header = ['Name', 'Email', 'WhatsApp', 'Country', 'Class', 'Sail Number', 'Category', 'T-Shirt', 'Status', 'Refund Status', 'Amount', 'Charter Dates', 'Short Charter Days', 'Extended Charter Days', 'Pro Kit', 'Boat Insurance', 'Medical Conditions', 'Emergency Contact', 'Emergency Phone', 'Stripe Session', 'Payment Intent', 'Refund ID', 'Admin Notes', 'Paid At', 'Refunded At', 'Canceled At']
     const rows = registrations.map(reg => [
       reg.full_name,
       reg.email,
@@ -156,6 +182,7 @@ export default function AdminPage() {
       reg.scoring_category,
       reg.tshirt_size || '',
       reg.payment_status,
+      reg.refund_status || 'none',
       `${((reg.amount_total || 0) / 100).toFixed(2)} ${String(reg.currency || 'usd').toUpperCase()}`,
       reg.charter_dates || '',
       reg.charter_days_short || 0,
@@ -165,7 +192,13 @@ export default function AdminPage() {
       reg.medical_conditions || '',
       reg.emergency_contact_name || '',
       reg.emergency_contact_phone || '',
+      reg.stripe_checkout_session_id || '',
+      reg.stripe_payment_intent_id || '',
+      reg.stripe_refund_id || '',
+      reg.admin_notes || '',
       reg.paid_at || '',
+      reg.refunded_at || '',
+      reg.canceled_at || '',
     ])
     const csv = [header, ...rows].map(row => row.map(value => `"${String(value || '').replace(/"/g, '""')}"`).join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
@@ -1176,9 +1209,13 @@ export default function AdminPage() {
                         <th>T-Shirt</th>
                         <th>Add-ons</th>
                         <th>Status</th>
+                        <th>Refund</th>
                         <th>Total</th>
+                        <th>Stripe</th>
+                        <th>Admin Notes</th>
                         <th>Paid</th>
                         <th>Created</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1197,10 +1234,23 @@ export default function AdminPage() {
                             reg.pro_kit_rental ? 'Pro kit' : null,
                             reg.boat_insurance ? 'Insurance' : null,
                           ].filter(Boolean).join(', ') || '—'}</td>
-                          <td><strong>{reg.payment_status}</strong></td>
+                          <td><strong style={{ color: reg.payment_status === 'paid' ? '#38a169' : reg.payment_status === 'refunded' || reg.payment_status === 'canceled' ? '#e53e3e' : '#805ad5' }}>{reg.payment_status}</strong></td>
+                          <td>{reg.refund_status || 'none'}{reg.refunded_at ? <><br /><small>{new Date(reg.refunded_at).toLocaleString()}</small></> : null}</td>
                           <td>{reg.amount_total ? `$${(reg.amount_total / 100).toFixed(2)}` : '—'}</td>
+                          <td>
+                            {reg.stripe_checkout_session_id ? <small>Session: {reg.stripe_checkout_session_id}</small> : '—'}
+                            {reg.stripe_payment_intent_id ? <><br /><small>PI: {reg.stripe_payment_intent_id}</small></> : null}
+                            {reg.stripe_refund_id ? <><br /><small>Refund: {reg.stripe_refund_id}</small></> : null}
+                          </td>
+                          <td>{reg.admin_notes || '—'}</td>
                           <td>{reg.paid_at ? new Date(reg.paid_at).toLocaleString() : '—'}</td>
                           <td>{reg.created_at ? new Date(reg.created_at).toLocaleString() : '—'}</td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                              {reg.payment_status === 'paid' && <button onClick={() => handleRegistrationAction(reg, 'refund')} style={{ ...styles.btnDanger, padding: '6px 10px', fontSize: '12px' }}>Refund</button>}
+                              {reg.payment_status !== 'canceled' && reg.payment_status !== 'refunded' && <button onClick={() => handleRegistrationAction(reg, 'cancel')} style={{ ...styles.btnSecondary, padding: '6px 10px', fontSize: '12px' }}>Cancel</button>}
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
