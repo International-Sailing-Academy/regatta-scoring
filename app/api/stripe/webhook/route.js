@@ -57,7 +57,8 @@ async function markRegistrationPaid(session) {
 
   try {
     const sentAt = new Date().toISOString()
-    const email = registrationConfirmationEmail({ registrations, checkoutSessionId: session.id })
+    const registrationsWithDocs = registrations.map(reg => ({ ...reg, event_documents: event.documents || [] }))
+    const email = registrationConfirmationEmail({ registrations: registrationsWithDocs, checkoutSessionId: session.id })
     await sendEmail(email)
     const ids = registrations.map(reg => reg.id)
     await supabase.from('regatta_registrations').update({ confirmation_email_sent_at: sentAt, confirmation_email_error: null }).in('id', ids)

@@ -17,12 +17,19 @@ function escapeHtml(value = '') {
     .replace(/"/g, '&quot;')
 }
 
+function documentLink(registrations, matchers = []) {
+  const docs = registrations[0]?.event_documents || []
+  return docs.find(doc => matchers.some(m => String(doc.name || '').toLowerCase().includes(m)))?.url || null
+}
+
 export function registrationConfirmationEmail({ registrations = [], checkoutSessionId = '' }) {
   const first = registrations[0] || {}
   const purchaserName = first.purchaser_name || first.full_name || 'there'
   const purchaserEmail = first.purchaser_email || first.email
   const total = registrations.reduce((sum, reg) => sum + (reg.amount_total || 0), 0)
   const currency = first.currency || 'usd'
+  const norUrl = documentLink(registrations, ['notice', 'nor']) || `${SITE_URL}/?tab=docs`
+  const sailingInstructionsUrl = documentLink(registrations, ['sailing instruction', 'instructions']) || `${SITE_URL}/?tab=docs`
   const sailorRows = registrations.map(reg => `
     <tr>
       <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${escapeHtml(reg.full_name)}</td>
@@ -34,7 +41,7 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
   `).join('')
 
   const subject = 'Mexican Midwinters registration confirmed'
-  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\n\nInternational Sailing Academy`
+  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\nNotice of Race: ${norUrl}\nSailing Instructions: ${sailingInstructionsUrl}\n\nInternational Sailing Academy`
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111827;max-width:680px;margin:0 auto;">
       <h1 style="color:#0a192f;">Mexican Midwinters registration confirmed</h1>
@@ -50,7 +57,13 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
         <p style="margin:0 0 14px;">We’ll use this group for race-office updates, logistics, and sailor notices.</p>
         <a href="${REGATTA_WHATSAPP_GROUP_URL}" style="display:inline-block;background:#25D366;color:#062414;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:8px;">Join WhatsApp group</a>
       </div>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin:22px 0;">
+        <h2 style="margin:0 0 10px;color:#0a192f;">Regatta documents</h2>
+        <p style="margin:0 0 8px;"><a href="${norUrl}">Notice of Race</a></p>
+        <p style="margin:0;"><a href="${sailingInstructionsUrl}">Sailing Instructions</a></p>
+      </div>
       <p><a href="${REGATTA_SAILORS_URL}">View the registered sailor list</a></p>
+      <p><a href="${SITE_URL}">Visit the regatta website</a></p>
       <p style="color:#6b7280;font-size:13px;">Checkout session: ${escapeHtml(checkoutSessionId)}</p>
       <p>International Sailing Academy</p>
     </div>
