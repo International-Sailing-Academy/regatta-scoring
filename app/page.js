@@ -477,13 +477,13 @@ export default function HomePage() {
       <section style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', color: 'var(--mm-cream)', background: 'var(--mm-ink)' }}>
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: 'url(/banner.jpg)',
+          backgroundImage: 'url(/midwinters-hero-race.jpg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center 46%',
           transform: `translateY(${scrollY * 0.35}px)`,
-          filter: 'brightness(0.62)',
+          filter: 'brightness(0.76) saturate(1.08) contrast(1.02)',
         }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,25,41,0.55) 0%, rgba(10,25,41,0.10) 35%, rgba(10,25,41,0.85) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(10,25,41,0.78) 0%, rgba(10,25,41,0.45) 42%, rgba(10,25,41,0.12) 78%), linear-gradient(180deg, rgba(10,25,41,0.34) 0%, rgba(10,25,41,0.06) 38%, rgba(10,25,41,0.88) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.06, mixBlendMode: 'overlay', pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>")` }} />
 
         <div className="mm-hero-inner" style={{ position: 'relative', zIndex: 3, minHeight: '100vh', padding: '24px 48px 48px', display: 'flex', flexDirection: 'column' }}>
