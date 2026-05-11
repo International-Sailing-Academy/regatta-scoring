@@ -204,19 +204,11 @@ function CountdownTimer({ targetDate }) {
   }, [targetDate])
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
-      {Object.entries(timeLeft).map(([unit, value]) => (
-        <div key={unit} style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '10px',
-          padding: '15px 20px',
-          textAlign: 'center',
-          minWidth: '65px',
-          border: '1px solid rgba(255,255,255,0.2)',
-        }}>
-          <div style={{ fontSize: 'clamp(28px, 8vw, 48px)', fontWeight: 'bold', lineHeight: 1 }}>{String(value).padStart(2, '0')}</div>
-          <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '5px' }}>{unit}</div>
+    <div className="mm-count-row" style={{ display: 'flex', gap: '22px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+      {Object.entries(timeLeft).map(([unit, value], index) => (
+        <div key={unit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <div className="mm-count-n" style={{ fontFamily: 'var(--mm-display)', fontSize: unit === 'days' ? '72px' : '64px', fontWeight: 900, lineHeight: 0.9, letterSpacing: '-0.03em', color: index === 0 ? 'var(--mm-sun)' : 'var(--mm-cream)', fontVariantNumeric: 'tabular-nums' }}>{unit === 'days' ? String(value) : String(value).padStart(2, '0')}</div>
+          <div className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.55)', marginTop: '8px' }}>{unit}</div>
         </div>
       ))}
     </div>
@@ -461,16 +453,17 @@ export default function HomePage() {
         @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
         :root { --mm-ink:#0A1929; --mm-ink-2:#122337; --mm-ink-3:#1B304A; --mm-cream:#F2EDE0; --mm-cream-2:#E7E1D1; --mm-bone:#FAF6EC; --mm-tequila:#F4A82A; --mm-tequila-2:#FFC04A; --mm-sun:#F4A82A; --mm-sun-2:#FFC04A; --mm-rojo:#E76F51; --mm-bay:#1E4F6B; --mm-bay-2:#143A52; --mm-verde:#1E4F6B; --mm-sky:#4FB3D9; --mm-pink:#E76F51; --mm-lime:#B6E04A; --mm-display:'Archivo','Inter',system-ui,sans-serif; --mm-body:'Manrope',system-ui,sans-serif; --mm-mono:'JetBrains Mono',ui-monospace,monospace; }
         .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
-        .mm-btn { display:inline-flex; align-items:center; gap:12px; padding:12px 20px; background:var(--mm-sun); color:var(--mm-ink); font-family:var(--mm-display); font-weight:800; font-size:14px; text-transform:uppercase; letter-spacing:.08em; border:none; border-radius:4px; cursor:pointer; text-decoration:none; transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
-        .mm-btn:hover { background:var(--mm-sun-2); transform:translateY(-1px) skewX(-2deg); }
-        .mm-btn--hero { font-size:24px; padding:18px 28px 18px 32px; }
-        .mm-btn-ghost { display:inline-flex; align-items:center; gap:10px; padding:14px 22px; background:transparent; color:var(--mm-cream); border:1px solid rgba(242,237,224,.35); font-family:var(--mm-mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; border-radius:4px; text-decoration:none; }
-        .mm-hero-brand { font-family:var(--mm-display); font-weight:900; font-size:18px; letter-spacing:-.01em; text-transform:uppercase; }
+        .mm-btn { display:inline-flex; align-items:center; gap:12px; padding:12px 20px; background:var(--mm-sun); color:var(--mm-ink); font-family:var(--mm-display); font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.08em; border:none; border-radius:2px; cursor:pointer; text-decoration:none; transition:transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
+        .mm-btn:hover { background:var(--mm-sun-2); transform:translateY(-1px); }
+        .mm-btn--hero { font-size:16px; padding:18px 30px; letter-spacing:.1em; }
+        .mm-btn-ghost { display:inline-flex; align-items:center; gap:10px; padding:16px 22px; background:transparent; color:var(--mm-cream); border:1px solid rgba(242,237,224,.35); font-family:var(--mm-mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; border-radius:2px; text-decoration:none; }
+        .mm-btn-ghost:hover { border-color:var(--mm-sun); color:var(--mm-sun); background:rgba(244,168,42,.05); }
+        .mm-hero-brand { font-family:var(--mm-display); font-weight:800; font-size:17px; letter-spacing:.04em; text-transform:uppercase; }
         .mm-hero-mono { font-family:var(--mm-mono); text-transform:uppercase; }
-        .mm-flag { display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 8px; background:var(--mm-ink); color:var(--mm-cream); font-family:var(--mm-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; border-radius:2px; }
-        .mm-flag::before { content:""; width:8px; height:8px; background:var(--mm-sun); border-radius:1px; }
-        .mm-flag--live { background:var(--mm-verde); }
-        .mm-flag--live::before { background:var(--mm-sun); }
+        .mm-flag { display:inline-flex; align-items:center; gap:8px; padding:5px 11px 5px 9px; background:rgba(242,237,224,.10); color:var(--mm-cream); border:1px solid rgba(242,237,224,.20); font-family:var(--mm-mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; border-radius:2px; backdrop-filter:blur(6px); }
+        .mm-flag::before { content:""; width:6px; height:6px; background:var(--mm-sun); border-radius:50%; box-shadow:0 0 8px var(--mm-sun); }
+        .mm-flag--live { background:rgba(79,179,217,.08); border-color:rgba(79,179,217,.4); }
+        .mm-flag--live::before { background:var(--mm-sky); box-shadow:0 0 8px var(--mm-sky); }
         @media (max-width: 900px) { .mm-nav-links, .mm-nav-lang { display:none !important; } .mm-hero-bottom { flex-direction:column !important; align-items:flex-start !important; gap:40px !important; } .mm-count-n { font-size:52px !important; } }
         .mm-page h2 { font-family:var(--mm-display) !important; font-weight:900; text-transform:uppercase; letter-spacing:-.01em; line-height:.9; color:var(--mm-cream); }
         .mm-page h3, .mm-page h4 { font-family:var(--mm-display) !important; font-style:italic; text-transform:uppercase; letter-spacing:.01em; }
@@ -488,11 +481,11 @@ export default function HomePage() {
           position: 'absolute', inset: 0,
           backgroundImage: 'url(/midwinters-hero-race.jpg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center 46%',
-          transform: `translateY(${scrollY * 0.35}px)`,
-          filter: 'brightness(0.76) saturate(1.08) contrast(1.02)',
+          backgroundPosition: 'center 42%',
+          transform: `translateY(${scrollY * 0.22}px) scale(1.02)`,
+          filter: 'brightness(0.88) saturate(1.16) contrast(1.04)',
         }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(10,25,41,0.78) 0%, rgba(10,25,41,0.45) 42%, rgba(10,25,41,0.12) 78%), linear-gradient(180deg, rgba(10,25,41,0.34) 0%, rgba(10,25,41,0.06) 38%, rgba(10,25,41,0.88) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 50% at 22% 8%, rgba(255,210,140,0.18) 0%, rgba(255,210,140,0) 60%), linear-gradient(90deg, rgba(10,25,41,0.72) 0%, rgba(10,25,41,0.36) 42%, rgba(10,25,41,0.08) 78%), linear-gradient(180deg, rgba(10,25,41,0.55) 0%, rgba(10,25,41,0.05) 35%, rgba(10,25,41,0.86) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, opacity: 0.06, mixBlendMode: 'overlay', pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>")` }} />
 
         <div className="mm-hero-inner" style={{ position: 'relative', zIndex: 3, minHeight: '100vh', padding: '24px 48px 48px', display: 'flex', flexDirection: 'column' }}>
@@ -501,12 +494,18 @@ export default function HomePage() {
               <img src="/logo-icon.png" alt="ISA" style={{ height: '40px', width: 'auto', objectFit: 'contain' }} />
               <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
                 <span className="mm-hero-brand">Mexican Midwinters</span>
-                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '4px' }}>EST. 2009 · Bahía de Banderas</span>
+                <span className="mm-hero-mono" style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgba(242,237,224,0.6)', marginTop: '5px' }}>An ISA Regatta · Est. 2009</span>
               </span>
             </a>
             <nav className="mm-nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }} aria-label="Primary">
-              {['Regatta', 'Sailors', 'Schedule', 'Results', 'Docs', 'Archive'].map((label) => (
-                <button key={label} onClick={() => setActiveTab(label.toLowerCase())} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', color: 'var(--mm-cream)', opacity: activeTab === label.toLowerCase() ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
+              {[
+                ['Regatta', 'info'],
+                ['Sailors', 'sailors'],
+                ['Past Winners', 'archive'],
+                ['Results', 'results'],
+                ['Docs', 'docs'],
+              ].map(([label, tab]) => (
+                <button key={label} onClick={() => setActiveTab(tab)} className="mm-hero-mono" style={{ background: 'transparent', border: 'none', borderBottom: activeTab === tab ? '1px solid var(--mm-sun)' : '1px solid transparent', paddingBottom: '4px', color: 'var(--mm-cream)', opacity: activeTab === tab ? 1 : 0.7, fontSize: '11px', letterSpacing: '0.18em', cursor: 'pointer' }}>{label}</button>
               ))}
             </nav>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -532,16 +531,16 @@ export default function HomePage() {
                 <span style={{ width: '64px', height: '1px', background: 'var(--mm-sun)' }} />
                 <span className="mm-hero-mono" style={{ fontSize: '12px', letterSpacing: '0.3em', color: 'var(--mm-sun)' }}>ILCA · Open Fleet · Mar 11–13, 2027</span>
               </div>
-              <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(88px, 13vw, 220px)', lineHeight: 0.84, letterSpacing: '-0.01em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
+              <h1 className="mm-headline" style={{ fontFamily: 'var(--mm-display)', fontWeight: 900, fontSize: 'clamp(72px, 11vw, 180px)', lineHeight: 0.92, letterSpacing: '-0.025em', textTransform: 'uppercase', margin: 0, color: 'var(--mm-cream)' }}>
                 Mexican<br />
-                <span style={{ color: 'var(--mm-rojo)' }}>Midwinters.</span>
+                <span style={{ color: 'var(--mm-sun)' }}>Midwinters.</span>
               </h1>
-              <p style={{ maxWidth: '560px', marginTop: '28px', fontSize: '18px', lineHeight: 1.5, color: 'rgba(242,237,224,0.82)', fontFamily: 'var(--mm-body)', fontWeight: 300 }}>
-                {event.description || 'Join us for the premier ILCA regatta in Mexico! Open to all ILCA 7 and ILCA 6 sailors.'}
+              <p style={{ maxWidth: '540px', marginTop: '28px', fontSize: '17px', lineHeight: 1.55, color: 'rgba(242,237,224,0.82)', fontFamily: 'var(--mm-body)', fontWeight: 300 }}>
+                Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management.
               </p>
               <div style={{ marginTop: '36px', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <a className="mm-btn mm-btn--hero" href="/register">Register for 2027 <span style={{ fontStyle: 'normal' }}>→</span></a>
-                <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('results')}>View 2026 results</button>
+                <button className="mm-btn-ghost" type="button" onClick={() => setActiveTab('archive')}>View 2026 results</button>
               </div>
               <div className="mm-hero-mono" style={{ marginTop: '32px', fontSize: '10px', letterSpacing: '0.24em', color: 'rgba(242,237,224,0.5)' }}>Scroll ↓ the regatta</div>
             </div>
