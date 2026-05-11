@@ -442,25 +442,15 @@ export default function HomePage() {
   const currentEventHref = currentEventId ? `/?event=${currentEventId}&tab=info` : '/'
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0E1116', color: '#F4EDDF', fontFamily: 'var(--mm-body)' }}>
+    <div style={{ minHeight: '100vh', background: '#0a192f', color: 'white', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-        :root {
-          --mm-ink:#0E1116; --mm-ink-2:#181C24; --mm-ink-3:#232834;
-          --mm-cream:#F4EDDF; --mm-cream-2:#EAE1CE; --mm-bone:#FFFBF2;
-          --mm-rojo:#C8311E; --mm-rojo-2:#E04A38; --mm-verde:#1B4034; --mm-sun:#F4C724;
-          --mm-display:'Antonio','Oswald','Impact',sans-serif;
-          --mm-body:'Space Grotesk',system-ui,sans-serif;
-          --mm-mono:'JetBrains Mono',ui-monospace,monospace;
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes mmTicker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .animate-fadeInUp { animation: fadeInUp 0.8s cubic-bezier(.16,1,.3,1) forwards; }
-        .mm-display { font-family: var(--mm-display); font-style: italic; font-weight: 700; text-transform: uppercase; letter-spacing: -0.015em; }
-        .mm-mono { font-family: var(--mm-mono); letter-spacing: .18em; text-transform: uppercase; }
-        .mm-cta { transition: transform 180ms cubic-bezier(.2,.7,.1,1), background 180ms; }
-        .mm-cta:hover { transform: translateY(-1px) skewX(-2deg); background: var(--mm-rojo-2) !important; }
-        .mm-card { background: rgba(244,237,223,0.045) !important; border-color: rgba(244,237,223,0.12) !important; }
+        .animate-fadeInUp {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
       `}</style>
 
       {/* Navigation */}
@@ -470,7 +460,7 @@ export default function HomePage() {
         left: 0,
         right: 0,
         zIndex: 100,
-        background: scrollY > 100 ? 'rgba(14, 17, 22, 0.92)' : 'transparent',
+        background: scrollY > 100 ? 'rgba(10, 25, 47, 0.95)' : 'transparent',
         backdropFilter: scrollY > 100 ? 'blur(20px)' : 'none',
         transition: 'all 0.3s ease',
         padding: '15px 20px',
@@ -480,7 +470,7 @@ export default function HomePage() {
         flexWrap: 'wrap',
         gap: '10px',
       }}>
-        <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--mm-display)', fontStyle: 'italic', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+        <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <img src="/logo-icon.png" alt="ISA" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
           <span style={{ whiteSpace: 'nowrap' }}>ISA Regattas</span>
         </div>
@@ -488,8 +478,8 @@ export default function HomePage() {
           <a
             href={currentEventHref}
             style={{
-              background: 'var(--mm-rojo)',
-              color: 'var(--mm-cream)',
+              background: '#63b3ed',
+              color: '#0a192f',
               padding: '10px 16px',
               borderRadius: '8px',
               textDecoration: 'none',
@@ -532,7 +522,7 @@ export default function HomePage() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'linear-gradient(180deg, rgba(14,17,22,0.52) 0%, rgba(14,17,22,0.18) 38%, rgba(14,17,22,0.94) 100%)',
+          background: 'linear-gradient(to bottom, rgba(10,25,47,0.3) 0%, rgba(10,25,47,0.8) 70%, #0a192f 100%)',
         }} />
 
         <div style={{
@@ -545,12 +535,11 @@ export default function HomePage() {
           <div className="animate-fadeInUp">
             <div style={{ 
               display: 'inline-block',
-              background: 'rgba(200,49,30,0.92)',
-              border: '1px solid rgba(244,237,223,0.28)',
+              background: 'rgba(99, 179, 237, 0.2)',
+              border: '1px solid rgba(99, 179, 237, 0.4)',
               padding: '10px 24px',
-              borderRadius: '3px',
-              fontFamily: 'var(--mm-mono)',
-              fontSize: '12px',
+              borderRadius: '50px',
+              fontSize: '14px',
               textTransform: 'uppercase',
               letterSpacing: '2px',
               marginBottom: '30px',
@@ -560,14 +549,10 @@ export default function HomePage() {
           </div>
 
           <h1 className="animate-fadeInUp" style={{
-            fontSize: 'clamp(58px, 12vw, 148px)',
-            fontFamily: 'var(--mm-display)',
-            fontStyle: 'italic',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '-0.025em',
+            fontSize: 'clamp(40px, 8vw, 72px)',
+            fontWeight: 'bold',
             margin: '0 0 20px 0',
-            lineHeight: 0.86,
+            lineHeight: 1.1,
             textShadow: '0 4px 20px rgba(0,0,0,0.5)',
           }}>
             {event.eventName}
@@ -591,38 +576,25 @@ export default function HomePage() {
             <CountdownTimer targetDate={eventStartDateTime} />
             <a
               href="/register"
-              className="mm-cta"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '10px',
                 marginTop: '28px',
-                background: 'var(--mm-rojo)',
-                color: 'var(--mm-cream)',
-                padding: '17px 30px',
-                borderRadius: '4px',
+                background: '#63b3ed',
+                color: '#0a192f',
+                padding: '15px 26px',
+                borderRadius: '10px',
                 textDecoration: 'none',
-                fontFamily: 'var(--mm-display)',
-                fontStyle: 'italic',
-                textTransform: 'uppercase',
-                letterSpacing: '0.02em',
                 fontWeight: '900',
-                fontSize: '22px',
-                boxShadow: '0 12px 30px rgba(200,49,30,0.26)',
+                fontSize: '16px',
+                boxShadow: '0 12px 30px rgba(99,179,237,0.28)',
               }}
             >
               Register Now <Icons.ArrowRight />
             </a>
           </div>
 
-        </div>
-      </div>
-
-      <div style={{ overflow: 'hidden', background: '#181C24', borderTop: '1px solid #232834', borderBottom: '1px solid #232834', color: '#F4EDDF', padding: '13px 0' }}>
-        <div className="mm-mono" style={{ display: 'flex', width: 'max-content', gap: '42px', fontSize: '11px', animation: 'mmTicker 38s linear infinite', whiteSpace: 'nowrap' }}>
-          {[...Array(2)].flatMap(() => ['La Cruz de Huanacaxtle', 'ILCA 6 + ILCA 7', 'March 11–13, 2027', 'Bahía de Banderas', 'Warm water racing', 'Whale Perpetual Trophy']).map((item, idx) => (
-            <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: '14px' }}><span style={{ color: 'var(--mm-rojo)' }}>◆</span>{item}</span>
-          ))}
         </div>
       </div>
 
@@ -719,7 +691,7 @@ export default function HomePage() {
                 flex: '1 1 auto',
                 minWidth: '70px',
                 padding: '12px 16px',
-                background: activeTab === tab ? 'var(--mm-rojo)' : 'transparent',
+                background: activeTab === tab ? '#38a169' : 'transparent',
                 color: activeTab === tab ? 'white' : 'white',
                 border: 'none',
                 borderRadius: '8px',
@@ -729,7 +701,7 @@ export default function HomePage() {
                 textTransform: 'capitalize',
                 transition: 'all 0.3s ease',
                 whiteSpace: 'nowrap',
-                boxShadow: activeTab === tab ? '0 8px 18px rgba(200,49,30,0.24)' : 'none',
+                boxShadow: activeTab === tab ? '0 4px 6px rgba(56, 161, 105, 0.3)' : 'none',
                 transform: activeTab === tab ? 'translateY(-2px)' : 'none',
               }}
             >
