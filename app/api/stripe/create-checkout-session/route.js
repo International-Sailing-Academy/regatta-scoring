@@ -113,6 +113,15 @@ export async function POST(request) {
         purchaserName: payload.purchaser.fullName,
         sailorCount: String(payload.sailors.length),
       },
+      payment_intent_data: {
+        receipt_email: payload.purchaser.email,
+        description: `Mexican Midwinters 2027 registration — ${payload.sailors.length} sailor${payload.sailors.length === 1 ? '' : 's'}`,
+      },
+      custom_text: {
+        after_submit: {
+          message: 'Registration complete. Please join the official regatta WhatsApp group from the confirmation page for race-office updates and logistics.',
+        },
+      },
       line_items: lineItems,
     })
 
