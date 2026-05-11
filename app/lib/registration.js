@@ -35,6 +35,7 @@ export function emptySailor() {
     fullName: '',
     country: '',
     sailNumber: '',
+    whatsapp: '',
     boatClass: 'ILCA 6',
     scoringCategory: '',
     tshirtSize: '',
@@ -55,6 +56,7 @@ export function cleanSailorPayload(input = {}) {
     fullName: String(input.fullName || '').trim(),
     country: String(input.country || '').trim(),
     sailNumber: String(input.sailNumber || '').trim().toUpperCase(),
+    whatsapp: cleanPhoneDigits(input.whatsapp || input.sailorWhatsapp || input.phone),
     boatClass: String(input.boatClass || '').trim(),
     scoringCategory: String(input.scoringCategory || '').trim(),
     tshirtSize: String(input.tshirtSize || '').trim(),
@@ -94,6 +96,7 @@ export function validateSailor(sailor, index = 0) {
   if (!sailor.fullName) errors.push(`${prefix}full name is required`)
   if (!sailor.country) errors.push(`${prefix}country is required`)
   if (!sailor.sailNumber) errors.push(`${prefix}sail number is required`)
+  if (!sailor.whatsapp || sailor.whatsapp.replace(/\D/g, '').length < 8) errors.push(`${prefix}WhatsApp number with country code is required`)
   if (!BOAT_CLASSES.includes(sailor.boatClass)) errors.push(`${prefix}rig / boat class is required`)
   if (!SCORING_CATEGORIES.includes(sailor.scoringCategory)) errors.push(`${prefix}scoring category is required`)
   if (!TSHIRT_SIZES.includes(sailor.tshirtSize)) errors.push(`${prefix}T-shirt size is required`)

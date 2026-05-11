@@ -50,6 +50,7 @@ export default function RegisterPage() {
     if (key === 'charterDaysExtended' && Number(value) > 0) next.charterDaysShort = 0
     return next
   }))
+  const copyPurchaserWhatsappToSailor = (index) => setSailors(prev => prev.map((sailor, i) => i === index ? { ...sailor, whatsapp: purchaser.whatsapp } : sailor))
   const addSailor = () => setSailors(prev => [...prev, emptySailor()])
   const duplicateSailor = (index) => setSailors(prev => [...prev.slice(0, index + 1), { ...prev[index], fullName: '', sailNumber: '' }, ...prev.slice(index + 1)])
   const removeSailor = (index) => setSailors(prev => prev.length === 1 ? prev : prev.filter((_, i) => i !== index))
@@ -108,6 +109,12 @@ export default function RegisterPage() {
                 <Field label="Sailor full name *"><input style={fieldStyle} value={sailor.fullName} onChange={e => updateSailor(index, 'fullName', e.target.value)} required /></Field>
                 <Field label="Country *"><input list="countries" style={fieldStyle} value={sailor.country} onChange={e => updateSailor(index, 'country', e.target.value)} placeholder="Mexico" required /></Field>
                 <Field label="Sail number *"><input style={fieldStyle} value={sailor.sailNumber} onChange={e => updateSailor(index, 'sailNumber', e.target.value)} required /></Field>
+                <Field label="Sailor WhatsApp *" help="For race-office updates and happenings. Include country code.">
+                  <div style={{ display: 'grid', gap: '8px' }}>
+                    <input style={fieldStyle} value={sailor.whatsapp} onChange={e => updateSailor(index, 'whatsapp', e.target.value)} placeholder="19178675309" required />
+                    {purchaser.whatsapp && <button type="button" onClick={() => copyPurchaserWhatsappToSailor(index)} style={{ justifySelf: 'start', background: 'transparent', color: '#0A1929', border: '1px solid rgba(10,25,41,0.18)', borderRadius: '4px', padding: '7px 10px', fontSize: '12px', fontWeight: 800, cursor: 'pointer' }}>Use purchaser WhatsApp</button>}
+                  </div>
+                </Field>
                 <Field label="Rig *"><Select required value={sailor.boatClass} onChange={e => updateSailor(index, 'boatClass', e.target.value)}>{BOAT_CLASSES.map(item => <option key={item}>{item}</option>)}</Select></Field>
                 <Field label="Scoring category *"><Select required value={sailor.scoringCategory} onChange={e => updateSailor(index, 'scoringCategory', e.target.value)}><option value="">Choose an option</option>{SCORING_CATEGORIES.map(item => <option key={item}>{item}</option>)}</Select></Field>
                 <Field label="T-shirt size *"><Select required value={sailor.tshirtSize} onChange={e => updateSailor(index, 'tshirtSize', e.target.value)}><option value="">Choose an option</option>{TSHIRT_SIZES.map(item => <option key={item}>{item}</option>)}</Select></Field>

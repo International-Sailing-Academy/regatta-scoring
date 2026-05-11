@@ -49,7 +49,7 @@ export async function POST(request) {
       full_name: sailor.fullName,
       email: payload.purchaser.email,
       phone: payload.purchaser.phone || null,
-      whatsapp: payload.purchaser.whatsapp || null,
+      whatsapp: sailor.whatsapp || payload.purchaser.whatsapp || null,
       country: sailor.country || null,
       sail_number: sailor.sailNumber || null,
       boat_class: sailor.boatClass,
