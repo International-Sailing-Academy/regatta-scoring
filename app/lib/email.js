@@ -42,8 +42,8 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
   `).join('')
 
   const subject = 'Mexican Midwinters registration confirmed'
-  const clinicText = clinicOptions.map(clinic => `${clinic.timing}: ${clinic.title} with ${clinic.coach} (${clinic.dates}) — ${clinic.href}`).join('\n')
-  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\nNotice of Race: ${norUrl}\nSailing Instructions: ${sailingInstructionsUrl}\n\nOptional ISA clinics around the regatta:\n${clinicText}\n\nInternational Sailing Academy`
+  const clinicText = clinicOptions.map(clinic => `${clinic.title} with ${clinic.coach} (${clinic.dates}) — ${clinic.href}`).join('\n')
+  const text = `Hi ${purchaserName},\n\nYour Mexican Midwinters registration is confirmed for ${registrations.length} sailor${registrations.length === 1 ? '' : 's'}.\n\nJoin the regatta WhatsApp group: ${REGATTA_WHATSAPP_GROUP_URL}\n\nTotal paid: ${money(total, currency)}\n\nView the sailor list: ${REGATTA_SAILORS_URL}\nNotice of Race: ${norUrl}\nSailing Instructions: ${sailingInstructionsUrl}\n\nWant to arrive sharp for race day? ISA has two pre-regatta training options before Mexican Midwinters. Details and booking live on the ISA site:\n${clinicText}\n\nInternational Sailing Academy`
   const clinicCards = clinicOptions.map(clinic => `
     <tr>
       <td style="padding:0 0 14px;">
@@ -61,7 +61,7 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
             <td style="padding:0 18px 18px;color:#0A1929;font-size:13px;line-height:1.5;"><strong>${escapeHtml(clinic.coach)}</strong> · ${escapeHtml(clinic.duration)} · ${escapeHtml(clinic.price)} starting from</td>
           </tr>
           <tr>
-            <td style="padding:0 18px 20px;"><a href="${clinic.href}" style="display:inline-block;background:#F4A82A;color:#0A1929;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;padding:12px 16px;border-radius:4px;">Learn more →</a></td>
+            <td style="padding:0 18px 20px;"><a href="${clinic.href}" style="display:inline-block;background:#F4A82A;color:#0A1929;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;padding:12px 16px;border-radius:4px;">View on ISA site →</a></td>
           </tr>
         </table>
       </td>
@@ -93,7 +93,8 @@ export function registrationConfirmationEmail({ registrations = [], checkoutSess
             <p style="margin:0 0 8px;"><a href="${norUrl}" style="color:#0A1929;font-weight:700;">Notice of Race</a></p>
             <p style="margin:0;"><a href="${sailingInstructionsUrl}" style="color:#0A1929;font-weight:700;">Sailing Instructions</a></p>
           </div>
-          <h2 style="margin:28px 0 12px;color:#0A1929;font-size:22px;text-transform:uppercase;">Train around the regatta</h2>
+          <h2 style="margin:28px 0 8px;color:#0A1929;font-size:22px;text-transform:uppercase;">Pre-regatta training with ISA</h2>
+          <p style="margin:0 0 14px;color:#4F6276;font-size:14px;line-height:1.55;">Want to arrive sharp for race day? These ISA training options run before Mexican Midwinters. Use the links below for clinic details and booking on the ISA site.</p>
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">${clinicCards}</table>
           <p><a href="${REGATTA_SAILORS_URL}" style="color:#0A1929;font-weight:700;">View the registered sailor list</a></p>
           <p><a href="${SITE_URL}" style="color:#0A1929;font-weight:700;">Visit the regatta website</a></p>
