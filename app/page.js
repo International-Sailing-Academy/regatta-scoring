@@ -32,7 +32,7 @@ const LANGUAGE_COPY = {
     eyebrow: 'ILCA · Open Fleet · Mar 11–13, 2027',
     titleA: 'Mexican',
     titleB: 'Midwinters.',
-    lede: 'Join us for the premier ILCA regatta in Mexico. Open to all ILCA 7 and ILCA 6 sailors.',
+    lede: 'Three days of championship ILCA racing on Banderas Bay — steady thermal breeze, big fleets, world-class race management. Sign up for the regatta experience of the year today.',
     registerShort: 'Register',
     register: 'Register',
     viewResults: 'View 2026 results',
@@ -49,7 +49,7 @@ const LANGUAGE_COPY = {
     eyebrow: 'ILCA · Flota abierta · 11–13 marzo, 2027',
     titleA: 'Mexican',
     titleB: 'Midwinters.',
-    lede: 'Únete a la principal regata ILCA en México. Abierta a todos los veleristas ILCA 7 e ILCA 6.',
+    lede: 'Tres días de regata ILCA en Bahía de Banderas: brisa térmica constante, flotas competitivas y organización de primer nivel.',
     registerShort: 'Inscríbete',
     register: 'Inscríbete para 2027',
     viewResults: 'Ver resultados 2026',
@@ -817,10 +817,10 @@ export default function HomePage() {
                         <span style={{ color: 'var(--mm-sun)' }}>•</span> "Whale Perpetual Trophy"
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--mm-sun)' }}>•</span> Warm water & stable thermal winds in March
+                        <span style={{ color: 'var(--mm-sun)' }}>•</span> Warm water sailing
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--mm-sun)' }}>•</span> Open to ILCA 7 and ILCA 6 sailors
+                        <span style={{ color: 'var(--mm-sun)' }}>•</span> Friendly atmosphere
                       </li>
                     </ul>
                   </div>
@@ -890,7 +890,7 @@ export default function HomePage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '18px', flexWrap: 'wrap' }}>
                     <div>
                       <h2 className="mm-training-title" style={{ fontSize: 'clamp(56px, 7.8vw, 94px)', lineHeight: 0.9, margin: 0, color: 'var(--mm-cream)', letterSpacing: '-0.035em' }}>
-                        Focused ILCA<br /><span style={{ color: 'var(--mm-sun)', fontStyle: 'italic' }}>training.</span>
+                        Train before<br />you <span style={{ color: 'var(--mm-sun)', fontStyle: 'italic' }}>race.</span>
                       </h2>
                     </div>
                     <a href="https://internationalsailingacademy.com/clinics" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--mm-sun)', fontFamily: 'var(--mm-mono)', fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', textDecoration: 'none' }}>View all ISA clinics →</a>
@@ -986,7 +986,7 @@ export default function HomePage() {
                     <div>
                       <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Weather</h4>
                       <p>Warm water & stable thermal winds in March</p>
-                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>La Cruz, Mexico</p>
+                      <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Average daily high ~28°C (82°F), reliable breeze, scenic mountain backdrop</p>
                     </div>
                     <div>
                       <h4 style={{ color: 'var(--mm-sun)', marginBottom: '10px' }}>Boat Storage</h4>
