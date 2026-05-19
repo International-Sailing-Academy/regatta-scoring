@@ -13,7 +13,7 @@ export const clinicOptions = [
     fleet: 'ILCA · Speed & Handling',
     image: `${ISA_SITE_URL}/images/clinics-gallery/speed-handling-gallery-3.jpg`,
     href: `${ISA_SITE_URL}/clinics/speed-handling-mar-2027`,
-    description: 'Arrive early for six days of high-quality ILCA speed, handling, and control work with Vaughn before race week.',
+    description: 'Work with 3X Olympic Coach Vaughn Harrison to take your speed and handling to the next level. Coaching format will include deliberate practice in upwind/downwind speed, technical/practical theory and in-depth video review.',
   },
   {
     id: 'starting-clinic-mar-2027',
@@ -27,6 +27,6 @@ export const clinicOptions = [
     fleet: 'ILCA · Starting & Racing',
     image: `${ISA_SITE_URL}/images/clinics-dropbox/Startline.png`,
     href: `${ISA_SITE_URL}/clinics/starting-clinic-mar-2027`,
-    description: 'Sharpen starts and race execution with Paul Swan in the three days immediately before the Midwinters.',
+    description: 'Starting Clinic at International Sailing Academy in La Cruz, Mexico. This page gives the key clinic details, dates, coach, and booking link for this training week.',
   },
 ]
